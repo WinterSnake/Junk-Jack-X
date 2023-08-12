@@ -1,0 +1,8 @@
+# C#: Build
+bin/
+obj/
+**/bin/
+**/obj/
+
+# Session: tmux
+.tmux-session
