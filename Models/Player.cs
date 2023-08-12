@@ -19,14 +19,23 @@ public class Player
 	/* Constructor */
 	public Player(string name)
 	{
+		this.Id = Guid.NewGuid();
+		this._Name = name;
+	}
+	public Player(Guid id, string name)
+	{
+		this.Id = id;
 		this._Name = name;
 	}
 	/* Static Methods */
 	public static async Task<Player> FromStream(Stream stream)
 	{
 		var workingData = new byte[64];
+		// Uuid
+		stream.Seek(0x48, SeekOrigin.Begin);
+		await stream.ReadAsync(workingData, 0, 0x10);
+		Guid id = new Guid(new Span<byte>(workingData).Slice(0, 0x10));
 		// Name
-		stream.Seek(0x58, SeekOrigin.Begin);
 		await stream.ReadAsync(workingData, 0, 0x10);
 		string name = Encoding.ASCII.GetString(
 			new Span<byte>(workingData).Slice(0, Array.IndexOf(workingData, byte.MinValue))
@@ -34,13 +43,9 @@ public class Player
 		return new Player(name);
 	}
 	/* Properties */
-	private string _Name;
+	public Guid Id { get; init; }	// Offset: 0x48 | Length: 0x10 [End = 0x57] | Type: Uuid
+	private string _Name;			// Offset: 0x58 | Length: 0x10 [End = 0x67] | Type: char*
 	public string Name {
-		/*
-			Offset: 0x58
-			Length: 0x10 [End = 0x67]
-			Type: char*
-		*/
 		get { return this._Name; }
 		set {
 			if (value.Length < 16) this._Name = value;
