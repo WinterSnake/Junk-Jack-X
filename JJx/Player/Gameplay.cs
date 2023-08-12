@@ -1,5 +1,5 @@
 /*
-	Junk Jack X Editor: Player
+	Junk Jack X: Player
 	- Gameplay Data
 
 	Written By: Ryan Smith
