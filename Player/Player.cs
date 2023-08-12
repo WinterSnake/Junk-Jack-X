@@ -1,9 +1,23 @@
 /*
-	Junk Jack X Editor: Models
-	- Player
+	Junk Jack X Editor: Player
 
 	Player class references both the player file and player stats file for creating, loading, editing, and saving.
 	This file documents both the hex offsets (and length) and their C equivalent types.
+
+	Segment Breakdown:
+	------------------------------------------------------------------------------------------------------------------------
+	Segment[0x0]  - Segment[0x3]  = JJ Character Header | Length: 4  (0x04) | Type: char[4]
+	Segment[0x4]  - Segment[0x47] = UNKNOWN FOR NOW     | Length: 71 (0x47) | Type: ??? Possible Header/File Length/CRC
+	Segment[0x48] - Segment[0x57] = UUID                | Length: 16 (0x10) | Type: uuid
+	Segment[0x58] - Segment[0x67] = Name                | Length: 16 (0x10) | Type: char*
+	Segment[0x68] - Segment[0x6F] = UNKNOWN FOR NOW     | Length: 8  (0x08) | Type: ???
+	Segment[0x70]                 = Gameplay Flags      | Length: 1  (0x01) | Type: enum flag | Parent: Gameplay.Flags
+	Segment[0x71] - Segment[0x73] = UNKNOWN FOR NOW     | Length: 3  (0x03) | Type: ???
+	Segment[0x74]                 = Hair Color          | Length: 1  (0x01) | Type: enum      | Parent: _Features
+	Segment[0x75]                 = Gender/Skin/Hair    | Length: 1  (0x01) | Type: bitfield  | Parent: _Features
+	Segment[0x76] - Segment[0x77] = UNKNOWN FOR NOW     | Length: 2  (0x02) | Type: ???
+	Segment[0x78]                 = Gameplay Difficulty | Length: 1  (0x01) | Type: enum      | Parent: Gameplay.Difficulty
+	------------------------------------------------------------------------------------------------------------------------
 
 	Written By: Ryan Smith
 */
@@ -12,41 +26,23 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JJx.Models;
+namespace JJx;
 
-public enum Color : byte
-{
-	White       = 0x0,
-	Grey        = 0x1,
-	Black       = 0x2,
-	Brown       = 0x3,
-	DarkBrown   = 0x4,
-	LightBrown  = 0x5,
-	Blonde      = 0x6,
-	DirtyBlonde = 0x7,
-	LightBlonde = 0x8,
-	Ginger      = 0x9,
-	Red         = 0xA,
-	Purple      = 0xB,
-	Blue        = 0xC,
-	Teal        = 0xD,
-	Green       = 0xE,
-	Yellow      = 0xF
-}
-
-public class Player
+public sealed class Player
 {
 	/* Constructor */
 	public Player(string name)
 	{
 		this.Id = Guid.NewGuid();
 		this._Name = name;
+		this.Gameplay = new Gameplay(0, 0);
 	}
-	public Player(Guid id, string name, ushort features)
+	private Player(Guid id, string name, ushort features, Gameplay gameplay)
 	{
 		this.Id = id;
 		this._Name = name;
 		this._Features = features;
+		this.Gameplay = gameplay;
 	}
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
@@ -61,11 +57,17 @@ public class Player
 		byteCount = Encoding.ASCII.GetBytes(this._Name, 0, this._Name.Length, workingData, 0);
 		for (var i = byteCount; i < 0x10; ++i) { workingData[i] = 0; }
 		await stream.WriteAsync(workingData, 0, 0x10);
+		// Gameplay: Flags
+		stream.Seek(0x8, SeekOrigin.Current);
+		stream.WriteByte((byte)this.Gameplay.Flags);
 		// Features
-		stream.Seek(0xC, SeekOrigin.Current);
+		stream.Seek(0x3, SeekOrigin.Current);
 		workingData[0] = (byte)((this._Features & 0xFF00) >> 4);
 		workingData[1] = (byte)(this._Features & 0xFF);
 		await stream.WriteAsync(workingData, 0, 0x2);
+		// Gameplay: Difficulty
+		stream.Seek(0x2, SeekOrigin.Current);
+		stream.WriteByte((byte)this.Gameplay.Difficulty);
 	}
 	/* Static Methods */
 	public static async Task<Player> FromStream(Stream stream)
@@ -80,19 +82,26 @@ public class Player
 		string name = Encoding.ASCII.GetString(
 			new Span<byte>(workingData).Slice(0, Array.IndexOf(workingData, byte.MinValue))
 		);
+		// Gameplay: Flags
+		stream.Seek(0x8, SeekOrigin.Current);
+		var flags = stream.ReadByte();
 		// Features
-		stream.Seek(0xC, SeekOrigin.Current);
+		stream.Seek(0x3, SeekOrigin.Current);
 		await stream.ReadAsync(workingData, 0, 0x02);
 		ushort features = (ushort)(((workingData[0]) << 4) | workingData[1]);
-		return new Player(id, name, features);
+		// Gameplay: Difficulty
+		stream.Seek(0x2, SeekOrigin.Current);
+		var difficulty = stream.ReadByte();
+		// -Gameplay
+		var gameplay = new Gameplay((byte)difficulty, (byte)flags);
+		return new Player(id, name, features, gameplay);
 	}
 	/* Properties */
 	/// Offset Properties
-	                               // Offset: 0x04 | Length: 0x44 [End = 0x47] | Type: UNKNOWN FOR NOW [Possible Header/File Length/Crc?]
-	public Guid Id { get; init; }  // Offset: 0x48 | Length: 0x10 [End = 0x57] | Type: Uuid
-	private string _Name;          // Offset: 0x58 | Length: 0x10 [End = 0x67] | Type: char*
-	                               // Offset: 0x68 | Length: 0x0C [End = 0x73] | Type: UNKNOWN FOR NOW
-	private ushort _Features;      // Offset: 0x74 | Length: 0x02 [End = 0x75] | Type: byte/enum | byte
+	public Guid Id { get; init; }
+	private string _Name;
+	public ushort _Features;
+	public Gameplay Gameplay;
 	/// Modifable Properties
 	public string Name {
 		// Min Length: 1 | Max length: 15 characters -- 16 = null termination
@@ -128,9 +137,9 @@ public class Player
 			this._Features = (ushort)((this._Features & 0xFFF0) | value);
 		}
 	}
-	public Color HairColor
+	public HairColor HairColor
 	{
-		get { return (Color)(this._Features >> 8); }
+		get { return (HairColor)(this._Features >> 8); }
 		set {
 			this._Features = (ushort)(((ushort)value << 8) | (this._Features & 0xFF));
 		}
