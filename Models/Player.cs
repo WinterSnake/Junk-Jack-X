@@ -48,12 +48,31 @@ public class Player
 		this._Name = name;
 		this._Features = features;
 	}
+	/* Instance Methods */
+	public async Task ToStream(Stream stream)
+	{
+		var byteCount = 0;
+		var workingData = new byte[64];
+		// Uuid
+		stream.Seek(0x48, SeekOrigin.Current);
+		var uuid = this.Id.ToByteArray();
+		await stream.WriteAsync(uuid, 0, 0x10);
+		// Name
+		byteCount = Encoding.ASCII.GetBytes(this._Name, 0, this._Name.Length, workingData, 0);
+		for (var i = byteCount; i < 0x10; ++i) { workingData[i] = 0; }
+		await stream.WriteAsync(workingData, 0, 0x10);
+		// Features
+		stream.Seek(0xC, SeekOrigin.Current);
+		workingData[0] = (byte)((this._Features & 0xFF00) >> 4);
+		workingData[1] = (byte)(this._Features & 0xFF);
+		await stream.WriteAsync(workingData, 0, 0x2);
+	}
 	/* Static Methods */
 	public static async Task<Player> FromStream(Stream stream)
 	{
 		var workingData = new byte[64];
 		// Uuid
-		stream.Seek(0x48, SeekOrigin.Begin);
+		stream.Seek(0x48, SeekOrigin.Current);
 		await stream.ReadAsync(workingData, 0, 0x10);
 		Guid id = new Guid(new Span<byte>(workingData).Slice(0, 0x10));
 		// Name
@@ -76,11 +95,11 @@ public class Player
 	private ushort _Features;      // Offset: 0x74 | Length: 0x02 [End = 0x75] | Type: byte/enum | byte
 	/// Modifable Properties
 	public string Name {
-		// Max length: 15 characters + null terminator
+		// Min Length: 1 | Max length: 15 characters -- 16 = null termination
 		get { return this._Name; }
 		set {
 			if (value.Length < 16) this._Name = value;
-			this._Name = value.Substring(0, 15);
+			else this._Name = value.Substring(0, 15);
 		}
 	}
 	public bool Gender
