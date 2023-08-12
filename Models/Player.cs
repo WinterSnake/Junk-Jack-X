@@ -43,8 +43,12 @@ public class Player
 		return new Player(name);
 	}
 	/* Properties */
-	public Guid Id { get; init; }	// Offset: 0x48 | Length: 0x10 [End = 0x57] | Type: Uuid
-	private string _Name;			// Offset: 0x58 | Length: 0x10 [End = 0x67] | Type: char*
+	/// Offset Properties
+	                               // Offset: 0x04 | Length: 0x44 [End = 0x47] | Type: UNKNOWN FOR NOW [Possible Header/File Length/Crc?]
+	public Guid Id { get; init; }  // Offset: 0x48 | Length: 0x10 [End = 0x57] | Type: Uuid
+	private string _Name;          // Offset: 0x58 | Length: 0x10 [End = 0x67] | Type: char*
+	                               // Offset: 0x68 | Length: 0x0C [End = 0x73] | Type: UNKNOWN FOR NOW
+	/// Modifable Properties
 	public string Name {
 		get { return this._Name; }
 		set {
