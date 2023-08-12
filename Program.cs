@@ -14,9 +14,15 @@ internal class Program
 	/* Static Methods */
 	private static async Task Main(string[] args)
 	{
-		using var fs = File.Open("debug/player/Debug_0.0.dat", FileMode.Open);
+		using var fs = File.Open("debug/player/Debug_0.4.dat", FileMode.Open);
 		var player = await Models.Player.FromStream(fs);
-		Console.WriteLine(player.Id);
-		Console.WriteLine(player.Name);
+		Console.WriteLine($"Id: {player.Id}");
+		Console.WriteLine($"Name: {player.Name}");
+		Console.WriteLine($"Features: {player._Features.ToString("x4")} | HairStyle: {player.HairStyle}");
+		player.HairStyle = 1;
+		Console.WriteLine($"Features: {player._Features.ToString("x4")} | HairStyle: {player.HairStyle}");
+		player.HairStyle = 4;
+		player.Gender = false;
+		Console.WriteLine($"Features: {player._Features.ToString("x4")} | HairStyle: {player.HairStyle}");
 	}
 }
