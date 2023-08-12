@@ -1,0 +1,29 @@
+Debug_0.0:
+	gender: male
+	hair: white
+	style: bald
+	skin: 0
+
+Debug_0.1:
+	gender: male
+	hair: white
+	style: slick
+	skin: 0
+
+Debug_0.2:
+	gender: male
+	hair: black
+	style: bald
+	skin: 0
+
+Debug_0.3:
+	gender: male
+	hair: white
+	style: bald
+	skin: 1
+
+Debug_0.4:
+	gender: female
+	hair: white
+	style: pony-tail up [bald]
+	skin: 0
