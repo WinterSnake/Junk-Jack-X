@@ -6,6 +6,3 @@ obj/
 
 # Session: tmux
 .tmux-session
-
-# Misc
-data
