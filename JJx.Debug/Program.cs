@@ -19,11 +19,8 @@ internal class Program
 		{
 			player = await Player.FromStream(fs);
 		}
-		player.HotbarSurvival[0].Id = 1391;
-		player.HotbarSurvival[0].Count = 264;
-		player.HotbarSurvival[0].Durability = 0;
-		player.HotbarSurvival[0].Modifier = 0;
-		player.HotbarSurvival[0].Icon = 0;
+		Console.WriteLine(player.Inventory[0].Id);
+		player.Inventory[0].Count = 50;
 		using (var fs = File.Open(args[0], FileMode.Open, FileAccess.Write))
 		{
 			await player.ToStream(fs);
