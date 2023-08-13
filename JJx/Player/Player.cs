@@ -18,13 +18,15 @@
 	Segment[0x76]  - Segment[0x77]  = UNKNOWN FOR NOW     | Length: 2   (0x2)   | Type: ???
 	Segment[0x78]                   = Gameplay Difficulty | Length: 1   (0x1)   | Type: enum            | Parent: Gameplay.Difficulty
 	Segment[0x79]  - Segment[0x7C]  = UNKNOWN FOR NOW     | Length: 3   (0x3)   | Type: ???
-	Segment[0x7D]  - Segment[0xF3]  = Hotbar: Survival    | Length: 120 (0x78)  | Type: struct Item[10] | Parent: HotbarSurvival
-	Segment[0xF4]  - Segment[0x16B] = Hotbar: Creative    | Length: 120 (0x78)  | Type: struct Item[10] | Parent: HotbarCreative
-	Segment[0x16C] - Segment[0x16B] = Crafting Slots      | Length: 108 (0x6C)  | Type: struct Item[9]  | Parent: CraftSlots
-	Segment[0x1D8] - Segment[0x387] = Hotbar: Survival    | Length: 432 (0x1B0) | Type: struct Item[36] | Parent: Inventory
-	Segment[0x388] - Segment[0x3FF] = UNKNOWN FOR NOW     | Length: 120 (0x78)  | Type: ???
-	Segment[0x400] - Segment[0x40B] = Craft Slot          | Length: 12  (0xC)   | Type: struct Item     | Parent: CraftSlot
-	Segment[0x40C] - Segment[0x417] = Arrow Slot          | Length: 12  (0xC)   | Type: struct Item     | Parent: ArrowSlow
+	Segment[0x7D]  - Segment[0xF3]  = Hotbar: Survival    | Length: 120 (0x78)  | Type: struct Item[10] | Parent: Items
+	Segment[0xF4]  - Segment[0x16B] = Hotbar: Creative    | Length: 120 (0x78)  | Type: struct Item[10] | Parent: Items
+	Segment[0x16C] - Segment[0x16B] = Crafting Slots      | Length: 108 (0x6C)  | Type: struct Item[9]  | Parent: Items
+	Segment[0x1D8] - Segment[0x387] = Inventory           | Length: 432 (0x1B0) | Type: struct Item[36] | Parent: Items
+	Segment[0x388] - Segment[0x3C3] = Actual Armor Slots  | Length: 60  (0x3C)  | Type: struct Item[5]  | Parent: Items
+	Segment[0x3C4] - Segment[0x3FF] = Visual Armor Slots  | Length: 60  (0x3C)  | Type: struct Item[5]  | Parent: Items
+	Segment[0x400] - Segment[0x40B] = Craft Slot          | Length: 12  (0xC)   | Type: struct Item     | Parent: Items
+	Segment[0x40C] - Segment[0x417] = Arrow Slot          | Length: 12  (0xC)   | Type: struct Item     | Parent: Items
+	Segment[0x418] - Segment[0x54C] = UNKNOWN FOR NOW     | Length: 308 (0x134) | Type: ???
 	------------------------------------------------------------------------------------------------------------------------
 
 	Written By: Ryan Smith
@@ -80,18 +82,11 @@ public sealed class Player
 		stream.Seek(0x2, SeekOrigin.Current);
 		// Gameplay: Difficulty
 		stream.WriteByte((byte)this.Gameplay.Difficulty);
-		// Hotbar: Survival
-		stream.Seek(0x3, SeekOrigin.Current);
-		for (var i = 0; i < this.HotbarSurvival.Length; ++i) { await this.HotbarSurvival[i].ToStream(stream); }
-		// Hotbar: Creative
-		for (var i = 0; i < this.HotbarCreative.Length; ++i) { await this.HotbarCreative[i].ToStream(stream); }
-		// Crafting Slots
-		for (var i = 0; i < this.CraftSlots.Length; ++i) { await this.CraftSlots[i].ToStream(stream); }
-		// Inventory
-		for (var i = 0; i < this.Inventory.Length; ++i) { await this.Inventory[i].ToStream(stream); }
 		//----Unknown----\\
-		stream.Seek(0x78, SeekOrigin.Current);
-		// Craft Slot
+		stream.Seek(0x3, SeekOrigin.Current);
+		// Items
+		for (var i = 0; i < this.Items.Length; ++i) { await this.Items[i].ToStream(stream); }
+		//----Unknown----\\
 	}
 	/* Static Methods */
 	public static async Task<Player> FromStream(Stream stream)
@@ -125,20 +120,9 @@ public sealed class Player
 		var player = new Player(id, name, character, gameplay);
 		//----Unknown----\\
 		stream.Seek(0x3, SeekOrigin.Current);
-		// Hotbar: Survival
-		for (var i = 0; i < player.HotbarSurvival.Length; ++i) { player.HotbarSurvival[i] = await Item.FromStream(stream); }
-		// Hotbar: Creative
-		for (var i = 0; i < player.HotbarCreative.Length; ++i) { player.HotbarCreative[i] = await Item.FromStream(stream); }
-		// Crafting Slots
-		for (var i = 0; i < player.CraftSlots.Length; ++i) { player.CraftSlots[i] = await Item.FromStream(stream); }
-		// Inventory
-		for (var i = 0; i < player.Inventory.Length; ++i) { player.Inventory[i] = await Item.FromStream(stream); }
+		// Items
+		for (var i = 0; i < player.Items.Length; ++i) { player.Items[i] = await Item.FromStream(stream); }
 		//----Unknown----\\
-		stream.Seek(0x78, SeekOrigin.Current);
-		// Craft Slot
-		player.CraftSlot = await Item.FromStream(stream);
-		// Arrow Slot
-		player.ArrowSlot = await Item.FromStream(stream);
 		return player;
 	}
 	/* Properties */
@@ -154,10 +138,14 @@ public sealed class Player
 	}
 	public Character Character;
 	public Gameplay Gameplay;
-	public readonly Item[] HotbarSurvival = new Item[10];
-	public readonly Item[] HotbarCreative = new Item[10];
-	public readonly Item[] Inventory = new Item[36];
-	public readonly Item[] CraftSlots = new Item[9];
-	public Item CraftSlot;
-	public Item ArrowSlot;
+	public Item[] Items = new Item[77];
+	public ArraySegment<Item> SurvivalHotbar { get { return new ArraySegment<Item>(this.Items,  0, 10); }}  // 10
+	public ArraySegment<Item> CreativeHotbar { get { return new ArraySegment<Item>(this.Items, 10, 10); }}  // 20
+	public ArraySegment<Item> CraftingSlots  { get { return new ArraySegment<Item>(this.Items, 20,  9); }}  // 29
+	public ArraySegment<Item> Inventory      { get { return new ArraySegment<Item>(this.Items, 29, 36); }}  // 65
+	// Order: Helm, Chestpiece, Leggings, Feet, Special
+	public ArraySegment<Item> ArmorActual    { get { return new ArraySegment<Item>(this.Items, 65,  5); }}  // 70
+	public ArraySegment<Item> ArmorVisual    { get { return new ArraySegment<Item>(this.Items, 70,  5); }}  // 75
+	public Item CraftSlot                    { get { return Items[75]; }}                                   // 76
+	public Item ArrowSlot                    { get { return Items[76]; }}                                   // 77
 }

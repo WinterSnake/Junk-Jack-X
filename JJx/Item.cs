@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace JJx;
 
-public struct Item
+public sealed class Item
 {
 	/* Constructors */
 	public Item(ushort id, ushort count, ushort durability, uint modifier, ushort icon)

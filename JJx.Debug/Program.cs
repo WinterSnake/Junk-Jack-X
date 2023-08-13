@@ -19,8 +19,9 @@ internal class Program
 		{
 			player = await Player.FromStream(fs);
 		}
-		Console.WriteLine(player.Inventory[0].Id);
-		player.Inventory[0].Count = 50;
+		player.ArrowSlot.Id = 2139;
+		player.ArrowSlot.Count = 1;
+		player.ArrowSlot.Durability = 255;
 		using (var fs = File.Open(args[0], FileMode.Open, FileAccess.Write))
 		{
 			await player.ToStream(fs);
