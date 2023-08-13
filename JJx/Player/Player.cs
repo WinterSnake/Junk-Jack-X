@@ -126,13 +126,14 @@ public sealed class Player
 		return player;
 	}
 	/* Properties */
-	public Guid Id { get; init; }
+	public readonly Guid Id;
 	private string _Name;
 	public string Name {
 		// Min Length: 1 | Max length: 15 characters -- 16 = null termination
 		get { return this._Name; }
 		set {
-			if (value.Length < 16) this._Name = value;
+			if (String.IsNullOrEmpty(value)) return;
+			else if (value.Length < 16) this._Name = value;
 			else this._Name = value.Substring(0, 15);
 		}
 	}

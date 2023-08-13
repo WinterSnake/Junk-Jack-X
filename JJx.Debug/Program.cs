@@ -14,17 +14,13 @@ internal class Program
 	private static async Task Main(string[] args)
 	{
 		if (args.Length != 1) return;
-		JJx.Player player;
+		JJx.World world;
 		using (var fs = File.Open(args[0], FileMode.Open, FileAccess.Read))
 		{
-			player = await Player.FromStream(fs);
+			world = await World.FromStream(fs);
 		}
-		player.ArrowSlot.Id = 2139;
-		player.ArrowSlot.Count = 1;
-		player.ArrowSlot.Durability = 255;
-		using (var fs = File.Open(args[0], FileMode.Open, FileAccess.Write))
-		{
-			await player.ToStream(fs);
-		}
+		Console.WriteLine(world.Id);
+		Console.WriteLine(world.Name);
+		Console.WriteLine(world.Gamemode);
 	}
 }
