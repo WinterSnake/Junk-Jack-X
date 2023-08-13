@@ -2,31 +2,31 @@
 	Junk Jack X: Player
 
 	Player class references both the player file and player stats file for creating, loading, editing, and saving.
-	This file documents both the hex offsets (and length) and their C equivalent types.
+	This file documents both the hex offsets (and length) and their (probable) C equivalent types.
 
 	Segment Breakdown:
 	------------------------------------------------------------------------------------------------------------------------
-	Segment[0x0]   - Segment[0x3]   = JJ Character Header | Length: 4   (0x04)  | Type: char[4]
-	Segment[0x4]   - Segment[0x47]  = UNKNOWN FOR NOW     | Length: 71  (0x47)  | Type: ??? Possible Header/File Length/CRC
-	Segment[0x48]  - Segment[0x57]  = UUID                | Length: 16  (0x10)  | Type: uuid
-	Segment[0x58]  - Segment[0x67]  = Name                | Length: 16  (0x10)  | Type: char*
-	Segment[0x68]  - Segment[0x6F]  = UNKNOWN FOR NOW     | Length: 8   (0x8)   | Type: ???
-	Segment[0x70]                   = Gameplay Flags      | Length: 1   (0x1)   | Type: enum flag       | Parent: Gameplay.Flags
-	Segment[0x71]  - Segment[0x73]  = UNKNOWN FOR NOW     | Length: 3   (0x3)   | Type: ???
-	Segment[0x74]                   = Hair Color          | Length: 1   (0x1)   | Type: enum            | Parent: Character
-	Segment[0x75]                   = Gender/Skin/Hair    | Length: 1   (0x1)   | Type: bitfield        | Parent: Character
-	Segment[0x76]  - Segment[0x77]  = UNKNOWN FOR NOW     | Length: 2   (0x2)   | Type: ???
-	Segment[0x78]                   = Gameplay Difficulty | Length: 1   (0x1)   | Type: enum            | Parent: Gameplay.Difficulty
-	Segment[0x79]  - Segment[0x7C]  = UNKNOWN FOR NOW     | Length: 3   (0x3)   | Type: ???
-	Segment[0x7D]  - Segment[0xF3]  = Hotbar: Survival    | Length: 120 (0x78)  | Type: struct Item[10] | Parent: Items
-	Segment[0xF4]  - Segment[0x16B] = Hotbar: Creative    | Length: 120 (0x78)  | Type: struct Item[10] | Parent: Items
-	Segment[0x16C] - Segment[0x16B] = Crafting Slots      | Length: 108 (0x6C)  | Type: struct Item[9]  | Parent: Items
-	Segment[0x1D8] - Segment[0x387] = Inventory           | Length: 432 (0x1B0) | Type: struct Item[36] | Parent: Items
-	Segment[0x388] - Segment[0x3C3] = Actual Armor Slots  | Length: 60  (0x3C)  | Type: struct Item[5]  | Parent: Items
-	Segment[0x3C4] - Segment[0x3FF] = Visual Armor Slots  | Length: 60  (0x3C)  | Type: struct Item[5]  | Parent: Items
-	Segment[0x400] - Segment[0x40B] = Craft Slot          | Length: 12  (0xC)   | Type: struct Item     | Parent: Items
-	Segment[0x40C] - Segment[0x417] = Arrow Slot          | Length: 12  (0xC)   | Type: struct Item     | Parent: Items
-	Segment[0x418] - Segment[0x54C] = UNKNOWN FOR NOW     | Length: 308 (0x134) | Type: ???
+	Segment[0x0   :  0x3]  = JJ Character Header | Length: 4   (0x04)  | Type: char[4]
+	Segment[0x4   : 0x47]  = UNKNOWN FOR NOW     | Length: 71  (0x47)  | Type: ??? Possible Header/File Length/CRC
+	Segment[0x48  : 0x57]  = UUID                | Length: 16  (0x10)  | Type: uuid
+	Segment[0x58  : 0x67]  = Name                | Length: 16  (0x10)  | Type: char*
+	Segment[0x68  : 0x6F]  = UNKNOWN FOR NOW     | Length: 8   (0x8)   | Type: ???
+	Segment[0x70]          = Gameplay Flags      | Length: 1   (0x1)   | Type: enum flag       | Parent: Gameplay.Flags
+	Segment[0x71  : 0x73]  = UNKNOWN FOR NOW     | Length: 3   (0x3)   | Type: ???
+	Segment[0x74]          = Hair Color          | Length: 1   (0x1)   | Type: enum            | Parent: Character
+	Segment[0x75]          = Gender/Skin/Hair    | Length: 1   (0x1)   | Type: bitfield        | Parent: Character
+	Segment[0x76  :  0x77] = UNKNOWN FOR NOW     | Length: 2   (0x2)   | Type: ???
+	Segment[0x78]          = Gameplay Difficulty | Length: 1   (0x1)   | Type: enum            | Parent: Gameplay.Difficulty
+	Segment[0x79  :  0x7C] = UNKNOWN FOR NOW     | Length: 3   (0x3)   | Type: ???
+	Segment[0x7D  :  0xF3] = Hotbar: Survival    | Length: 120 (0x78)  | Type: struct Item[10] | Parent: Items
+	Segment[0xF4  : 0x16B] = Hotbar: Creative    | Length: 120 (0x78)  | Type: struct Item[10] | Parent: Items
+	Segment[0x16C : 0x16B] = Crafting Slots      | Length: 108 (0x6C)  | Type: struct Item[9]  | Parent: Items
+	Segment[0x1D8 : 0x387] = Inventory           | Length: 432 (0x1B0) | Type: struct Item[36] | Parent: Items
+	Segment[0x388 : 0x3C3] = Actual Armor Slots  | Length: 60  (0x3C)  | Type: struct Item[5]  | Parent: Items
+	Segment[0x3C4 : 0x3FF] = Visual Armor Slots  | Length: 60  (0x3C)  | Type: struct Item[5]  | Parent: Items
+	Segment[0x400 : 0x40B] = Craft Slot          | Length: 12  (0xC)   | Type: struct Item     | Parent: Items
+	Segment[0x40C : 0x417] = Arrow Slot          | Length: 12  (0xC)   | Type: struct Item     | Parent: Items
+	Segment[0x418 : 0x54C] = UNKNOWN FOR NOW     | Length: 308 (0x134) | Type: ???
 	------------------------------------------------------------------------------------------------------------------------
 
 	Written By: Ryan Smith

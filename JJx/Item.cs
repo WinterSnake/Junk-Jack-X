@@ -21,7 +21,7 @@ namespace JJx;
 public sealed class Item
 {
 	/* Constructors */
-	public Item(ushort id, ushort count, ushort durability, uint modifier, ushort icon)
+	public Item(ushort id, ushort count, ushort durability = 0, uint modifier = 0, ushort icon = 0)
 	{
 		this.Id = id;
 		this.Count = count;
@@ -53,17 +53,17 @@ public sealed class Item
 		var workingData = new byte[12];
 		await stream.ReadAsync(workingData, 0, 0xC);
 		return new Item(
-			(ushort)((workingData[5] << 8)  | workingData[4]),                                                // Id
-			(ushort)((workingData[7] << 8)  | workingData[6]),                                                // Count
-			(ushort)((workingData[9] << 8)  | workingData[8]),                                                // Durability
-			(uint)((workingData[3] << 32) | (workingData[2] << 16) | (workingData[1] << 8) | workingData[0]), // Modifier
-			(ushort)((workingData[11] << 8) | workingData[10])                                                // Icon
+			(ushort)((workingData[5] <<  8) | workingData[4]),                                                  // Id
+			(ushort)((workingData[7] <<  8) | workingData[6]),                                                  // Count
+			(ushort)((workingData[9] <<  8) | workingData[8]),                                                  // Durability
+			(uint)  ((workingData[3] << 32) | (workingData[2] << 16) | (workingData[1] << 8) | workingData[0]), // Modifier
+			(ushort)((workingData[11] << 8) | workingData[10])                                                  // Icon
 		);
 	}
 	/* Properties */
-	public ushort Id = 0;
-	public ushort Count = 0;
-	public ushort Durability = 0;
-	public uint Modifier = 0;
-	public ushort Icon = 0;
+	public ushort Id;
+	public ushort Count;
+	public ushort Durability;
+	public uint Modifier;
+	public ushort Icon;
 }

@@ -4,8 +4,8 @@
 
 	Segment Breakdown:
 	------------------------------------------------------------------------------------------------------------------------
-	Segment[0x0] = Hair.Color = data >> 4
-	Segment[0x1] = Tone = (data & 0xE0) >> 5 | Gender = (data & 0x10) >> 4 | Hair.Style = data & 0xF
+	Segment[0x0] = Hair.Color: data >> 4
+	Segment[0x1] = Tone:  (data & 0xE0) >> 5 | Gender: (data & 0x10) >> 4 | Hair.Style: data & 0xF
 	------------------------------------------------------------------------------------------------------------------------
 	Written By: Ryan Smith
 */
