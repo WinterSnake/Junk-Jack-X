@@ -11,7 +11,7 @@
 	Segment Breakdown:
 	------------------------------------------------------------------------------------------------------------------------
 	Segment[0x0   :   0x3]      = JJ World Header  | Length: 4   (0x04)  | Type: char[4]
-	Segment[0x4   :  0xEF]      = UNKNOWN FOR NOW  | Length: 170 (0xEC)  | Type: ??? Possible Header/File Length/CRC
+	Segment[0x4   :  0xEF]      = UNKNOWN FOR NOW  | Length: 236 (0xEC)  | Type: ??? Possible Header/File Length/CRC
 	Segment[0xF0  :  0xFF]      = UUID             | Length: 16  (0x10)  | Type: uuid
 	Segment[0x100 : 0x107]      = UNKNOWN FOR NOW  | Length: 8   (0x8)   | Type: ??? Possible long/epoch/DateTime
 	Segment[0x108 : 0x118]      = Name             | Length: 16  (0x10)  | Type: char*
@@ -73,7 +73,8 @@ public sealed class World
 	}
 	private World(
 		Guid id, string name, Gamemode gamemode, Planet planet,
-		(ushort X, ushort Y) spawn, (ushort X, ushort Y) player
+		(ushort X, ushort Y) spawn, (ushort X, ushort Y) player,
+		ushort[] background
 	)
 	{
 		this.Id = id;
@@ -82,6 +83,7 @@ public sealed class World
 		this.Planet = planet;
 		this.Spawn = spawn;
 		this.Player = player;
+		this.Background = background;
 	}
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
@@ -122,7 +124,15 @@ public sealed class World
 		// Gamemode
 		stream.WriteByte((byte)this.Gamemode);
 		//----Unknown----\\
+		stream.Seek(0x86, SeekOrigin.Current);
 		// Background Layer
+		// TODO: USE FULL BUFFER
+		foreach (var bg in this.Background)
+		{
+			workingData[1] = (byte)((bg & 0xFF00) >> 8);
+			workingData[0] = (byte)((bg & 0x00FF) >> 0);
+			await stream.WriteAsync(workingData, 0, 0x2);
+		}
 		//----Unknown----\\
 	}
 	/* Static Methods */
@@ -163,10 +173,19 @@ public sealed class World
 		// Gamemode
 		var gamemode = (Gamemode)stream.ReadByte();
 		//----Unknown----\\
+		stream.Seek(0x86, SeekOrigin.Current);
 		// Background Layer
-		var background = new ushort[512];  // TODO: Remove hardcode
+		// TODO: REMOVE HARDCODE
+		// TODO: USE FULL BUFFER
+		var background = new ushort[512];
+		for (var i = 0; i < background.Length; ++i)
+		{
+			await stream.ReadAsync(workingData, 0, 2);
+			background[i] = (ushort)((workingData[1] << 8) | workingData[0]);
+		}
+		//----Unknown----\\
 		return new World(
-			id, name, gamemode, planet, spawn, player
+			id, name, gamemode, planet, spawn, player, background
 		);
 	}
 	/* Properties */
