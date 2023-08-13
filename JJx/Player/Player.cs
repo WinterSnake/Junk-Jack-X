@@ -41,13 +41,7 @@ namespace JJx;
 public sealed class Player
 {
 	/* Constructor */
-	public Player(string name)
-	{
-		this.Id = Guid.NewGuid();
-		this.Name = name;
-		this.Character = new Character(0, 0);
-		this.Gameplay = new Gameplay(0, 0);
-	}
+	public Player(string name): this(Guid.NewGuid(), name, new Character(0, 0), new Gameplay(0, 0)) { }
 	private Player(Guid id, string name, Character character, Gameplay gameplay)
 	{
 		this.Id = id;

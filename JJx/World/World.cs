@@ -34,12 +34,7 @@ public enum Gamemode: byte
 public sealed class World
 {
 	/* Constructors */
-	public World(string name, Gamemode gamemode)
-	{
-		this.Id = Guid.NewGuid();
-		this.Name = name;
-		this.Gamemode = gamemode;
-	}
+	public World(string name, Gamemode gamemode): this(Guid.NewGuid(), name, gamemode) { }
 	private World(Guid id, string name, Gamemode gamemode)
 	{
 		this.Id = id;
