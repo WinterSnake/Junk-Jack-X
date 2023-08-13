@@ -19,8 +19,11 @@ internal class Program
 		{
 			world = await World.FromStream(fs);
 		}
-		Console.WriteLine(world.Id);
-		Console.WriteLine(world.Name);
 		Console.WriteLine(world.Gamemode);
+		world.Gamemode = Gamemode.Survival;
+		using (var fs = File.Open(args[0], FileMode.Open, FileAccess.Write))
+		{
+			world.ToStream(fs);
+		}
 	}
 }

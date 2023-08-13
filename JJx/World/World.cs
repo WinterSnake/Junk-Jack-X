@@ -3,6 +3,13 @@
 
 	- Currently only testing with TINY world size
 
+	Sizes in blocks:
+		[TINY]:   512 * 128
+		[SMALL]:  {x} * {y}
+		[NORMAL]: {x} * {y}
+		[LARGE]:  {x} * {y}
+		[HUGE]:   {x} * {y}
+
 	Segment Breakdown:
 	------------------------------------------------------------------------------------------------------------------------
 	Segment[0x0   :   0x3] = JJ World Header     | Length: 4   (0x04)  | Type: char[4]
@@ -44,7 +51,24 @@ public sealed class World
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
 	{
-
+		var byteCount = 0;
+		var workingData = new byte[64];
+		//----Unknown----\\
+		stream.Seek(0xF0, SeekOrigin.Current);
+		// Uuid
+		var uuid = this.Id.ToByteArray();
+		await stream.WriteAsync(uuid, 0, 0x10);
+		//----Unknown----\\
+		stream.Seek(0x8, SeekOrigin.Current);
+		// Name
+		byteCount = Encoding.ASCII.GetBytes(this._Name, 0, this._Name.Length, workingData, 0);
+		for (var i = byteCount; i < 0x10; ++i) { workingData[i] = 0; }
+		await stream.WriteAsync(workingData, 0, 0x10);
+		//----Unknown----\\
+		stream.Seek(0x31, SeekOrigin.Current);
+		// Gamemode
+		stream.WriteByte((byte)this.Gamemode);
+		//----Unknown----\\
 	}
 	/* Static Methods */
 	public static async Task<World> FromStream(Stream stream)
