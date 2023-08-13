@@ -1,8 +1,6 @@
 /*
 	Junk Jack X: World
 
-	- Currently only testing with TINY world size [Non-Adventure]
-
 	Sizes in blocks:
 		[TINY]:   512 * 128
 		[SMALL]:  {x} * {y}
@@ -12,20 +10,21 @@
 
 	Segment Breakdown:
 	------------------------------------------------------------------------------------------------------------------------
-	Segment[0x0   :   0x3] = JJ World Header     | Length: 4   (0x04)  | Type: char[4]
-	Segment[0x4   :  0xEF] = UNKNOWN FOR NOW     | Length: 170 (0xEC)  | Type: ??? Possible Header/File Length/CRC
-	Segment[0xF0  :  0xFF] = UUID                | Length: 16  (0x10)  | Type: uuid
-	Segment[0x100 : 0x107] = UNKNOWN FOR NOW     | Length: 8   (0x8)   | Type: ??? Possible long/epoch/DateTime
-	Segment[0x108 : 0x118] = Name                | Length: 16  (0x10)  | Type: char*
-	Segment[0x118 : 0x13B] = UNKNOWN FOR NOW     | Length: 36  (0x24)  | Type: ???
-	Segment[0x13C : 0x13D] = Player.X            | Length: 2   (0x2)   | Type uint32           | Parent: Player.X
-	Segment[0x13E : 0x13F] = Player.Y            | Length: 2   (0x2)   | Type uint32           | Parent: Player.Y
-	Segment[0x140 : 0x141] = Spawn.X             | Length: 2   (0x2)   | Type uint32           | Parent: Spawn.X
-	Segment[0x142 : 0x143] = Spawn.Y             | Length: 2   (0x2)   | Type uint32           | Parent: Spawn.Y
-	Segment[0x144 : 0x145] = Planet              | Length: 2   (0x2)   | Type enum
-	Segment[0x146 : 0x148] = UNKNOWN FOR NOW     | Length: 3   (0x3)   | Type: ???
-	Segment[0x149]         = Gamemode            | Length: 1   (0x1)   | Type: enum            | Parent: Gamemode
-	Segment[0x14A : 0x---] = UNKNOWN FOR NOW     | Length: ?   (0x)    | Type: ???
+	Segment[0x0   :   0x3]      = JJ World Header  | Length: 4   (0x04)  | Type: char[4]
+	Segment[0x4   :  0xEF]      = UNKNOWN FOR NOW  | Length: 170 (0xEC)  | Type: ??? Possible Header/File Length/CRC
+	Segment[0xF0  :  0xFF]      = UUID             | Length: 16  (0x10)  | Type: uuid
+	Segment[0x100 : 0x107]      = UNKNOWN FOR NOW  | Length: 8   (0x8)   | Type: ??? Possible long/epoch/DateTime
+	Segment[0x108 : 0x118]      = Name             | Length: 16  (0x10)  | Type: char*
+	Segment[0x118 : 0x13B]      = UNKNOWN FOR NOW  | Length: 36  (0x24)  | Type: ???
+	Segment[0x13C : 0x13D]      = Player.X         | Length: 2   (0x2)   | Type uint32              | Parent: Player.X
+	Segment[0x13E : 0x13F]      = Player.Y         | Length: 2   (0x2)   | Type uint32              | Parent: Player.Y
+	Segment[0x140 : 0x141]      = Spawn.X          | Length: 2   (0x2)   | Type uint32              | Parent: Spawn.X
+	Segment[0x142 : 0x143]      = Spawn.Y          | Length: 2   (0x2)   | Type uint32              | Parent: Spawn.Y
+	Segment[0x144 : 0x145]      = Planet           | Length: 2   (0x2)   | Type enum
+	Segment[0x146 : 0x148]      = UNKNOWN FOR NOW  | Length: 3   (0x3)   | Type: ???
+	Segment[0x149]              = Gamemode         | Length: 1   (0x1)   | Type: enum               | Parent: Gamemode
+	Segment[0x14A : 0x1CF]      = UNKNOWN FOR NOW  | Length: 133 (0x86)  | Type: ???
+	Segment[0x1D0 : 0x{size.X}] = Background Layer | Length: {size.x}    | Type: uint16_t[{size.x}] | Parent: Background
 	------------------------------------------------------------------------------------------------------------------------
 
 	Written By: Ryan Smith
@@ -63,12 +62,15 @@ public enum Planet : ushort
 public sealed class World
 {
 	/* Constructors */
-	public World(
-		string name, Gamemode gamemode, Planet planet
-	): this(
-		Guid.NewGuid(), name, gamemode, planet,
-		(0, 0), (0, 0)
-	) { }
+	public World(string name, Gamemode gamemode, Planet planet)
+	{
+		this.Id = Guid.NewGuid();
+		this.Name = name;
+		this.Gamemode = gamemode;
+		this.Planet = planet;
+		this.Spawn = (0, 0);
+		this.Player = (0, 0);
+	}
 	private World(
 		Guid id, string name, Gamemode gamemode, Planet planet,
 		(ushort X, ushort Y) spawn, (ushort X, ushort Y) player
@@ -120,6 +122,8 @@ public sealed class World
 		// Gamemode
 		stream.WriteByte((byte)this.Gamemode);
 		//----Unknown----\\
+		// Background Layer
+		//----Unknown----\\
 	}
 	/* Static Methods */
 	public static async Task<World> FromStream(Stream stream)
@@ -159,6 +163,8 @@ public sealed class World
 		// Gamemode
 		var gamemode = (Gamemode)stream.ReadByte();
 		//----Unknown----\\
+		// Background Layer
+		var background = new ushort[512];  // TODO: Remove hardcode
 		return new World(
 			id, name, gamemode, planet, spawn, player
 		);
@@ -179,4 +185,5 @@ public sealed class World
 	public (ushort X, ushort Y) Spawn;
 	public (ushort X, ushort Y) Player;
 	public Planet Planet;
+	public readonly ushort[] Background;
 }

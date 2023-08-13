@@ -20,7 +20,12 @@ public enum Difficulty : byte
 public struct Gameplay
 {
 	/* Constructors */
-	public Gameplay(byte difficulty, byte flags)
+	public Gameplay(Difficulty difficulty, Flag flags = Flag.None)
+	{
+		this.Difficulty = difficulty;
+		this.Flags = flags;
+	}
+	internal Gameplay(byte difficulty, byte flags)
 	{
 		this.Difficulty = (Difficulty)difficulty;
 		this.Flags = (Flag)flags;

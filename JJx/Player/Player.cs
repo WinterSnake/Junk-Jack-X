@@ -41,7 +41,19 @@ namespace JJx;
 public sealed class Player
 {
 	/* Constructor */
-	public Player(string name): this(Guid.NewGuid(), name, new Character(0, 0), new Gameplay(0, 0)) { }
+	public Player(string name, Gameplay.Flag flags = Gameplay.Flag.None)
+	{
+		var rnd = new Random();
+		this.Id = Guid.NewGuid();
+		this.Name = name;
+		this.Character = new Character(
+			rnd.NextDouble() >= 0.5 ,
+			(byte)rnd.Next(Character.MaxTones + 1),
+			(byte)rnd.Next(Character._Hair.MaxStyles + 1),
+			(Character.HairColor)(rnd.Next(Enum.GetValues(typeof(Character.HairColor)).Length))
+		);
+		this.Gameplay = new Gameplay(Difficulty.Normal, flags);
+	}
 	private Player(Guid id, string name, Character character, Gameplay gameplay)
 	{
 		this.Id = id;

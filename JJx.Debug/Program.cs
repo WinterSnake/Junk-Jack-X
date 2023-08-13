@@ -52,5 +52,24 @@ internal class Program
 				await world.ToStream(fs);
 			}
 		}
+		// Adventure Editing
+		else if (args[0] == "-a" || args[0] == "--adventure")
+		{
+			JJx.Adventure adventure;
+			// Read world from file
+			Console.WriteLine("Loading adventure from file..");
+			using (var fs = File.Open(args[1], FileMode.Open, FileAccess.Read))
+			{
+				adventure = await Adventure.FromStream(fs);
+			}
+			// Do changes
+			// Write world to file (if flagged)
+			if (args.Length == 2 || (args.Length == 3 && args[2] != "--store")) return;
+			Console.WriteLine("Writing adventure to file..");
+			using (var fs = File.Open(args[1], FileMode.Open, FileAccess.Write))
+			{
+				await adventure.ToStream(fs);
+			}
+		}
 	}
 }

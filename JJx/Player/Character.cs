@@ -16,17 +16,17 @@ namespace JJx;
 public struct Character
 {
 	/* Constructors */
-	internal Character(byte color, byte features)
-	{
-		this.Gender = ((features & 0x10) >> 4) == 1;
-		this._Tone = (byte)((features & 0xE0) >> 5);
-		this.Hair = new _Hair(color, features);
-	}
 	public Character(bool gender, byte tone, byte hairStyle, HairColor hairColor)
 	{
 		this.Gender = gender;
 		this.Tone = tone;
 		this.Hair = new _Hair(hairStyle, hairColor);
+	}
+	internal Character(byte color, byte features)
+	{
+		this.Gender = ((features & 0x10) >> 4) == 1;
+		this._Tone = (byte)((features & 0xE0) >> 5);
+		this.Hair = new _Hair(color, features);
 	}
 	/* Instance Methods */
 	public byte[] ToByteArray()
@@ -44,24 +44,26 @@ public struct Character
 		// Min: 0 | Max: 5
 		get { return this._Tone; }
 		set {
-			value = Math.Min(value, (byte)0x4);
+			value = Math.Min(value, MaxTones);
 			this._Tone = value;
 		}
 	}
 	public _Hair Hair;
+	/* Class Properties */
+	public const byte MaxTones = 0x4;
 	/* Sub-Classes */
 	public class _Hair
 	{
 		/* Constructor */
-		internal _Hair(byte color, byte features)
-		{
-			this._Style = (byte)(features & 0xF);
-			this.Color = (HairColor)(color >> 4);
-		}
 		public _Hair(byte style, HairColor color)
 		{
 			this.Style = style;
 			this.Color = color;
+		}
+		internal _Hair(byte color, byte features)
+		{
+			this._Style = (byte)(features & 0xF);
+			this.Color = (HairColor)(color >> 4);
 		}
 		/* Properties */
 		public HairColor Color;
@@ -70,10 +72,12 @@ public struct Character
 			// Min: 0 | Max: 13
 			get { return this._Style; }
 			set {
-				value = Math.Min(value, (byte)0xD);
+				value = Math.Min(value, MaxStyles);
 				this._Style = value;
 			}
 		}
+		/* Class Propeties */
+		public const byte MaxStyles = 0xD;
 	}
 	public enum HairColor : byte
 	{
