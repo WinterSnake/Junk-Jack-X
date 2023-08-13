@@ -138,7 +138,7 @@ public sealed class Player
 	}
 	public Character Character;
 	public Gameplay Gameplay;
-	public Item[] Items = new Item[77];
+	public readonly Item[] Items = new Item[77];
 	public ArraySegment<Item> SurvivalHotbar { get { return new ArraySegment<Item>(this.Items,  0, 10); }}  // 10
 	public ArraySegment<Item> CreativeHotbar { get { return new ArraySegment<Item>(this.Items, 10, 10); }}  // 20
 	public ArraySegment<Item> CraftingSlots  { get { return new ArraySegment<Item>(this.Items, 20,  9); }}  // 29
