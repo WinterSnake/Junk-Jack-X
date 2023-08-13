@@ -19,11 +19,11 @@ internal class Program
 		{
 			player = await Player.FromStream(fs);
 		}
-		player.Character.Hair.Style = 1;
-		player.Character.Hair.Color = Character.HairColor.Ginger;
-		player.Gameplay.Flags = Gameplay.Flag.Hardcore;
-		player.Name = "NewPlayer";
-		player.Character.Tone = 0;
+		player.HotbarSurvival[0].Id = 1391;
+		player.HotbarSurvival[0].Count = 264;
+		player.HotbarSurvival[0].Durability = 0;
+		player.HotbarSurvival[0].Modifier = 0;
+		player.HotbarSurvival[0].Icon = 0;
 		using (var fs = File.Open(args[0], FileMode.Open, FileAccess.Write))
 		{
 			await player.ToStream(fs);

@@ -6,17 +6,19 @@
 
 	Segment Breakdown:
 	------------------------------------------------------------------------------------------------------------------------
-	Segment[0x0]  - Segment[0x3]  = JJ Character Header | Length: 4  (0x04) | Type: char[4]
-	Segment[0x4]  - Segment[0x47] = UNKNOWN FOR NOW     | Length: 71 (0x47) | Type: ??? Possible Header/File Length/CRC
-	Segment[0x48] - Segment[0x57] = UUID                | Length: 16 (0x10) | Type: uuid
-	Segment[0x58] - Segment[0x67] = Name                | Length: 16 (0x10) | Type: char*
-	Segment[0x68] - Segment[0x6F] = UNKNOWN FOR NOW     | Length: 8  (0x08) | Type: ???
-	Segment[0x70]                 = Gameplay Flags      | Length: 1  (0x01) | Type: enum flag | Parent: Gameplay.Flags
-	Segment[0x71] - Segment[0x73] = UNKNOWN FOR NOW     | Length: 3  (0x03) | Type: ???
-	Segment[0x74]                 = Hair Color          | Length: 1  (0x01) | Type: enum      | Parent: Character
-	Segment[0x75]                 = Gender/Skin/Hair    | Length: 1  (0x01) | Type: bitfield  | Parent: Character
-	Segment[0x76] - Segment[0x77] = UNKNOWN FOR NOW     | Length: 2  (0x02) | Type: ???
-	Segment[0x78]                 = Gameplay Difficulty | Length: 1  (0x01) | Type: enum      | Parent: Gameplay.Difficulty
+	Segment[0x0]  - Segment[0x3]  = JJ Character Header | Length: 4   (0x04) | Type: char[4]
+	Segment[0x4]  - Segment[0x47] = UNKNOWN FOR NOW     | Length: 71  (0x47) | Type: ??? Possible Header/File Length/CRC
+	Segment[0x48] - Segment[0x57] = UUID                | Length: 16  (0x10) | Type: uuid
+	Segment[0x58] - Segment[0x67] = Name                | Length: 16  (0x10) | Type: char*
+	Segment[0x68] - Segment[0x6F] = UNKNOWN FOR NOW     | Length: 8   (0x08) | Type: ???
+	Segment[0x70]                 = Gameplay Flags      | Length: 1   (0x01) | Type: enum flag | Parent: Gameplay.Flags
+	Segment[0x71] - Segment[0x73] = UNKNOWN FOR NOW     | Length: 3   (0x03) | Type: ???
+	Segment[0x74]                 = Hair Color          | Length: 1   (0x01) | Type: enum      | Parent: Character
+	Segment[0x75]                 = Gender/Skin/Hair    | Length: 1   (0x01) | Type: bitfield  | Parent: Character
+	Segment[0x76] - Segment[0x77] = UNKNOWN FOR NOW     | Length: 2   (0x02) | Type: ???
+	Segment[0x78]                 = Gameplay Difficulty | Length: 1   (0x01) | Type: enum      | Parent: Gameplay.Difficulty
+	Segment[0x79] - Segment[0x7C] = UNKNOWN FOR NOW     | Length: 3   (0x03) | Type: ???
+	Segment[0x7D] - Segment[0xF3] = Hotbar: Survival    | Length: 120 (0x78) | Type: struct Item[10];
 	------------------------------------------------------------------------------------------------------------------------
 
 	Written By: Ryan Smith
@@ -68,6 +70,9 @@ public sealed class Player
 		// Gameplay: Difficulty
 		stream.Seek(0x2, SeekOrigin.Current);
 		stream.WriteByte((byte)this.Gameplay.Difficulty);
+		// Hotbar: Survival
+		stream.Seek(0x3, SeekOrigin.Current);
+		for (var i = 0; i < this.HotbarSurvival.Length; ++i) { await this.HotbarSurvival[i].ToStream(stream); }
 	}
 	/* Static Methods */
 	public static async Task<Player> FromStream(Stream stream)
@@ -94,7 +99,11 @@ public sealed class Player
 		var difficulty = stream.ReadByte();
 		// -Gameplay
 		var gameplay = new Gameplay((byte)difficulty, (byte)flags);
-		return new Player(id, name, character, gameplay);
+		var player = new Player(id, name, character, gameplay);
+		// Hotbar: Survival
+		stream.Seek(0x3, SeekOrigin.Current);
+		for (var i = 0; i < player.HotbarSurvival.Length; ++i) { player.HotbarSurvival[i] = await Item.FromStream(stream); }
+		return player;
 	}
 	/* Properties */
 	public Guid Id { get; init; }
@@ -109,4 +118,5 @@ public sealed class Player
 	}
 	public Character Character;
 	public Gameplay Gameplay;
+	public readonly Item[] HotbarSurvival = new Item[10];
 }
