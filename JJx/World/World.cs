@@ -1,7 +1,7 @@
 /*
 	Junk Jack X: World
 
-	- Currently only testing with TINY world size
+	- Currently only testing with TINY world size [Non-Adventure]
 
 	Sizes in blocks:
 		[TINY]:   512 * 128
@@ -15,9 +15,15 @@
 	Segment[0x0   :   0x3] = JJ World Header     | Length: 4   (0x04)  | Type: char[4]
 	Segment[0x4   :  0xEF] = UNKNOWN FOR NOW     | Length: 170 (0xEC)  | Type: ??? Possible Header/File Length/CRC
 	Segment[0xF0  :  0xFF] = UUID                | Length: 16  (0x10)  | Type: uuid
-	Segment[0x100 : 0x107] = UNKNOWN FOR NOW     | Length: 8   (0x8)   | Type: ??? Possible long/DateTime
+	Segment[0x100 : 0x107] = UNKNOWN FOR NOW     | Length: 8   (0x8)   | Type: ??? Possible long/epoch/DateTime
 	Segment[0x108 : 0x118] = Name                | Length: 16  (0x10)  | Type: char*
-	Segment[0x118 : 0x148] = UNKNOWN FOR NOW     | Length: 49  (0x31)  | Type: ???
+	Segment[0x118 : 0x13B] = UNKNOWN FOR NOW     | Length: 36  (0x24)  | Type: ???
+	Segment[0x13C : 0x13D] = Player.X            | Length: 2   (0x2)   | Type uint32           | Parent: Player.X
+	Segment[0x13E : 0x13F] = Player.Y            | Length: 2   (0x2)   | Type uint32           | Parent: Player.Y
+	Segment[0x140 : 0x141] = Spawn.X             | Length: 2   (0x2)   | Type uint32           | Parent: Spawn.X
+	Segment[0x142 : 0x143] = Spawn.Y             | Length: 2   (0x2)   | Type uint32           | Parent: Spawn.Y
+	Segment[0x144 : 0x145] = Planet              | Length: 2   (0x2)   | Type enum
+	Segment[0x146 : 0x148] = UNKNOWN FOR NOW     | Length: 3   (0x3)   | Type: ???
 	Segment[0x149]         = Gamemode            | Length: 1   (0x1)   | Type: enum            | Parent: Gamemode
 	Segment[0x14A : 0x---] = UNKNOWN FOR NOW     | Length: ?   (0x)    | Type: ???
 	------------------------------------------------------------------------------------------------------------------------
@@ -38,15 +44,42 @@ public enum Gamemode: byte
 	Flat
 }
 
+public enum Planet : ushort
+{
+	Terra  = 0x0001,
+	Seth   = 0x0002,
+	Alba   = 0x0004,
+	Xeno   = 0x0008,
+	Magmar = 0x0010,
+	Cryo   = 0x0020,
+	Yuca   = 0x0040,
+	Lilith = 0x0080,
+	Thetis = 0x0100,
+	Mykon  = 0x0200,
+	Umbra  = 0x0400,
+	Tor    = 0x0800
+}
+
 public sealed class World
 {
 	/* Constructors */
-	public World(string name, Gamemode gamemode): this(Guid.NewGuid(), name, gamemode) { }
-	private World(Guid id, string name, Gamemode gamemode)
+	public World(
+		string name, Gamemode gamemode, Planet planet
+	): this(
+		Guid.NewGuid(), name, gamemode, planet,
+		(0, 0), (0, 0)
+	) { }
+	private World(
+		Guid id, string name, Gamemode gamemode, Planet planet,
+		(ushort X, ushort Y) spawn, (ushort X, ushort Y) player
+	)
 	{
 		this.Id = id;
 		this._Name = name;
 		this.Gamemode = gamemode;
+		this.Planet = planet;
+		this.Spawn = spawn;
+		this.Player = player;
 	}
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
@@ -65,7 +98,25 @@ public sealed class World
 		for (var i = byteCount; i < 0x10; ++i) { workingData[i] = 0; }
 		await stream.WriteAsync(workingData, 0, 0x10);
 		//----Unknown----\\
-		stream.Seek(0x31, SeekOrigin.Current);
+		stream.Seek(0x24, SeekOrigin.Current);
+		// Player
+		workingData[3] = (byte)((this.Player.Y & 0xFF00) >> 8);
+		workingData[2] = (byte)((this.Player.Y & 0x00FF) >> 0);
+		workingData[1] = (byte)((this.Player.X & 0xFF00) >> 8);
+		workingData[0] = (byte)((this.Player.X & 0x00FF) >> 0);
+		await stream.WriteAsync(workingData, 0, 0x4);
+		// Spawn
+		workingData[3] = (byte)((this.Spawn.Y & 0xFF00) >> 8);
+		workingData[2] = (byte)((this.Spawn.Y & 0x00FF) >> 0);
+		workingData[1] = (byte)((this.Spawn.X & 0xFF00) >> 8);
+		workingData[0] = (byte)((this.Spawn.X & 0x00FF) >> 0);
+		await stream.WriteAsync(workingData, 0, 0x4);
+		// Planet
+		workingData[1] = (byte)(((ushort)this.Planet & 0xFF00) >> 8);
+		workingData[0] = (byte)(((ushort)this.Planet & 0x00FF) >> 0);
+		await stream.WriteAsync(workingData, 0, 0x2);
+		//----Unknown----\\
+		stream.Seek(0x3, SeekOrigin.Current);
 		// Gamemode
 		stream.WriteByte((byte)this.Gamemode);
 		//----Unknown----\\
@@ -87,11 +138,30 @@ public sealed class World
 			new Span<byte>(workingData).Slice(0, Array.IndexOf(workingData, byte.MinValue))
 		);
 		//----Unknown----\\
-		stream.Seek(0x31, SeekOrigin.Current);
+		stream.Seek(0x24, SeekOrigin.Current);
+		// Player
+		await stream.ReadAsync(workingData, 0, 0x4);
+		var player = (
+			(ushort)((workingData[1] << 8) | workingData[0]),
+			(ushort)((workingData[3] << 8) | workingData[2])
+		);
+		// Spawn
+		await stream.ReadAsync(workingData, 0, 0x4);
+		var spawn = (
+			(ushort)((workingData[1] << 8) | workingData[0]),
+			(ushort)((workingData[3] << 8) | workingData[2])
+		);
+		// Planet
+		await stream.ReadAsync(workingData, 0, 0x2);
+		var planet = (Planet)((workingData[1] << 8) | workingData[0]);
+		//----Unknown----\\
+		stream.Seek(0x3, SeekOrigin.Current);
 		// Gamemode
 		var gamemode = (Gamemode)stream.ReadByte();
 		//----Unknown----\\
-		return new World(id, name, gamemode);
+		return new World(
+			id, name, gamemode, planet, spawn, player
+		);
 	}
 	/* Properties */
 	public readonly Guid Id;
@@ -106,4 +176,7 @@ public sealed class World
 		}
 	}
 	public Gamemode Gamemode;
+	public (ushort X, ushort Y) Spawn;
+	public (ushort X, ushort Y) Player;
+	public Planet Planet;
 }
