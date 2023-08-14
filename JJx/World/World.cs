@@ -31,6 +31,7 @@
 */
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -88,7 +89,6 @@ public sealed class World
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
 	{
-		var byteCount = 0;
 		var workingData = new byte[64];
 		//----Unknown----\\
 		stream.Seek(0xF0, SeekOrigin.Current);
@@ -98,7 +98,7 @@ public sealed class World
 		//----Unknown----\\
 		stream.Seek(0x8, SeekOrigin.Current);
 		// Name
-		byteCount = Encoding.ASCII.GetBytes(this._Name, 0, this._Name.Length, workingData, 0);
+		var byteCount = Encoding.ASCII.GetBytes(this._Name, 0, this._Name.Length, workingData, 0);
 		for (var i = byteCount; i < 0x10; ++i) { workingData[i] = 0; }
 		await stream.WriteAsync(workingData, 0, 0x10);
 		//----Unknown----\\
@@ -138,35 +138,46 @@ public sealed class World
 	/* Static Methods */
 	public static async Task<World> FromStream(Stream stream)
 	{
+		var bytesRead = 0;
 		var workingData = new byte[64];
 		//----Unknown----\\
 		stream.Seek(0xF0, SeekOrigin.Current);
 		// Uuid
-		await stream.ReadAsync(workingData, 0, 0x10);
-		Guid id = new Guid(new Span<byte>(workingData).Slice(0, 0x10));
+		bytesRead = 0;
+		while (bytesRead < UUIDSIZE)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, UUIDSIZE - bytesRead);
+		Guid id = new Guid(new Span<byte>(workingData).Slice(0, UUIDSIZE));
 		//----Unknown----\\
 		stream.Seek(0x8, SeekOrigin.Current);
 		// Name
-		await stream.ReadAsync(workingData, 0, 0x10);
+		bytesRead = 0;
+		while (bytesRead < NAMESIZE)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, NAMESIZE - bytesRead);
 		var name = Encoding.ASCII.GetString(
 			new Span<byte>(workingData).Slice(0, Array.IndexOf(workingData, byte.MinValue))
 		);
 		//----Unknown----\\
 		stream.Seek(0x24, SeekOrigin.Current);
 		// Player
-		await stream.ReadAsync(workingData, 0, 0x4);
+		bytesRead = 0;
+		while (bytesRead < PLAYERPOSSIZE)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, PLAYERPOSSIZE - bytesRead);
 		var player = (
 			(ushort)((workingData[1] << 8) | workingData[0]),
 			(ushort)((workingData[3] << 8) | workingData[2])
 		);
 		// Spawn
-		await stream.ReadAsync(workingData, 0, 0x4);
+		bytesRead = 0;
+		while (bytesRead < SPAWNPOSSIZE)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SPAWNPOSSIZE - bytesRead);
 		var spawn = (
 			(ushort)((workingData[1] << 8) | workingData[0]),
 			(ushort)((workingData[3] << 8) | workingData[2])
 		);
 		// Planet
-		await stream.ReadAsync(workingData, 0, 0x2);
+		bytesRead = 0;
+		while (bytesRead < PLANETSIZE)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, PLANETSIZE - bytesRead);
 		var planet = (Planet)((workingData[1] << 8) | workingData[0]);
 		//----Unknown----\\
 		stream.Seek(0x3, SeekOrigin.Current);
@@ -175,14 +186,9 @@ public sealed class World
 		//----Unknown----\\
 		stream.Seek(0x86, SeekOrigin.Current);
 		// Background Layer
-		// TODO: REMOVE HARDCODE
-		// TODO: USE FULL BUFFER
+		bytesRead = 0;
 		var background = new ushort[512];
-		for (var i = 0; i < background.Length; ++i)
-		{
-			await stream.ReadAsync(workingData, 0, 2);
-			background[i] = (ushort)((workingData[1] << 8) | workingData[0]);
-		}
+		// Blocks
 		//----Unknown----\\
 		return new World(
 			id, name, gamemode, planet, spawn, player, background
@@ -205,4 +211,10 @@ public sealed class World
 	public (ushort X, ushort Y) Player;
 	public Planet Planet;
 	public readonly ushort[] Background;
+	/* Class Properties */
+	private const byte UUIDSIZE = 16;
+	private const byte NAMESIZE = 16;
+	private const byte PLAYERPOSSIZE = 4;
+	private const byte SPAWNPOSSIZE = 4;
+	private const byte PLANETSIZE = 2;
 }

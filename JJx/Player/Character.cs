@@ -36,7 +36,6 @@ public struct Character
 		data[1] = (byte)((((this._Tone << 3) | Convert.ToByte(this.Gender)) << 4) | this.Hair.Style);
 		return data;
 	}
-	public void ToByteArray(ref byte[] bytes) => Array.Copy(this.ToByteArray(), bytes, 2);
 	/* Properties */
 	public bool Gender;  // Male: 0 | Female: 1
 	private byte _Tone;

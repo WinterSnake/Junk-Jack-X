@@ -64,17 +64,17 @@ public sealed class Player
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
 	{
-		var byteCount = 0;
 		var workingData = new byte[64];
 		//----Unknown----\\
 		stream.Seek(0x48, SeekOrigin.Current);
 		// Uuid
 		var uuid = this.Id.ToByteArray();
-		await stream.WriteAsync(uuid, 0, 0x10);
+		await stream.WriteAsync(uuid, 0, uuid.Length);
 		// Name
-		byteCount = Encoding.ASCII.GetBytes(this._Name, 0, this._Name.Length, workingData, 0);
-		for (var i = byteCount; i < 0x10; ++i) { workingData[i] = 0; }
-		await stream.WriteAsync(workingData, 0, 0x10);
+		var byteCount = Encoding.ASCII.GetBytes(this._Name, 0, this._Name.Length, workingData, 0);
+		for (var i = byteCount; i < NAMESIZE; ++i)
+			workingData[i] = 0;
+		await stream.WriteAsync(workingData, 0, NAMESIZE);
 		//----Unknown----\\
 		stream.Seek(0x8, SeekOrigin.Current);
 		// Gameplay: Flags
@@ -82,8 +82,8 @@ public sealed class Player
 		//----Unknown----\\
 		stream.Seek(0x3, SeekOrigin.Current);
 		// Features
-		this.Character.ToByteArray(ref workingData);
-		await stream.WriteAsync(workingData, 0, 0x2);
+		var features = this.Character.ToByteArray();
+		await stream.WriteAsync(features, 0, features.Length);
 		//----Unknown----\\
 		stream.Seek(0x2, SeekOrigin.Current);
 		// Gameplay: Difficulty
@@ -91,20 +91,28 @@ public sealed class Player
 		//----Unknown----\\
 		stream.Seek(0x3, SeekOrigin.Current);
 		// Items
-		for (var i = 0; i < this.Items.Length; ++i) { await this.Items[i].ToStream(stream); }
+		for (var i = 0; i < this.Items.Length; ++i)
+			await this.Items[i].ToStream(stream);
 		//----Unknown----\\
 	}
 	/* Static Methods */
 	public static async Task<Player> FromStream(Stream stream)
 	{
+		var bytesRead = 0;
 		var workingData = new byte[64];
 		//----Unknown----\\
 		stream.Seek(0x48, SeekOrigin.Current);
 		// Uuid
-		await stream.ReadAsync(workingData, 0, 0x10);
+		bytesRead = 0;
+		while (bytesRead < UUIDSIZE)
+		{
+			bytesRead += await stream.ReadAsync(workingData, 0, UUIDSIZE - bytesRead);
+		}
 		Guid id = new Guid(new Span<byte>(workingData).Slice(0, 0x10));
 		// Name
-		await stream.ReadAsync(workingData, 0, 0x10);
+		bytesRead = 0;
+		while (bytesRead < NAMESIZE)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, NAMESIZE - bytesRead);
 		string name = Encoding.ASCII.GetString(
 			new Span<byte>(workingData).Slice(0, Array.IndexOf(workingData, byte.MinValue))
 		);
@@ -115,7 +123,9 @@ public sealed class Player
 		//----Unknown----\\
 		stream.Seek(0x3, SeekOrigin.Current);
 		// Features
-		await stream.ReadAsync(workingData, 0, 0x02);
+		bytesRead = 0;
+		while (bytesRead < FEATURESSIZE)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, FEATURESSIZE - bytesRead);
 		var character = new Character(workingData[0], workingData[1]);
 		//----Unknown----\\
 		stream.Seek(0x2, SeekOrigin.Current);
@@ -127,7 +137,8 @@ public sealed class Player
 		//----Unknown----\\
 		stream.Seek(0x3, SeekOrigin.Current);
 		// Items
-		for (var i = 0; i < player.Items.Length; ++i) { player.Items[i] = await Item.FromStream(stream); }
+		for (var i = 0; i < player.Items.Length; ++i)
+			player.Items[i] = await Item.FromStream(stream);
 		//----Unknown----\\
 		return player;
 	}
@@ -139,8 +150,8 @@ public sealed class Player
 		get { return this._Name; }
 		set {
 			if (String.IsNullOrEmpty(value)) return;
-			else if (value.Length < 16) this._Name = value;
-			else this._Name = value.Substring(0, 15);
+			else if (value.Length < NAMESIZE) this._Name = value;
+			else this._Name = value.Substring(0, NAMESIZE - 1);
 		}
 	}
 	public Character Character;
@@ -155,4 +166,8 @@ public sealed class Player
 	public ArraySegment<Item> ArmorVisual    { get { return new ArraySegment<Item>(this.Items, 70,  5); }}  // 75
 	public Item CraftSlot                    { get { return Items[75]; }}                                   // 76
 	public Item ArrowSlot                    { get { return Items[76]; }}                                   // 77
+	/* Class Properties */
+	private const byte UUIDSIZE = 16;
+	private const byte NAMESIZE = 16;
+	private const byte FEATURESSIZE = 2;
 }

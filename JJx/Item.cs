@@ -50,8 +50,10 @@ public sealed class Item
 	/* Static Methods */
 	public static async Task<Item> FromStream(Stream stream)
 	{
-		var workingData = new byte[12];
-		await stream.ReadAsync(workingData, 0, 0xC);
+		var bytesRead = 0;
+		var workingData = new byte[SIZE];
+		while (bytesRead < SIZE)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZE - bytesRead);
 		return new Item(
 			(ushort)((workingData[5] <<  8) | workingData[4]),                                                  // Id
 			(ushort)((workingData[7] <<  8) | workingData[6]),                                                  // Count
@@ -66,4 +68,6 @@ public sealed class Item
 	public ushort Durability;
 	public uint Modifier;
 	public ushort Icon;
+	/* Class Properties */
+	private const byte SIZE = 12;
 }
