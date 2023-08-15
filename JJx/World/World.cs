@@ -2,30 +2,41 @@
 	Junk Jack X: World
 
 	Sizes in blocks:
-		[TINY]:   512 * 128
-		[SMALL]:  {x} * {y}
-		[NORMAL]: {x} * {y}
-		[LARGE]:  {x} * {y}
-		[HUGE]:   {x} * {y}
+		[TINY]:   512  * 128
+		[SMALL]:  {x}  * {y}
+		[NORMAL]: {x}  * {y}
+		[LARGE]:  {x}  * {y}
+		[HUGE]:   4096 * 512
 
 	Segment Breakdown:
-	------------------------------------------------------------------------------------------------------------------------
-	Segment[0x0   :   0x3]      = JJ World Header  | Length: 4   (0x04)  | Type: char[4]
-	Segment[0x4   :  0xEF]      = UNKNOWN FOR NOW  | Length: 236 (0xEC)  | Type: ??? Possible Header/File Length/CRC
-	Segment[0xF0  :  0xFF]      = UUID             | Length: 16  (0x10)  | Type: uuid
-	Segment[0x100 : 0x107]      = UNKNOWN FOR NOW  | Length: 8   (0x8)   | Type: ??? Possible long/epoch/DateTime
-	Segment[0x108 : 0x118]      = Name             | Length: 16  (0x10)  | Type: char*
-	Segment[0x118 : 0x13B]      = UNKNOWN FOR NOW  | Length: 36  (0x24)  | Type: ???
-	Segment[0x13C : 0x13D]      = Player.X         | Length: 2   (0x2)   | Type uint32              | Parent: Player.X
-	Segment[0x13E : 0x13F]      = Player.Y         | Length: 2   (0x2)   | Type uint32              | Parent: Player.Y
-	Segment[0x140 : 0x141]      = Spawn.X          | Length: 2   (0x2)   | Type uint32              | Parent: Spawn.X
-	Segment[0x142 : 0x143]      = Spawn.Y          | Length: 2   (0x2)   | Type uint32              | Parent: Spawn.Y
-	Segment[0x144 : 0x145]      = Planet           | Length: 2   (0x2)   | Type enum
-	Segment[0x146 : 0x148]      = UNKNOWN FOR NOW  | Length: 3   (0x3)   | Type: ???
-	Segment[0x149]              = Gamemode         | Length: 1   (0x1)   | Type: enum               | Parent: Gamemode
-	Segment[0x14A : 0x1CF]      = UNKNOWN FOR NOW  | Length: 133 (0x86)  | Type: ???
-	Segment[0x1D0 : 0x{size.X}] = Background Layer | Length: {size.x}    | Type: uint16_t[{size.x}] | Parent: Background
-	------------------------------------------------------------------------------------------------------------------------
+	----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	Segment[0x0       :        0x3] = JJ World Header                  | Length: 4   (0x4)  | Type: char[4]
+	Segment[0x4       :        0x5] = JJ Type Header                   | Length: 2   (0x2)  | Type: uint16 <01 00: world | 02 00: adventure>
+	Segment[0x6       :       0x1B] = UNKNOWN FOR NOW                  | Length: 16  (0x10) | Type: ???
+	Segment[0x1C      :       0x1F] = Background Location Offset       | Length: 4   (0x4)  | Type: uint32
+	Segment[0x20      :       0x23] = Background Size                  | Length: 4   (0x4)  | Type: uint32
+	Segment[0x24      :       0x27] = UNKNOWN FOR NOW                  | Length: 4   (0x4)  | Type: ???
+	Segment[0x28      :       0x2B] = Compressed World Location Offset | Length: 4   (0x4)  | Type: uint32
+	Segment[0x2C      :       0x2F] = Compressed World Size            | Length: 4   (0x4)  | Type: uint32
+	Segment[0x30      :       0xEF] = UNKNOWN FOR NOW                  | Length: 234 (0xEA) | Type: ???
+	Segment[0xF0      :       0xFF] = UUID                             | Length: 16  (0x10) | Type: uuid
+	Segment[0x100     :      0x107] = UNKNOWN FOR NOW                  | Length: 8   (0x8)  | Type: ??? Possible long/epoch/DateTime
+	Segment[0x108     :      0x118] = Name                             | Length: 16  (0x10) | Type: char*
+	Segment[0x118     :      0x137] = UNKNOWN FOR NOW                  | Length: 32  (0x20) | Type: ???
+	Segment[0x138     :      0x139] = World.Width                      | Length: 2   (0x2)  | Type uint32                    | Parent: Blocks.Width
+	Segment[0x13A     :      0x13B] = World.Height                     | Length: 2   (0x2)  | Type uint32                    | Parent: Blocks.Height
+	Segment[0x13C     :      0x13D] = Player.X                         | Length: 2   (0x2)  | Type uint32                    | Parent: Player.X
+	Segment[0x13E     :      0x13F] = Player.Y                         | Length: 2   (0x2)  | Type uint32                    | Parent: Player.Y
+	Segment[0x140     :      0x141] = Spawn.X                          | Length: 2   (0x2)  | Type uint32                    | Parent: Spawn.X
+	Segment[0x142     :      0x143] = Spawn.Y                          | Length: 2   (0x2)  | Type uint32                    | Parent: Spawn.Y
+	Segment[0x144     :      0x145] = Planet                           | Length: 2   (0x2)  | Type enum
+	Segment[0x146     :      0x148] = UNKNOWN FOR NOW                  | Length: 3   (0x3)  | Type: ???
+	Segment[0x149]                  = Gamemode                         | Length: 1   (0x1)  | Type: enum                     | Parent: Gamemode
+	Segment[0x14A]                  = World Size                       | Length: 1   (0x1)  | Type: enum                     | Parent: Size
+	Segment[0x14B     :      0x1CF] = UNKNOWN FOR NOW                  | Length: 132 (0x85) | Type: ???
+	Segment[{bg loc}  :  {bg size}] = Background Layer                 | Length: {bg size}  | Type: uint16_t[{bg size}]      | Parent: Background
+	Segment[{wld loc} : {wld size}] = Compressed World Data {Blocks}   | Length: {wld size} | Type: struct Block[{wld size}] | Parent: Blocks
+	----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	Written By: Ryan Smith
 */
@@ -44,7 +55,7 @@ public enum Gamemode: byte
 	Flat
 }
 
-public enum Planet : ushort
+public enum Planet : ushort  // TODO: Convert to byte enum
 {
 	Terra  = 0x0001,
 	Seth   = 0x0002,
@@ -58,6 +69,15 @@ public enum Planet : ushort
 	Mykon  = 0x0200,
 	Umbra  = 0x0400,
 	Tor    = 0x0800
+}
+
+public enum Size : byte
+{
+	Tiny = 0x0,
+	Small,
+	Normal,
+	Large,
+	Huge
 }
 
 public sealed class World
@@ -74,8 +94,7 @@ public sealed class World
 	}
 	private World(
 		Guid id, string name, Gamemode gamemode, Planet planet,
-		(ushort X, ushort Y) spawn, (ushort X, ushort Y) player,
-		ushort[] background
+		(ushort X, ushort Y) spawn, (ushort X, ushort Y) player
 	)
 	{
 		this.Id = id;
@@ -84,62 +103,62 @@ public sealed class World
 		this.Planet = planet;
 		this.Spawn = spawn;
 		this.Player = player;
-		this.Background = background;
 	}
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
 	{
-		var workingData = new byte[64];
+		byte[] bytes;
+		var workingData = new byte[BUFFERSIZE];
 		//----Unknown----\\
 		stream.Seek(0xF0, SeekOrigin.Current);
 		// Uuid
 		var uuid = this.Id.ToByteArray();
-		await stream.WriteAsync(uuid, 0, 0x10);
+		await stream.WriteAsync(uuid, 0, uuid.Length);
 		//----Unknown----\\
 		stream.Seek(0x8, SeekOrigin.Current);
 		// Name
 		var byteCount = Encoding.ASCII.GetBytes(this._Name, 0, this._Name.Length, workingData, 0);
-		for (var i = byteCount; i < 0x10; ++i) { workingData[i] = 0; }
-		await stream.WriteAsync(workingData, 0, 0x10);
+		for (var i = byteCount; i < NAMESIZE; ++i)
+			workingData[i] = 0;
+		await stream.WriteAsync(workingData, 0, NAMESIZE);
 		//----Unknown----\\
 		stream.Seek(0x24, SeekOrigin.Current);
 		// Player
-		workingData[3] = (byte)((this.Player.Y & 0xFF00) >> 8);
-		workingData[2] = (byte)((this.Player.Y & 0x00FF) >> 0);
-		workingData[1] = (byte)((this.Player.X & 0xFF00) >> 8);
-		workingData[0] = (byte)((this.Player.X & 0x00FF) >> 0);
-		await stream.WriteAsync(workingData, 0, 0x4);
+		// -X
+		bytes = BitConverter.GetBytes(this.Player.X);
+		Array.Reverse(bytes);
+		Array.Copy(bytes, 0, workingData, 0, bytes.Length);
+		// -Y
+		bytes = BitConverter.GetBytes(this.Player.Y);
+		Array.Reverse(bytes);
+		Array.Copy(bytes, 0, workingData, 2, bytes.Length);
+		await stream.WriteAsync(workingData, 0, PLAYERPOSSIZE);
 		// Spawn
-		workingData[3] = (byte)((this.Spawn.Y & 0xFF00) >> 8);
-		workingData[2] = (byte)((this.Spawn.Y & 0x00FF) >> 0);
-		workingData[1] = (byte)((this.Spawn.X & 0xFF00) >> 8);
-		workingData[0] = (byte)((this.Spawn.X & 0x00FF) >> 0);
-		await stream.WriteAsync(workingData, 0, 0x4);
+		// -X
+		bytes = BitConverter.GetBytes(this.Spawn.X);
+		Array.Reverse(bytes);
+		Array.Copy(bytes, 0, workingData, 0, bytes.Length);
+		// -Y
+		bytes = BitConverter.GetBytes(this.Spawn.Y);
+		Array.Reverse(bytes);
+		Array.Copy(bytes, 0, workingData, 2, bytes.Length);
+		await stream.WriteAsync(workingData, 0, SPAWNPOSSIZE);
 		// Planet
+		// TODO: Convert from byte enum
 		workingData[1] = (byte)(((ushort)this.Planet & 0xFF00) >> 8);
 		workingData[0] = (byte)(((ushort)this.Planet & 0x00FF) >> 0);
-		await stream.WriteAsync(workingData, 0, 0x2);
+		await stream.WriteAsync(workingData, 0, PLANETSIZE);
 		//----Unknown----\\
 		stream.Seek(0x3, SeekOrigin.Current);
 		// Gamemode
 		stream.WriteByte((byte)this.Gamemode);
-		//----Unknown----\\
-		stream.Seek(0x86, SeekOrigin.Current);
-		// Background Layer
-		// TODO: USE FULL BUFFER
-		foreach (var bg in this.Background)
-		{
-			workingData[1] = (byte)((bg & 0xFF00) >> 8);
-			workingData[0] = (byte)((bg & 0x00FF) >> 0);
-			await stream.WriteAsync(workingData, 0, 0x2);
-		}
 		//----Unknown----\\
 	}
 	/* Static Methods */
 	public static async Task<World> FromStream(Stream stream)
 	{
 		var bytesRead = 0;
-		var workingData = new byte[64];
+		var workingData = new byte[BUFFERSIZE];
 		//----Unknown----\\
 		stream.Seek(0xF0, SeekOrigin.Current);
 		// Uuid
@@ -163,36 +182,28 @@ public sealed class World
 		while (bytesRead < PLAYERPOSSIZE)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, PLAYERPOSSIZE - bytesRead);
 		var player = (
-			(ushort)((workingData[1] << 8) | workingData[0]),
-			(ushort)((workingData[3] << 8) | workingData[2])
+			BitConverter.ToUInt16(new Span<byte>(workingData).Slice(0, 2)),
+			BitConverter.ToUInt16(new Span<byte>(workingData).Slice(2, 2))
 		);
 		// Spawn
 		bytesRead = 0;
 		while (bytesRead < SPAWNPOSSIZE)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SPAWNPOSSIZE - bytesRead);
 		var spawn = (
-			(ushort)((workingData[1] << 8) | workingData[0]),
-			(ushort)((workingData[3] << 8) | workingData[2])
+			BitConverter.ToUInt16(new Span<byte>(workingData).Slice(0, 2)),
+			BitConverter.ToUInt16(new Span<byte>(workingData).Slice(2, 2))
 		);
 		// Planet
 		bytesRead = 0;
 		while (bytesRead < PLANETSIZE)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, PLANETSIZE - bytesRead);
-		var planet = (Planet)((workingData[1] << 8) | workingData[0]);
+		var planet = (Planet)((workingData[1] << 8) | workingData[0]);  // TODO: Convert to byte enum
 		//----Unknown----\\
 		stream.Seek(0x3, SeekOrigin.Current);
 		// Gamemode
 		var gamemode = (Gamemode)stream.ReadByte();
 		//----Unknown----\\
-		stream.Seek(0x86, SeekOrigin.Current);
-		// Background Layer
-		bytesRead = 0;
-		var background = new ushort[512];
-		// Blocks
-		//----Unknown----\\
-		return new World(
-			id, name, gamemode, planet, spawn, player, background
-		);
+		return new World(id, name, gamemode, planet, spawn, player);
 	}
 	/* Properties */
 	public readonly Guid Id;
@@ -202,8 +213,8 @@ public sealed class World
 		get { return this._Name; }
 		set {
 			if (String.IsNullOrEmpty(value)) return;
-			else if (value.Length < 16) this._Name = value;
-			else this._Name = value.Substring(0, 15);
+			else if (value.Length < NAMESIZE) this._Name = value;
+			else this._Name = value.Substring(0, NAMESIZE - 1);
 		}
 	}
 	public Gamemode Gamemode;
@@ -211,9 +222,22 @@ public sealed class World
 	public (ushort X, ushort Y) Player;
 	public Planet Planet;
 	public readonly ushort[] Background;
+	public readonly Block[] Blocks;
+	/*
+		TODO: Memory Mapped File Implementation
+		https://learn.microsoft.com/en-us/dotnet/api/system.io.memorymappedfiles.memorymappedfile?view=net-7.0
+		https://learn.microsoft.com/en-us/dotnet/api/system.io.memorymappedfiles.memorymappedviewstream?view=net-7.0
+
+		Implement Block array as memmory mapped file with a viewer and getblock/setblock implementation
+		
+		Separate Blocks class with x/y indexer class
+		https://stackoverflow.com/questions/6111049/2d-array-property
+	*/
 	/* Class Properties */
+	private const byte BUFFERSIZE = 64;
 	private const byte UUIDSIZE = 16;
 	private const byte NAMESIZE = 16;
+	private const byte COMPRESSEDSIZESIZE = 4;
 	private const byte PLAYERPOSSIZE = 4;
 	private const byte SPAWNPOSSIZE = 4;
 	private const byte PLANETSIZE = 2;
