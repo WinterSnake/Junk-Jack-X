@@ -47,8 +47,8 @@ public sealed class Player
 		// Random character design
 		this.Character = new Character(
 			rnd.NextDouble() >= 0.5 ,
-			(byte)rnd.Next(Character.MaxTones + 1),
-			(byte)rnd.Next(Hair.MaxStyles + 1),
+			(byte)rnd.Next(Character.MAX_TONES + 1),
+			(byte)rnd.Next(Hair.MAX_STYLES + 1),
 			(Hair.HColor)(rnd.Next(Enum.GetValues(typeof(Hair.HColor)).Length))
 		);
 		// Default gameplay data
@@ -170,6 +170,7 @@ public sealed class Player
 	public Item CraftSlot                    { get { return Items[75]; }}                                   // 76
 	public Item ArrowSlot                    { get { return Items[76]; }}                                   // 77
 	/* Class Properties */
+	public  const byte MAXLENGTH_NAME   = SIZEOF_NAME - 1;
 	private const byte BUFFER_SIZE      = 32;
 	private const byte SIZEOF_UUID      = 16;
 	private const byte SIZEOF_NAME      = 16;

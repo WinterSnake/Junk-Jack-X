@@ -42,11 +42,11 @@ public sealed class Character
 	public byte Tone {
 		// Min: 0 | Max: 4
 		get { return this._Tone; }
-		set { this._Tone = Math.Min(value, MaxTones); }
+		set { this._Tone = Math.Min(value, MAX_TONES); }
 	}
 	public readonly Hair Hair;
 	/* Class Properties */
-	public const byte MaxTones = 0x4;  // Maximum skin tones in game (5) [0-4]
+	public const byte MAX_TONES = 0x4;  // Maximum skin tones in game (5) [0-4]
 }
 public sealed class Hair
 {
@@ -66,10 +66,10 @@ public sealed class Hair
 	private byte _Style;
 	public byte Style {
 		get { return this._Style; }
-		set { this._Style = Math.Min(value, MaxStyles); }
+		set { this._Style = Math.Min(value, MAX_STYLES); }
 	}
 	/* Class Properties */
-	public const byte MaxStyles = 0xD;  // Maximum hair styles in game (14) [0-D]
+	public const byte MAX_STYLES = 0xD;  // Maximum hair styles in game (14) [0-D]
 	/* Sub-Classes */
 	public enum HColor : byte
 	{

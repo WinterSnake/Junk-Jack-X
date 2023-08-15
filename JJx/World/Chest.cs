@@ -4,8 +4,8 @@
 
 	Segment Breakdown:
 	------------------------------------------------------------------------------------------------------------------------
-	Segment[0x0 : 0x3] = Y Position      | Length: 4  (0x04) | Type: uint32
-	Segment[0x4 : 0x7] = X Position      | Length: 4  (0x04) | Type: uint32
+	Segment[0x0 : 0x3] = X Position      | Length: 4  (0x04) | Type: uint32
+	Segment[0x4 : 0x7] = Y Position      | Length: 4  (0x04) | Type: uint32
 	Segment[0x8 : 0xB] = Item Count      | Length: 4  (0x04) | Type: uint32
 		<Item[]>
 	------------------------------------------------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ public sealed class Chest
 		// Item Count
 		bytes = BitConverter.GetBytes((uint)this.Items.Length);
 		Array.Copy(bytes, 0, workingData, 8, bytes.Length);
-		await stream.WriteAsync(workingData, 0, 4);
+		await stream.WriteAsync(workingData, 0, SIZEOF_ITEMLENGTH);
 		// Items
 		foreach (var item in this.Items)
 			await item.ToStream(stream);
@@ -75,23 +75,24 @@ public sealed class Chest
 		// Items
 		var items = new Item[size];
 		for (var i = 0; i < size; ++i)
-			items[i] = Item.FromStream(stream);
+			items[i] = await Item.FromStream(stream);
 		return new Chest(position, items);
 	}
 	/* Properties */
 	public (uint X, uint Y) Position;
 	public Item[] Items;
 	/* Class Properties */
-	private const byte SIZE = 12;
-	private const byte SIZEOF_POSITION = 8;
-	public const uint ITEMCOUNT_WOOD       =  12;
-	public const uint ITEMCOUNT_COPPER     =  24;
-	public const uint ITEMCOUNT_IRON       =  24;
-	public const uint ITEMCOUNT_SILVER     =  36;
-	public const uint ITEMCOUNT_GOLD       =  36;
-	public const uint ITEMCOUNT_MITHRIL    =  48;
-	public const uint ITEMCOUNT_ANTANIUM   =  60;
-	public const uint ITEMCOUNT_GALVANIUM  =  72;
-	public const uint ITEMCOUNT_TITANIUM   =  72;
-	public const uint ITEMCOUNT_BOTTOMLESS = 120;
+	public  const uint ITEMCOUNT_WOOD       = 12;
+	public  const uint ITEMCOUNT_COPPER     = 24;
+	public  const uint ITEMCOUNT_IRON       = 24;
+	public  const uint ITEMCOUNT_SILVER     = 36;
+	public  const uint ITEMCOUNT_GOLD       = 36;
+	public  const uint ITEMCOUNT_MITHRIL    = 48;
+	public  const uint ITEMCOUNT_ANTANIUM   = 60;
+	public  const uint ITEMCOUNT_GALVANIUM  = 72;
+	public  const uint ITEMCOUNT_TITANIUM   = 72;
+	public  const uint ITEMCOUNT_BOTTOMLESS = 120;
+	private const byte SIZE                 = 12;
+	private const byte SIZEOF_POSITION      = 8;
+	private const byte SIZEOF_ITEMLENGTH    = 8;
 }

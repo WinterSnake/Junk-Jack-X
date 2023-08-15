@@ -14,7 +14,10 @@
 	Segment[0x30      :       0x4B] = UNKNOWN FOR NOW                | Length: ??? (0x??) | Type: ???
 	Segment[0x4C      :       0x4F] = Chest Footer Location          | Length: 4   (0x10) | Type: uint32
 	Segment[0x50      :       0x53] = Chest Footer Size              | Length: 4   (0x10) | Type: uint32
-	Segment[0x54      :       0xDB] = UNKNOWN FOR NOW                | Length: ??? (0x??) | Type: ???
+	Segment[0x54      :       0x63] = UNKNOWN FOR NOW                | Length: ??? (0x??) | Type: ???
+	Segment[0x64      :       0x67] = Sign Footer Location           | Length: 4   (0x10) | Type: uint32
+	Segment[0x68      :       0x6B] = Chest Footer Size              | Length: 4   (0x10) | Type: uint32
+	Segment[0x6C      :       0xDB] = UNKNOWN FOR NOW                | Length: ??? (0x??) | Type: ???
 	Segment[0xDC      :       0xDF] = Entity Footer Location         | Length: 4   (0x10) | Type: uint32
 	Segment[0xE0      :       0xE3] = Entity Footer Size             | Length: 4   (0x10) | Type: uint32
 	Segment[0xE4      :       0xEF] = UNKNOWN FOR NOW                | Length: 12  (0xC)  | Type: ???
@@ -46,6 +49,9 @@
 	{CHEST FOOTER}
 	Segment[0x0       :        0x3] = # of chests                    | Length: 4   (0x4)  | Type: uint32
 		<Chest[]>
+	{SIGN FOOTER}
+	Segment[0x0       :        0x3] = # of signs                     | Length: 4   (0x4)  | Type: uint32
+		<Sign[]>
 	{ENTITY FOOTER}
 	Segment[0x0       :        0x3] = # of entities                  | Length: 4   (0x4)  | Type: uint32
 		<Entity[]>
@@ -263,10 +269,11 @@ public sealed class World
 			https://stackoverflow.com/questions/6111049/2d-array-property
 		*/
 	/* Class Properties */
-	private const byte BUFFER_SIZE = 64;
-	private const byte SIZEOF_UUID = 16;
-	private const byte SIZEOF_NAME = 16;
+	public  const byte MAXLENGTH_NAME        = SIZEOF_NAME - 1;
+	private const byte BUFFER_SIZE           = 64;
+	private const byte SIZEOF_UUID           = 16;
+	private const byte SIZEOF_NAME           = 16;
 	private const byte SIZEOF_PLAYERPOSITION = 4;
-	private const byte SIZEOF_SPAWNPOSITION = 4;
-	private const byte SIZEOF_PLANET = 2;
+	private const byte SIZEOF_SPAWNPOSITION  = 4;
+	private const byte SIZEOF_PLANET         = 2;
 }

@@ -4,8 +4,8 @@
 
 	Segment Breakdown:
 	------------------------------------------------------------------------------------------------------------------------
-	Segment[0x0 : 0x1] = Y Position      | Length: 2  (0x02) | Type: uint16
-	Segment[0x2 : 0x3] = X Position      | Length: 2  (0x02) | Type: uint16
+	Segment[0x0 : 0x1] = X Position      | Length: 2  (0x02) | Type: uint16
+	Segment[0x2 : 0x3] = Y Position      | Length: 2  (0x02) | Type: uint16
 	Segment[0x4]       = UNKNOWN FOR NOW | Length: 1  (0x01) | Type: ???
 	Segment[0x5 : 0x6] = Id              | Length: 2  (0x02) | Type: uint16
 	------------------------------------------------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ public sealed class Entity
 	public ushort Id;
 	public (ushort X, ushort Y) Position;
 	/* Class Properties */
-	private const byte SIZE = 7;
+	private const byte SIZE            = 7;
 	private const byte SIZEOF_ID       = 2;
 	private const byte SIZEOF_POSITION = 4;
 }

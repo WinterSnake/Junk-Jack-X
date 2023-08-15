@@ -90,6 +90,7 @@ public sealed class Adventure
 		}
 	}
 	/* Class Properties */
+	public  const byte MAXLENGTH_NAME = SIZEOF_NAME - 1;
 	private const byte BUFFER_SIZE = 32;
 	private const byte SIZEOF_UUID = 16;
 	private const byte SIZEOF_NAME = 16;
