@@ -29,26 +29,25 @@ public sealed class Entity
 	}
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
-		// TODO: Write using single array.reverse
+		// TODO: Single WriteAsync | Use SIZE buffer
+		// TODO: Ensure BitConverter.GetBytes<T> forces little endian
 	{
 		byte[] bytes;
 		var workingData = new byte[SIZE];
-		// Spawn
+		// Position
 		// -X
 		bytes = BitConverter.GetBytes(this.Position.X);
-		Array.Reverse(bytes);
 		Array.Copy(bytes, 0, workingData, 0, bytes.Length);
 		// -Y
 		bytes = BitConverter.GetBytes(this.Position.Y);
-		Array.Reverse(bytes);
 		Array.Copy(bytes, 0, workingData, 2, bytes.Length);
 		await stream.WriteAsync(workingData, 0, SIZEOF_POSITION);
 		//----Unknown----\\
 		stream.WriteByte(0);
 		// Id
 		bytes = BitConverter.GetBytes(this.Id);
-		Array.Reverse(bytes);
 		Array.Copy(bytes, 0, workingData, 5, bytes.Length);
+		await stream.WriteAsync(workingData, 0, SIZEOF_ID);
 	}
 	/* Static Methods */
 	public static async Task<Entity> FromStream(Stream stream)
@@ -74,5 +73,6 @@ public sealed class Entity
 	public (ushort X, ushort Y) Position;
 	/* Class Properties */
 	private const byte SIZE = 7;
+	private const byte SIZEOF_ID       = 2;
 	private const byte SIZEOF_POSITION = 4;
 }

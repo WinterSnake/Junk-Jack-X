@@ -11,7 +11,10 @@
 	Segment[0x24      :       0x27] = UNKNOWN FOR NOW                | Length: 4   (0x4)  | Type: ???
 	Segment[0x28      :       0x2B] = Compressed World Location      | Length: 4   (0x4)  | Type: uint32
 	Segment[0x2C      :       0x2F] = Compressed World Size          | Length: 4   (0x4)  | Type: uint32
-	Segment[0x30      :       0xDB] = UNKNOWN FOR NOW                | Length: 234 (0xEA) | Type: ???
+	Segment[0x30      :       0x4B] = UNKNOWN FOR NOW                | Length: ??? (0x??) | Type: ???
+	Segment[0x4C      :       0x4F] = Chest Footer Location          | Length: 4   (0x10) | Type: uint32
+	Segment[0x50      :       0x53] = Chest Footer Size              | Length: 4   (0x10) | Type: uint32
+	Segment[0x54      :       0xDB] = UNKNOWN FOR NOW                | Length: ??? (0x??) | Type: ???
 	Segment[0xDC      :       0xDF] = Entity Footer Location         | Length: 4   (0x10) | Type: uint32
 	Segment[0xE0      :       0xE3] = Entity Footer Size             | Length: 4   (0x10) | Type: uint32
 	Segment[0xE4      :       0xEF] = UNKNOWN FOR NOW                | Length: 12  (0xC)  | Type: ???
@@ -40,6 +43,9 @@
 	Segment[0x4]                    = Skybox {Day/Night} ???         | Length: 1   (0x1)  | Type: ???
 	Segment[0x5       :        0xB] = UNKNOWN FOR NOW                | Length: 2   (0x2)  | Type: ???
 	Segment[0xC]                    = Weather                        | Length: 1   (0x1)  | Type: ???
+	{CHEST FOOTER}
+	Segment[0x0       :        0x3] = # of chests                    | Length: 4   (0x4)  | Type: uint32
+		<Chest[]>
 	{ENTITY FOOTER}
 	Segment[0x0       :        0x3] = # of entities                  | Length: 4   (0x4)  | Type: uint32
 		<Entity[]>
@@ -131,7 +137,8 @@ public sealed class World
 	}
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
-		// TODO: Write using minimal array.reverse
+		// TODO: Use full buffer before WriteAynsc
+		// TODO: Ensure BitConverter.GetBytes<T> forces little endian
 	{
 		byte[] bytes;
 		var workingData = new byte[BUFFER_SIZE];
@@ -152,21 +159,17 @@ public sealed class World
 		// Player
 		// -X
 		bytes = BitConverter.GetBytes(this.Player.X);
-		Array.Reverse(bytes);
 		Array.Copy(bytes, 0, workingData, 0, bytes.Length);
 		// -Y
 		bytes = BitConverter.GetBytes(this.Player.Y);
-		Array.Reverse(bytes);
 		Array.Copy(bytes, 0, workingData, 2, bytes.Length);
 		await stream.WriteAsync(workingData, 0, SIZEOF_PLAYERPOSITION);
 		// Spawn
 		// -X
 		bytes = BitConverter.GetBytes(this.Spawn.X);
-		Array.Reverse(bytes);
 		Array.Copy(bytes, 0, workingData, 0, bytes.Length);
 		// -Y
 		bytes = BitConverter.GetBytes(this.Spawn.Y);
-		Array.Reverse(bytes);
 		Array.Copy(bytes, 0, workingData, 2, bytes.Length);
 		await stream.WriteAsync(workingData, 0, SIZEOF_SPAWNPOSITION);
 		// Planet

@@ -32,29 +32,24 @@ public sealed class Item
 	}
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
-		// TODO: Write using single reverse
+		// TODO: Ensure BitConverter.GetBytes<T> forces little endian
 	{
 		byte[] bytes;
 		var workingData = new byte[SIZE];
 		// Modifier
 		bytes = BitConverter.GetBytes(this.Modifier);
-		Array.Reverse(bytes);
 		Array.Copy(bytes, 0, workingData, 0, bytes.Length);
 		// Id
 		bytes = BitConverter.GetBytes(this.Id);
-		Array.Reverse(bytes);
 		Array.Copy(bytes, 0, workingData, 4, bytes.Length);
 		// Count
 		bytes = BitConverter.GetBytes(this.Count);
-		Array.Reverse(bytes);
 		Array.Copy(bytes, 0, workingData, 6, bytes.Length);
 		// Durability
 		bytes = BitConverter.GetBytes(this.Durability);
-		Array.Reverse(bytes);
 		Array.Copy(bytes, 0, workingData, 8, bytes.Length);
 		// Icon
 		bytes = BitConverter.GetBytes(this.Icon);
-		Array.Reverse(bytes);
 		Array.Copy(bytes, 0, workingData, 10, bytes.Length);
 
 		await stream.WriteAsync(workingData, 0, workingData.Length);
