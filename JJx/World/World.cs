@@ -10,32 +10,45 @@
 
 	Segment Breakdown:
 	----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	Segment[0x0       :        0x3] = JJ World Header                  | Length: 4   (0x4)  | Type: char[4]
-	Segment[0x4       :        0x5] = JJ Type Header                   | Length: 2   (0x2)  | Type: uint16 <01 00: world | 02 00: adventure>
-	Segment[0x6       :       0x1B] = UNKNOWN FOR NOW                  | Length: 16  (0x10) | Type: ???
-	Segment[0x1C      :       0x1F] = Background Location Offset       | Length: 4   (0x4)  | Type: uint32
-	Segment[0x20      :       0x23] = Background Size                  | Length: 4   (0x4)  | Type: uint32
-	Segment[0x24      :       0x27] = UNKNOWN FOR NOW                  | Length: 4   (0x4)  | Type: ???
-	Segment[0x28      :       0x2B] = Compressed World Location Offset | Length: 4   (0x4)  | Type: uint32
-	Segment[0x2C      :       0x2F] = Compressed World Size            | Length: 4   (0x4)  | Type: uint32
-	Segment[0x30      :       0xEF] = UNKNOWN FOR NOW                  | Length: 234 (0xEA) | Type: ???
-	Segment[0xF0      :       0xFF] = UUID                             | Length: 16  (0x10) | Type: uuid
-	Segment[0x100     :      0x107] = UNKNOWN FOR NOW                  | Length: 8   (0x8)  | Type: ??? Possible long/epoch/DateTime
-	Segment[0x108     :      0x118] = Name                             | Length: 16  (0x10) | Type: char*
-	Segment[0x118     :      0x137] = UNKNOWN FOR NOW                  | Length: 32  (0x20) | Type: ???
-	Segment[0x138     :      0x139] = World.Width                      | Length: 2   (0x2)  | Type uint32                    | Parent: Blocks.Width
-	Segment[0x13A     :      0x13B] = World.Height                     | Length: 2   (0x2)  | Type uint32                    | Parent: Blocks.Height
-	Segment[0x13C     :      0x13D] = Player.X                         | Length: 2   (0x2)  | Type uint32                    | Parent: Player.X
-	Segment[0x13E     :      0x13F] = Player.Y                         | Length: 2   (0x2)  | Type uint32                    | Parent: Player.Y
-	Segment[0x140     :      0x141] = Spawn.X                          | Length: 2   (0x2)  | Type uint32                    | Parent: Spawn.X
-	Segment[0x142     :      0x143] = Spawn.Y                          | Length: 2   (0x2)  | Type uint32                    | Parent: Spawn.Y
-	Segment[0x144     :      0x145] = Planet                           | Length: 2   (0x2)  | Type enum
-	Segment[0x146     :      0x148] = UNKNOWN FOR NOW                  | Length: 3   (0x3)  | Type: ???
-	Segment[0x149]                  = Gamemode                         | Length: 1   (0x1)  | Type: enum                     | Parent: Gamemode
-	Segment[0x14A]                  = World Size                       | Length: 1   (0x1)  | Type: enum                     | Parent: Size
-	Segment[0x14B     :      0x1CF] = UNKNOWN FOR NOW                  | Length: 132 (0x85) | Type: ???
-	Segment[{bg loc}  :  {bg size}] = Background Layer                 | Length: {bg size}  | Type: uint16_t[{bg size}]      | Parent: Background
-	Segment[{wld loc} : {wld size}] = Compressed World Data {Blocks}   | Length: {wld size} | Type: struct Block[{wld size}] | Parent: Blocks
+	Segment[0x0       :        0x3] = JJ World Header                | Length: 4   (0x4)  | Type: char[4]
+	Segment[0x4       :        0x5] = JJ Type Header                 | Length: 2   (0x2)  | Type: uint16 <01 00: world | 02 00: adventure>
+	Segment[0x6       :       0x1B] = UNKNOWN FOR NOW                | Length: 16  (0x10) | Type: ???
+	Segment[0x1C      :       0x1F] = Background Location            | Length: 4   (0x4)  | Type: uint32
+	Segment[0x20      :       0x23] = Background Size                | Length: 4   (0x4)  | Type: uint32
+	Segment[0x24      :       0x27] = UNKNOWN FOR NOW                | Length: 4   (0x4)  | Type: ???
+	Segment[0x28      :       0x2B] = Compressed World Location      | Length: 4   (0x4)  | Type: uint32
+	Segment[0x2C      :       0x2F] = Compressed World Size          | Length: 4   (0x4)  | Type: uint32
+	Segment[0x30      :       0xDB] = UNKNOWN FOR NOW                | Length: 234 (0xEA) | Type: ???
+	Segment[0xDC      :       0xDF] = Entity Footer Location         | Length: 4   (0x10) | Type: uint32
+	Segment[0xE0      :       0xE3] = Entity Footer Size             | Length: 4   (0x10) | Type: uint32
+	Segment[0xE4      :       0xEF] = UNKNOWN FOR NOW                | Length: 12  (0xC)  | Type: ???
+	Segment[0xF0      :       0xFF] = UUID                           | Length: 16  (0x10) | Type: uuid
+	Segment[0x100     :      0x107] = UNKNOWN FOR NOW                | Length: 8   (0x8)  | Type: ??? Possible long/epoch/DateTime
+	Segment[0x108     :      0x118] = Name                           | Length: 16  (0x10) | Type: char*
+	Segment[0x118     :      0x137] = UNKNOWN FOR NOW                | Length: 32  (0x20) | Type: ???
+	Segment[0x138     :      0x139] = World.Width                    | Length: 2   (0x2)  | Type uint32                    | Parent: Blocks.Width
+	Segment[0x13A     :      0x13B] = World.Height                   | Length: 2   (0x2)  | Type uint32                    | Parent: Blocks.Height
+	Segment[0x13C     :      0x13D] = Player.X                       | Length: 2   (0x2)  | Type uint32                    | Parent: Player.X
+	Segment[0x13E     :      0x13F] = Player.Y                       | Length: 2   (0x2)  | Type uint32                    | Parent: Player.Y
+	Segment[0x140     :      0x141] = Spawn.X                        | Length: 2   (0x2)  | Type uint32                    | Parent: Spawn.X
+	Segment[0x142     :      0x143] = Spawn.Y                        | Length: 2   (0x2)  | Type uint32                    | Parent: Spawn.Y
+	Segment[0x144     :      0x145] = Planet                         | Length: 2   (0x2)  | Type enum
+	Segment[0x146     :      0x147] = UNKNOWN FOR NOW                | Length: 2   (0x2)  | Type: ???
+	Segment[0x148]                  = Season                         | Length: 1   (0x1)  | Type: enum                     | Parent: Season
+	Segment[0x149]                  = Gamemode                       | Length: 1   (0x1)  | Type: enum                     | Parent: Gamemode
+	Segment[0x14A]                  = World Size                     | Length: 1   (0x1)  | Type: enum                     | Parent: Size
+	Segment[0x14B]                  = Sky Size                       | Length: 1   (0x1)  | Type: enum                     | Parent: Size
+	Segment[0x14C     :      0x1CF] = UNKNOWN FOR NOW                | Length: 131 (0x84) | Type: ???
+	Segment[{bg loc}  :  {bg size}] = Background Layer               | Length: {bg size}  | Type: uint16_t[{bg size}]      | Parent: Background
+	Segment[{wld loc} : {wld size}] = Compressed World Data {Blocks} | Length: {wld size} | Type: struct Block[{wld size}] | Parent: Blocks
+	{END OF COMPRESSED WORLD}
+	Segment[0x0       :        0x1] = Time ???                       | Length: 2   (0x2)  | Type: ???
+	Segment[0x2       :        0x3] = UNKNOWN FOR NOW                | Length: 2   (0x2)  | Type: ???
+	Segment[0x4]                    = Skybox {Day/Night} ???         | Length: 1   (0x1)  | Type: ???
+	Segment[0x5       :        0xB] = UNKNOWN FOR NOW                | Length: 2   (0x2)  | Type: ???
+	Segment[0xC]                    = Weather                        | Length: 1   (0x1)  | Type: ???
+	{ENTITY FOOTER}
+	Segment[0x0       :        0x3] = # of entities                  | Length: 4   (0x4)  | Type: uint32
 	----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	Written By: Ryan Smith
@@ -48,11 +61,20 @@ using System.Threading.Tasks;
 
 namespace JJx;
 
-public enum Gamemode: byte
+public enum Gamemode : byte
 {
 	Survival = 0x0,
 	Creative,
 	Flat
+}
+
+public enum Season : byte
+{
+	Spring = 0x1,
+	Summer = 0x2,
+	Autumn = 0x4,
+	Winter = 0x8,
+	None   = 0xF
 }
 
 public enum Planet : ushort  // TODO: Convert to byte enum
@@ -69,6 +91,14 @@ public enum Planet : ushort  // TODO: Convert to byte enum
 	Mykon  = 0x0200,
 	Umbra  = 0x0400,
 	Tor    = 0x0800
+}
+
+public enum Weather: byte
+{
+	None,
+	Rain,
+	Snow,
+	AcidRain
 }
 
 public enum Size : byte
