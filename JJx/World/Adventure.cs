@@ -48,7 +48,8 @@ public sealed class Adventure
 		stream.Seek(0x8, SeekOrigin.Current);
 		// Name
 		byteCount = Encoding.ASCII.GetBytes(this._Name, 0, this._Name.Length, workingData, 0);
-		for (var i = byteCount; i < NAMESIZE; ++i) { workingData[i] = 0; }
+		for (var i = byteCount; i < NAMESIZE; ++i)
+			workingData[i] = 0;
 		await stream.WriteAsync(workingData, 0, NAMESIZE);
 		//----Unknown----\\
 	}
