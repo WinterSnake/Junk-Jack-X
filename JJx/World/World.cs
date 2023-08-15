@@ -71,7 +71,8 @@ public enum Season : byte
 	None   = 0xF
 }
 
-public enum Planet : ushort  // TODO: Convert to byte enum
+public enum Planet : ushort
+	// TODO: Convert to byte enum
 {
 	Terra  = 0x0001,
 	Seth   = 0x0002,
@@ -169,7 +170,6 @@ public sealed class World
 		Array.Copy(bytes, 0, workingData, 2, bytes.Length);
 		await stream.WriteAsync(workingData, 0, SIZEOF_SPAWNPOSITION);
 		// Planet
-		// TODO: Convert from byte enum
 		workingData[1] = (byte)(((ushort)this.Planet & 0xFF00) >> 8);
 		workingData[0] = (byte)(((ushort)this.Planet & 0x00FF) >> 0);
 		await stream.WriteAsync(workingData, 0, SIZEOF_PLANET);
@@ -181,6 +181,7 @@ public sealed class World
 	}
 	/* Static Methods */
 	public static async Task<World> FromStream(Stream stream)
+		// TODO: Ensure BitConverter.To<T> forces little endian
 	{
 		var bytesRead = 0;
 		var workingData = new byte[BUFFER_SIZE];
@@ -206,7 +207,7 @@ public sealed class World
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_PLAYERPOSITION)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_PLAYERPOSITION - bytesRead);
-		var player = (
+		var playerPosition = (
 			BitConverter.ToUInt16(new Span<byte>(workingData).Slice(0, 2)),
 			BitConverter.ToUInt16(new Span<byte>(workingData).Slice(2, 2))
 		);
@@ -214,7 +215,7 @@ public sealed class World
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_SPAWNPOSITION)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_SPAWNPOSITION - bytesRead);
-		var spawn = (
+		var spawnPosition = (
 			BitConverter.ToUInt16(new Span<byte>(workingData).Slice(0, 2)),
 			BitConverter.ToUInt16(new Span<byte>(workingData).Slice(2, 2))
 		);
@@ -222,13 +223,13 @@ public sealed class World
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_PLANET)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_PLANET - bytesRead);
-		var planet = (Planet)((workingData[1] << 8) | workingData[0]);  // TODO: Convert to byte enum
+		var planet = (Planet)((workingData[1] << 8) | workingData[0]);
 		//----Unknown----\\
 		stream.Seek(0x3, SeekOrigin.Current);
 		// Gamemode
 		var gamemode = (Gamemode)stream.ReadByte();
 		//----Unknown----\\
-		return new World(id, name, gamemode, planet, spawn, player);
+		return new World(id, name, gamemode, planet, spawnPosition, playerPosition);
 	}
 	/* Properties */
 	public readonly Guid Id;
@@ -248,16 +249,16 @@ public sealed class World
 	public Planet Planet;
 	public readonly ushort[] Background;
 	public readonly Block[] Blocks;
-	/*
-		TODO: Memory Mapped File Implementation
-		https://learn.microsoft.com/en-us/dotnet/api/system.io.memorymappedfiles.memorymappedfile?view=net-7.0
-		https://learn.microsoft.com/en-us/dotnet/api/system.io.memorymappedfiles.memorymappedviewstream?view=net-7.0
+		/*
+			TODO: Memory Mapped File Implementation
+			https://learn.microsoft.com/en-us/dotnet/api/system.io.memorymappedfiles.memorymappedfile?view=net-7.0
+			https://learn.microsoft.com/en-us/dotnet/api/system.io.memorymappedfiles.memorymappedviewstream?view=net-7.0
 
-		Implement Block array as memmory mapped file with a viewer and getblock/setblock implementation
-		
-		Separate Blocks class with x/y indexer class
-		https://stackoverflow.com/questions/6111049/2d-array-property
-	*/
+			Implement Background AND Block array as memmory mapped file with a viewer and getblock/setblock implementation
+			
+			Separate Blocks class with x/y indexer class
+			https://stackoverflow.com/questions/6111049/2d-array-property
+		*/
 	/* Class Properties */
 	private const byte BUFFER_SIZE = 64;
 	private const byte SIZEOF_UUID = 16;

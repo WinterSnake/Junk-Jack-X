@@ -52,6 +52,7 @@ public sealed class Entity
 	}
 	/* Static Methods */
 	public static async Task<Entity> FromStream(Stream stream)
+		// TODO: Ensure BitConverter.To<T> forces little endian
 	{
 		var bytesRead = 0;
 		var workingData = new byte[SIZE];
