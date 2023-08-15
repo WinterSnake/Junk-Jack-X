@@ -4,12 +4,12 @@
 
 	Segment Breakdown:
 	------------------------------------------------------------------------------------------------------------------------
-	Segment[0x0   :   0x3]      = JJ World Header  | Length: 4   (0x04)  | Type: char[4]
-	Segment[0x4   :  0x23]      = UNKNOWN FOR NOW  | Length: 31  (0x1F)  | Type: ??? Possible Header/File Length/CRC
-	Segment[0x24  :  0x33]      = UUID             | Length: 16  (0x10)  | Type: uuid
-	Segment[0x34  :  0x3C]      = UNKNOWN FOR NOW  | Length: 8   (0x8)   | Type: ??? Possible long/epoch/DateTime
-	Segment[0x3D  :  0x4B]      = Name             | Length: 16  (0x10)  | Type: char*
-	Segment[0x4C  : 0x---]      = UNKNOWN FOR NOW  | Length: ?   (0x?)   | Type: ???
+	Segment[0x0  :  0x3] = JJ World Header  | Length: 4   (0x04)  | Type: char[4]
+	Segment[0x4  : 0x23] = UNKNOWN FOR NOW  | Length: 31  (0x1F)  | Type: ??? Possible Header/File Length/CRC
+	Segment[0x24 : 0x33] = UUID             | Length: 16  (0x10)  | Type: uuid
+	Segment[0x34 : 0x3C] = UNKNOWN FOR NOW  | Length: 8   (0x8)   | Type: ??? Possible long/epoch/DateTime
+	Segment[0x3D : 0x4B] = Name             | Length: 16  (0x10)  | Type: char*
+	Segment[0x4C : 0x--] = UNKNOWN FOR NOW  | Length: ?   (0x?)   | Type: ???
 	------------------------------------------------------------------------------------------------------------------------
 
 	Written By: Ryan Smith
@@ -37,8 +37,7 @@ public sealed class Adventure
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
 	{
-		var byteCount = 0;
-		var workingData = new byte[BUFFERSIZE];
+		var workingData = new byte[BUFFER_SIZE];
 		//----Unknown----\\
 		stream.Seek(0x1F, SeekOrigin.Current);
 		// Uuid
@@ -47,31 +46,30 @@ public sealed class Adventure
 		//----Unknown----\\
 		stream.Seek(0x8, SeekOrigin.Current);
 		// Name
-		byteCount = Encoding.ASCII.GetBytes(this._Name, 0, this._Name.Length, workingData, 0);
-		for (var i = byteCount; i < NAMESIZE; ++i)
+		var byteCount = Encoding.ASCII.GetBytes(this._Name, 0, this._Name.Length, workingData, 0);
+		for (var i = byteCount; i < SIZEOF_NAME; ++i)
 			workingData[i] = 0;
-		await stream.WriteAsync(workingData, 0, NAMESIZE);
+		await stream.WriteAsync(workingData, 0, SIZEOF_NAME);
 		//----Unknown----\\
 	}
 	/* Static Methods */
 	public static async Task<Adventure> FromStream(Stream stream)
 	{
 		var bytesRead = 0;
-		var workingData = new byte[BUFFERSIZE];
+		var workingData = new byte[BUFFER_SIZE];
 		//----Unknown----\\
 		stream.Seek(0x24, SeekOrigin.Current);
-		Console.WriteLine(stream.Position.ToString("x2"));
 		// Uuid
 		bytesRead = 0;
-		while (bytesRead < UUIDSIZE)
-			bytesRead += await stream.ReadAsync(workingData, bytesRead, UUIDSIZE - bytesRead);
-		Guid id = new Guid(new Span<byte>(workingData).Slice(0, UUIDSIZE));
+		while (bytesRead < SIZEOF_UUID)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_UUID - bytesRead);
+		Guid id = new Guid(new Span<byte>(workingData).Slice(0, SIZEOF_UUID));
 		//----Unknown----\\
 		stream.Seek(0x8, SeekOrigin.Current);
 		// Name
 		bytesRead = 0;
-		while (bytesRead < NAMESIZE)
-			bytesRead += await stream.ReadAsync(workingData, bytesRead, NAMESIZE - bytesRead);
+		while (bytesRead < SIZEOF_NAME)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_NAME - bytesRead);
 		var name = Encoding.ASCII.GetString(
 			new Span<byte>(workingData).Slice(0, Array.IndexOf(workingData, byte.MinValue))
 		);
@@ -86,12 +84,12 @@ public sealed class Adventure
 		get { return this._Name; }
 		set {
 			if (String.IsNullOrEmpty(value)) return;
-			else if (value.Length < NAMESIZE) this._Name = value;
-			else this._Name = value.Substring(0, NAMESIZE - 1);
+			else if (value.Length < SIZEOF_NAME) this._Name = value;
+			else this._Name = value.Substring(0, SIZEOF_NAME - 1);
 		}
 	}
 	/* Class Properties */
-	private const byte BUFFERSIZE = 32;
-	private const byte UUIDSIZE = 16;
-	private const byte NAMESIZE = 16;
+	private const byte BUFFER_SIZE = 32;
+	private const byte SIZEOF_UUID = 16;
+	private const byte SIZEOF_NAME = 16;
 }

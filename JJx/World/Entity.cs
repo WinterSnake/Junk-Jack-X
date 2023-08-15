@@ -29,6 +29,7 @@ public sealed class Entity
 	}
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
+		// TODO: Write using single array.reverse
 	{
 		byte[] bytes;
 		var workingData = new byte[SIZE];

@@ -1,13 +1,10 @@
 /*
 	Junk Jack X: Player
 
-	Player class references both the player file and player stats file for creating, loading, editing, and saving.
-	This file documents both the hex offsets (and length) and their (probable) C equivalent types.
-
 	Segment Breakdown:
 	------------------------------------------------------------------------------------------------------------------------
 	Segment[0x0   :  0x3]  = JJ Character Header | Length: 4   (0x04)  | Type: char[4]
-	Segment[0x4   :  0x5]  = JJ Type Header      | Length: 2   (0x2)   | Type: uint16          | Parent: None - 00 00: player
+	Segment[0x4   :  0x5]  = JJ Type Header      | Length: 2   (0x2)   | Type: uint16 <00 00: player>
 	Segment[0x4   : 0x47]  = UNKNOWN FOR NOW     | Length: 71  (0x47)  | Type: ??? Possible Header/File Length/CRC
 	Segment[0x48  : 0x57]  = UUID                | Length: 16  (0x10)  | Type: uuid
 	Segment[0x58  : 0x67]  = Name                | Length: 16  (0x10)  | Type: char*
@@ -71,7 +68,7 @@ public sealed class Player
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
 	{
-		var workingData = new byte[BUFFERSIZE];
+		var workingData = new byte[BUFFER_SIZE];
 		//----Unknown----\\
 		stream.Seek(0x48, SeekOrigin.Current);
 		// Uuid
@@ -79,9 +76,9 @@ public sealed class Player
 		await stream.WriteAsync(uuid, 0, uuid.Length);
 		// Name
 		var byteCount = Encoding.ASCII.GetBytes(this._Name, 0, this._Name.Length, workingData, 0);
-		for (var i = byteCount; i < NAMESIZE; ++i)
+		for (var i = byteCount; i < SIZEOF_NAME; ++i)
 			workingData[i] = 0;
-		await stream.WriteAsync(workingData, 0, NAMESIZE);
+		await stream.WriteAsync(workingData, 0, SIZEOF_NAME);
 		//----Unknown----\\
 		stream.Seek(0x8, SeekOrigin.Current);
 		// Gameplay: Flags
@@ -89,12 +86,8 @@ public sealed class Player
 		//----Unknown----\\
 		stream.Seek(0x3, SeekOrigin.Current);
 		// Features
-		workingData[1] = (byte)(
-			(((this.Character.Tone << 3) | Convert.ToByte(this.Character.Gender)) << 4) |
-			this.Character.Hair.Style
-		);
-		workingData[0] = (byte)((byte)this.Character.Hair.Color << 4);
-		await stream.WriteAsync(workingData, 0, FEATURESSIZE);
+		this.Character.Pack(new Span<byte>(workingData));
+		await stream.WriteAsync(workingData, 0, SIZEOF_CHARACTER);
 		//----Unknown----\\
 		stream.Seek(0x2, SeekOrigin.Current);
 		// Gameplay: Difficulty
@@ -102,26 +95,26 @@ public sealed class Player
 		//----Unknown----\\
 		stream.Seek(0x3, SeekOrigin.Current);
 		// Items
-		for (var i = 0; i < this.Items.Length; ++i)
-			await this.Items[i].ToStream(stream);
+		foreach (var item in this.Items)
+			await item.ToStream(stream);
 		//----Unknown----\\
 	}
 	/* Static Methods */
 	public static async Task<Player> FromStream(Stream stream)
 	{
 		var bytesRead = 0;
-		var workingData = new byte[BUFFERSIZE];
+		var workingData = new byte[BUFFER_SIZE];
 		//----Unknown----\\
 		stream.Seek(0x48, SeekOrigin.Current);
 		// Uuid
 		bytesRead = 0;
-		while (bytesRead < UUIDSIZE)
-			bytesRead += await stream.ReadAsync(workingData, 0, UUIDSIZE - bytesRead);
-		Guid id = new Guid(new Span<byte>(workingData).Slice(0, 0x10));
+		while (bytesRead < SIZEOF_UUID)
+			bytesRead += await stream.ReadAsync(workingData, 0, SIZEOF_UUID - bytesRead);
+		Guid id = new Guid(new Span<byte>(workingData).Slice(0, SIZEOF_UUID));
 		// Name
 		bytesRead = 0;
-		while (bytesRead < NAMESIZE)
-			bytesRead += await stream.ReadAsync(workingData, bytesRead, NAMESIZE - bytesRead);
+		while (bytesRead < SIZEOF_NAME)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_NAME - bytesRead);
 		string name = Encoding.ASCII.GetString(
 			new Span<byte>(workingData).Slice(0, Array.IndexOf(workingData, byte.MinValue))
 		);
@@ -131,11 +124,11 @@ public sealed class Player
 		var flags = stream.ReadByte();
 		//----Unknown----\\
 		stream.Seek(0x3, SeekOrigin.Current);
-		// Features
+		// Character
 		bytesRead = 0;
-		while (bytesRead < FEATURESSIZE)
-			bytesRead += await stream.ReadAsync(workingData, bytesRead, FEATURESSIZE - bytesRead);
-		var character = new Character(workingData[0], workingData[1]);
+		while (bytesRead < SIZEOF_CHARACTER)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_CHARACTER - bytesRead);
+		var character = new Character(new Span<byte>(workingData).Slice(0, 2));
 		//----Unknown----\\
 		stream.Seek(0x2, SeekOrigin.Current);
 		// Gameplay: Difficulty
@@ -159,8 +152,8 @@ public sealed class Player
 		get { return this._Name; }
 		set {
 			if (String.IsNullOrEmpty(value)) return;
-			else if (value.Length < NAMESIZE) this._Name = value;
-			else this._Name = value.Substring(0, NAMESIZE - 1);
+			else if (value.Length < SIZEOF_NAME) this._Name = value;
+			else this._Name = value.Substring(0, SIZEOF_NAME - 1);
 		}
 	}
 	public readonly Character Character;
@@ -176,8 +169,8 @@ public sealed class Player
 	public Item CraftSlot                    { get { return Items[75]; }}                                   // 76
 	public Item ArrowSlot                    { get { return Items[76]; }}                                   // 77
 	/* Class Properties */
-	private const byte BUFFERSIZE = 32;
-	private const byte UUIDSIZE = 16;
-	private const byte NAMESIZE = 16;
-	private const byte FEATURESSIZE = 2;
+	private const byte BUFFER_SIZE      = 32;
+	private const byte SIZEOF_UUID      = 16;
+	private const byte SIZEOF_NAME      = 16;
+	private const byte SIZEOF_CHARACTER = 2;
 }

@@ -1,13 +1,6 @@
 /*
 	Junk Jack X: World
 
-	Sizes in blocks:
-		[TINY]:   512  * 128
-		[SMALL]:  {x}  * {y}
-		[NORMAL]: {x}  * {y}
-		[LARGE]:  {x}  * {y}
-		[HUGE]:   4096 * 512
-
 	Segment Breakdown:
 	----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	Segment[0x0       :        0x3] = JJ World Header                | Length: 4   (0x4)  | Type: char[4]
@@ -49,6 +42,7 @@
 	Segment[0xC]                    = Weather                        | Length: 1   (0x1)  | Type: ???
 	{ENTITY FOOTER}
 	Segment[0x0       :        0x3] = # of entities                  | Length: 4   (0x4)  | Type: uint32
+		<Entity[]>
 	----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	Written By: Ryan Smith
@@ -103,11 +97,11 @@ public enum Weather: byte
 
 public enum Size : byte
 {
-	Tiny = 0x0,
-	Small,
-	Normal,
-	Large,
-	Huge
+	Tiny = 0x0,  // Size: 512 * 128
+	Small,       // Size: x * y
+	Normal,      // Size: x * y
+	Large,       // Size: x * y
+	Huge         // Size: x * y
 }
 
 public sealed class World
@@ -136,9 +130,10 @@ public sealed class World
 	}
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
+		// TODO: Write using minimal array.reverse
 	{
 		byte[] bytes;
-		var workingData = new byte[BUFFERSIZE];
+		var workingData = new byte[BUFFER_SIZE];
 		//----Unknown----\\
 		stream.Seek(0xF0, SeekOrigin.Current);
 		// Uuid
@@ -148,9 +143,9 @@ public sealed class World
 		stream.Seek(0x8, SeekOrigin.Current);
 		// Name
 		var byteCount = Encoding.ASCII.GetBytes(this._Name, 0, this._Name.Length, workingData, 0);
-		for (var i = byteCount; i < NAMESIZE; ++i)
+		for (var i = byteCount; i < SIZEOF_NAME; ++i)
 			workingData[i] = 0;
-		await stream.WriteAsync(workingData, 0, NAMESIZE);
+		await stream.WriteAsync(workingData, 0, SIZEOF_NAME);
 		//----Unknown----\\
 		stream.Seek(0x24, SeekOrigin.Current);
 		// Player
@@ -162,7 +157,7 @@ public sealed class World
 		bytes = BitConverter.GetBytes(this.Player.Y);
 		Array.Reverse(bytes);
 		Array.Copy(bytes, 0, workingData, 2, bytes.Length);
-		await stream.WriteAsync(workingData, 0, PLAYERPOSSIZE);
+		await stream.WriteAsync(workingData, 0, SIZEOF_PLAYERPOSITION);
 		// Spawn
 		// -X
 		bytes = BitConverter.GetBytes(this.Spawn.X);
@@ -172,12 +167,12 @@ public sealed class World
 		bytes = BitConverter.GetBytes(this.Spawn.Y);
 		Array.Reverse(bytes);
 		Array.Copy(bytes, 0, workingData, 2, bytes.Length);
-		await stream.WriteAsync(workingData, 0, SPAWNPOSSIZE);
+		await stream.WriteAsync(workingData, 0, SIZEOF_SPAWNPOSITION);
 		// Planet
 		// TODO: Convert from byte enum
 		workingData[1] = (byte)(((ushort)this.Planet & 0xFF00) >> 8);
 		workingData[0] = (byte)(((ushort)this.Planet & 0x00FF) >> 0);
-		await stream.WriteAsync(workingData, 0, PLANETSIZE);
+		await stream.WriteAsync(workingData, 0, SIZEOF_PLANET);
 		//----Unknown----\\
 		stream.Seek(0x3, SeekOrigin.Current);
 		// Gamemode
@@ -188,20 +183,20 @@ public sealed class World
 	public static async Task<World> FromStream(Stream stream)
 	{
 		var bytesRead = 0;
-		var workingData = new byte[BUFFERSIZE];
+		var workingData = new byte[BUFFER_SIZE];
 		//----Unknown----\\
 		stream.Seek(0xF0, SeekOrigin.Current);
 		// Uuid
 		bytesRead = 0;
-		while (bytesRead < UUIDSIZE)
-			bytesRead += await stream.ReadAsync(workingData, bytesRead, UUIDSIZE - bytesRead);
-		Guid id = new Guid(new Span<byte>(workingData).Slice(0, UUIDSIZE));
+		while (bytesRead < SIZEOF_UUID)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_UUID - bytesRead);
+		Guid id = new Guid(new Span<byte>(workingData).Slice(0, SIZEOF_UUID));
 		//----Unknown----\\
 		stream.Seek(0x8, SeekOrigin.Current);
 		// Name
 		bytesRead = 0;
-		while (bytesRead < NAMESIZE)
-			bytesRead += await stream.ReadAsync(workingData, bytesRead, NAMESIZE - bytesRead);
+		while (bytesRead < SIZEOF_NAME)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_NAME - bytesRead);
 		var name = Encoding.ASCII.GetString(
 			new Span<byte>(workingData).Slice(0, Array.IndexOf(workingData, byte.MinValue))
 		);
@@ -209,24 +204,24 @@ public sealed class World
 		stream.Seek(0x24, SeekOrigin.Current);
 		// Player
 		bytesRead = 0;
-		while (bytesRead < PLAYERPOSSIZE)
-			bytesRead += await stream.ReadAsync(workingData, bytesRead, PLAYERPOSSIZE - bytesRead);
+		while (bytesRead < SIZEOF_PLAYERPOSITION)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_PLAYERPOSITION - bytesRead);
 		var player = (
 			BitConverter.ToUInt16(new Span<byte>(workingData).Slice(0, 2)),
 			BitConverter.ToUInt16(new Span<byte>(workingData).Slice(2, 2))
 		);
 		// Spawn
 		bytesRead = 0;
-		while (bytesRead < SPAWNPOSSIZE)
-			bytesRead += await stream.ReadAsync(workingData, bytesRead, SPAWNPOSSIZE - bytesRead);
+		while (bytesRead < SIZEOF_SPAWNPOSITION)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_SPAWNPOSITION - bytesRead);
 		var spawn = (
 			BitConverter.ToUInt16(new Span<byte>(workingData).Slice(0, 2)),
 			BitConverter.ToUInt16(new Span<byte>(workingData).Slice(2, 2))
 		);
 		// Planet
 		bytesRead = 0;
-		while (bytesRead < PLANETSIZE)
-			bytesRead += await stream.ReadAsync(workingData, bytesRead, PLANETSIZE - bytesRead);
+		while (bytesRead < SIZEOF_PLANET)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_PLANET - bytesRead);
 		var planet = (Planet)((workingData[1] << 8) | workingData[0]);  // TODO: Convert to byte enum
 		//----Unknown----\\
 		stream.Seek(0x3, SeekOrigin.Current);
@@ -243,8 +238,8 @@ public sealed class World
 		get { return this._Name; }
 		set {
 			if (String.IsNullOrEmpty(value)) return;
-			else if (value.Length < NAMESIZE) this._Name = value;
-			else this._Name = value.Substring(0, NAMESIZE - 1);
+			else if (value.Length < SIZEOF_NAME) this._Name = value;
+			else this._Name = value.Substring(0, SIZEOF_NAME - 1);
 		}
 	}
 	public Gamemode Gamemode;
@@ -264,11 +259,10 @@ public sealed class World
 		https://stackoverflow.com/questions/6111049/2d-array-property
 	*/
 	/* Class Properties */
-	private const byte BUFFERSIZE = 64;
-	private const byte UUIDSIZE = 16;
-	private const byte NAMESIZE = 16;
-	private const byte COMPRESSEDSIZESIZE = 4;
-	private const byte PLAYERPOSSIZE = 4;
-	private const byte SPAWNPOSSIZE = 4;
-	private const byte PLANETSIZE = 2;
+	private const byte BUFFER_SIZE = 64;
+	private const byte SIZEOF_UUID = 16;
+	private const byte SIZEOF_NAME = 16;
+	private const byte SIZEOF_PLAYERPOSITION = 4;
+	private const byte SIZEOF_SPAWNPOSITION = 4;
+	private const byte SIZEOF_PLANET = 2;
 }

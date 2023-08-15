@@ -32,6 +32,7 @@ public sealed class Item
 	}
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
+		// TODO: Write using single reverse
 	{
 		byte[] bytes;
 		var workingData = new byte[SIZE];
@@ -55,6 +56,7 @@ public sealed class Item
 		bytes = BitConverter.GetBytes(this.Icon);
 		Array.Reverse(bytes);
 		Array.Copy(bytes, 0, workingData, 10, bytes.Length);
+
 		await stream.WriteAsync(workingData, 0, workingData.Length);
 	}
 	/* Static Methods */
@@ -64,11 +66,11 @@ public sealed class Item
 		var workingData = new byte[SIZE];
 		while (bytesRead < SIZE)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZE - bytesRead);
-		var icon       = BitConverter.ToUInt16(new Span<byte>(workingData).Slice(10, 2));
-		var durability = BitConverter.ToUInt16(new Span<byte>(workingData).Slice(8, 2));
-		var count      = BitConverter.ToUInt16(new Span<byte>(workingData).Slice(6, 2));
+		var modifier   = BitConverter.ToUInt32(new Span<byte>(workingData).Slice(0, 4));
 		var id         = BitConverter.ToUInt16(new Span<byte>(workingData).Slice(4, 2));
-		uint modifier  = BitConverter.ToUInt32(new Span<byte>(workingData).Slice(0, 4));
+		var count      = BitConverter.ToUInt16(new Span<byte>(workingData).Slice(6, 2));
+		var durability = BitConverter.ToUInt16(new Span<byte>(workingData).Slice(8, 2));
+		var icon       = BitConverter.ToUInt16(new Span<byte>(workingData).Slice(10, 2));
 		return new Item(id, count, durability, modifier, icon);
 	}
 	/* Properties */
