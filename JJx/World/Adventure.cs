@@ -38,34 +38,39 @@ public sealed class Adventure
 	public async Task ToStream(Stream stream)
 	{
 		var byteCount = 0;
-		var workingData = new byte[64];
+		var workingData = new byte[BUFFERSIZE];
 		//----Unknown----\\
 		stream.Seek(0x1F, SeekOrigin.Current);
 		// Uuid
 		var uuid = this.Id.ToByteArray();
-		await stream.WriteAsync(uuid, 0, 0x10);
+		await stream.WriteAsync(uuid, 0, uuid.Length);
 		//----Unknown----\\
 		stream.Seek(0x8, SeekOrigin.Current);
 		// Name
 		byteCount = Encoding.ASCII.GetBytes(this._Name, 0, this._Name.Length, workingData, 0);
-		for (var i = byteCount; i < 0x10; ++i) { workingData[i] = 0; }
-		await stream.WriteAsync(workingData, 0, 0x10);
+		for (var i = byteCount; i < NAMESIZE; ++i) { workingData[i] = 0; }
+		await stream.WriteAsync(workingData, 0, NAMESIZE);
 		//----Unknown----\\
 	}
 	/* Static Methods */
 	public static async Task<Adventure> FromStream(Stream stream)
 	{
-		var workingData = new byte[64];
+		var bytesRead = 0;
+		var workingData = new byte[BUFFERSIZE];
 		//----Unknown----\\
 		stream.Seek(0x24, SeekOrigin.Current);
 		Console.WriteLine(stream.Position.ToString("x2"));
 		// Uuid
-		await stream.ReadAsync(workingData, 0, 0x10);
-		Guid id = new Guid(new Span<byte>(workingData).Slice(0, 0x10));
+		bytesRead = 0;
+		while (bytesRead < UUIDSIZE)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, UUIDSIZE - bytesRead);
+		Guid id = new Guid(new Span<byte>(workingData).Slice(0, UUIDSIZE));
 		//----Unknown----\\
 		stream.Seek(0x8, SeekOrigin.Current);
 		// Name
-		await stream.ReadAsync(workingData, 0, 0x10);
+		bytesRead = 0;
+		while (bytesRead < NAMESIZE)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, NAMESIZE - bytesRead);
 		var name = Encoding.ASCII.GetString(
 			new Span<byte>(workingData).Slice(0, Array.IndexOf(workingData, byte.MinValue))
 		);
@@ -80,8 +85,12 @@ public sealed class Adventure
 		get { return this._Name; }
 		set {
 			if (String.IsNullOrEmpty(value)) return;
-			else if (value.Length < 16) this._Name = value;
-			else this._Name = value.Substring(0, 15);
+			else if (value.Length < NAMESIZE) this._Name = value;
+			else this._Name = value.Substring(0, NAMESIZE - 1);
 		}
 	}
+	/* Class Properties */
+	private const byte BUFFERSIZE = 32;
+	private const byte UUIDSIZE = 16;
+	private const byte NAMESIZE = 16;
 }
