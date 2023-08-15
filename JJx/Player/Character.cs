@@ -13,72 +13,64 @@ using System;
 
 namespace JJx;
 
-public struct Character
+public sealed class Character
 {
 	/* Constructors */
-	public Character(bool gender, byte tone, byte hairStyle, HairColor hairColor)
+	public Character(bool gender, byte tone, byte hairStyle, Hair.HColor hairColor)
 	{
 		this.Gender = gender;
 		this.Tone = tone;
-		this.Hair = new _Hair(hairStyle, hairColor);
+		this.Hair = new Hair(hairStyle, hairColor);
 	}
 	internal Character(byte color, byte features)
 	{
 		this.Gender = ((features & 0x10) >> 4) == 1;
 		this._Tone = (byte)((features & 0xE0) >> 5);
-		this.Hair = new _Hair(color, features);
-	}
-	/* Instance Methods */
-	public byte[] ToByteArray()
-	{
-		var data = new byte[2];
-		data[0] = (byte)((byte)this.Hair.Color << 4);
-		data[1] = (byte)((((this._Tone << 3) | Convert.ToByte(this.Gender)) << 4) | this.Hair.Style);
-		return data;
+		this.Hair = new Hair(color, features);
 	}
 	/* Properties */
 	public bool Gender;  // Male: 0 | Female: 1
 	private byte _Tone;
 	public byte Tone {
-		// Min: 0 | Max: 5
+		// Min: 0 | Max: 4
 		get { return this._Tone; }
 		set {
 			value = Math.Min(value, MaxTones);
 			this._Tone = value;
 		}
 	}
-	public _Hair Hair;
+	public readonly Hair Hair;
 	/* Class Properties */
 	public const byte MaxTones = 0x4;
-	/* Sub-Classes */
-	public class _Hair
+}
+public sealed class Hair
+{
+	/* Constructors */
+	public Hair(byte style, HColor color)
 	{
-		/* Constructor */
-		public _Hair(byte style, HairColor color)
-		{
-			this.Style = style;
-			this.Color = color;
-		}
-		internal _Hair(byte color, byte features)
-		{
-			this._Style = (byte)(features & 0xF);
-			this.Color = (HairColor)(color >> 4);
-		}
-		/* Properties */
-		public HairColor Color;
-		private byte _Style;
-		public byte Style {
-			// Min: 0 | Max: 13
-			get { return this._Style; }
-			set {
-				value = Math.Min(value, MaxStyles);
-				this._Style = value;
-			}
-		}
-		/* Class Propeties */
-		public const byte MaxStyles = 0xD;
+		this.Style = style;
+		this.Color = color;
 	}
-	public enum HairColor : byte
+	internal Hair(byte color, byte features)
+	{
+		this._Style = (byte)(features & 0xF);
+		this.Color = (HColor)(color >> 4);
+	}
+	/* Properties */
+	public HColor Color;
+	private byte _Style;
+	public byte Style {
+		// Min: 0 | Max: 13
+		get { return this._Style; }
+		set {
+			value = Math.Min(value, MaxStyles);
+			this._Style = value;
+		}
+	}
+	/* Class Properties */
+	public const byte MaxStyles = 0xD;
+	/* Sub-Classes */
+	public enum HColor : byte
 	{
 		White       = 0x0,
 		Grey,

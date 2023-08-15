@@ -7,6 +7,7 @@
 	Segment Breakdown:
 	------------------------------------------------------------------------------------------------------------------------
 	Segment[0x0   :  0x3]  = JJ Character Header | Length: 4   (0x04)  | Type: char[4]
+	Segment[0x4   :  0x5]  = JJ Type Header      | Length: 2   (0x2)   | Type: uint16          | Parent: None - 00 00: player
 	Segment[0x4   : 0x47]  = UNKNOWN FOR NOW     | Length: 71  (0x47)  | Type: ??? Possible Header/File Length/CRC
 	Segment[0x48  : 0x57]  = UUID                | Length: 16  (0x10)  | Type: uuid
 	Segment[0x58  : 0x67]  = Name                | Length: 16  (0x10)  | Type: char*
@@ -46,25 +47,31 @@ public sealed class Player
 		var rnd = new Random();
 		this.Id = Guid.NewGuid();
 		this.Name = name;
+		// Random character design
 		this.Character = new Character(
 			rnd.NextDouble() >= 0.5 ,
 			(byte)rnd.Next(Character.MaxTones + 1),
-			(byte)rnd.Next(Character._Hair.MaxStyles + 1),
-			(Character.HairColor)(rnd.Next(Enum.GetValues(typeof(Character.HairColor)).Length))
+			(byte)rnd.Next(Hair.MaxStyles + 1),
+			(Hair.HColor)(rnd.Next(Enum.GetValues(typeof(Hair.HColor)).Length))
 		);
+		// Default gameplay data
 		this.Gameplay = new Gameplay(Difficulty.Normal, flags);
+		// Set items to none
+		for (var i = 0; i < this.Items.Length; ++i)
+			this.Items[i] = new Item(0, 0);
 	}
-	private Player(Guid id, string name, Character character, Gameplay gameplay)
+	private Player(Guid id, string name, Character character, Gameplay gameplay, Item[] items)
 	{
 		this.Id = id;
 		this._Name = name;
 		this.Character = character;
 		this.Gameplay = gameplay;
+		this.Items = items;
 	}
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
 	{
-		var workingData = new byte[64];
+		var workingData = new byte[BUFFERSIZE];
 		//----Unknown----\\
 		stream.Seek(0x48, SeekOrigin.Current);
 		// Uuid
@@ -82,8 +89,12 @@ public sealed class Player
 		//----Unknown----\\
 		stream.Seek(0x3, SeekOrigin.Current);
 		// Features
-		var features = this.Character.ToByteArray();
-		await stream.WriteAsync(features, 0, features.Length);
+		workingData[1] = (byte)(
+			(((this.Character.Tone << 3) | Convert.ToByte(this.Character.Gender)) << 4) |
+			this.Character.Hair.Style
+		);
+		workingData[0] = (byte)((byte)this.Character.Hair.Color << 4);
+		await stream.WriteAsync(workingData, 0, FEATURESSIZE);
 		//----Unknown----\\
 		stream.Seek(0x2, SeekOrigin.Current);
 		// Gameplay: Difficulty
@@ -99,15 +110,13 @@ public sealed class Player
 	public static async Task<Player> FromStream(Stream stream)
 	{
 		var bytesRead = 0;
-		var workingData = new byte[64];
+		var workingData = new byte[BUFFERSIZE];
 		//----Unknown----\\
 		stream.Seek(0x48, SeekOrigin.Current);
 		// Uuid
 		bytesRead = 0;
 		while (bytesRead < UUIDSIZE)
-		{
 			bytesRead += await stream.ReadAsync(workingData, 0, UUIDSIZE - bytesRead);
-		}
 		Guid id = new Guid(new Span<byte>(workingData).Slice(0, 0x10));
 		// Name
 		bytesRead = 0;
@@ -133,14 +142,14 @@ public sealed class Player
 		var difficulty = stream.ReadByte();
 		// -Gameplay
 		var gameplay = new Gameplay((byte)difficulty, (byte)flags);
-		var player = new Player(id, name, character, gameplay);
 		//----Unknown----\\
 		stream.Seek(0x3, SeekOrigin.Current);
 		// Items
-		for (var i = 0; i < player.Items.Length; ++i)
-			player.Items[i] = await Item.FromStream(stream);
+		var items = new Item[77];
+		for (var i = 0; i < items.Length; ++i)
+			items[i] = await Item.FromStream(stream);
 		//----Unknown----\\
-		return player;
+		return new Player(id, name, character, gameplay, items);
 	}
 	/* Properties */
 	public readonly Guid Id;
@@ -154,8 +163,8 @@ public sealed class Player
 			else this._Name = value.Substring(0, NAMESIZE - 1);
 		}
 	}
-	public Character Character;
-	public Gameplay Gameplay;
+	public readonly Character Character;
+	public readonly Gameplay Gameplay;
 	public readonly Item[] Items = new Item[77];
 	public ArraySegment<Item> SurvivalHotbar { get { return new ArraySegment<Item>(this.Items,  0, 10); }}  // 10
 	public ArraySegment<Item> CreativeHotbar { get { return new ArraySegment<Item>(this.Items, 10, 10); }}  // 20
@@ -167,6 +176,7 @@ public sealed class Player
 	public Item CraftSlot                    { get { return Items[75]; }}                                   // 76
 	public Item ArrowSlot                    { get { return Items[76]; }}                                   // 77
 	/* Class Properties */
+	private const byte BUFFERSIZE = 32;
 	private const byte UUIDSIZE = 16;
 	private const byte NAMESIZE = 16;
 	private const byte FEATURESSIZE = 2;

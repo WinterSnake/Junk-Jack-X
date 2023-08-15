@@ -32,19 +32,28 @@ public sealed class Item
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
 	{
-		var workingData = new byte[12];
-		workingData[11] = (byte)((this.Icon       & 0xFF00)     >>  8);
-		workingData[10] = (byte)((this.Icon       & 0x00FF)     >>  0);
-		workingData[9]  = (byte)((this.Durability & 0xFF00)     >>  8);
-		workingData[8]  = (byte)((this.Durability & 0x00FF)     >>  0);
-		workingData[7]  = (byte)((this.Count      & 0xFF00)     >>  8);
-		workingData[6]  = (byte)((this.Count      & 0x00FF)     >>  0);
-		workingData[5]  = (byte)((this.Id         & 0xFF00)     >>  8);
-		workingData[4]  = (byte)((this.Id         & 0x00FF)     >>  0);
-		workingData[3]  = (byte)((this.Modifier   & 0xFF000000) >> 32);
-		workingData[2]  = (byte)((this.Modifier   & 0x00FF0000) >> 16);
-		workingData[1]  = (byte)((this.Modifier   & 0x0000FF00) >>  8);
-		workingData[0]  = (byte)((this.Modifier   & 0x000000FF) >>  0);
+		byte[] bytes;
+		var workingData = new byte[SIZE];
+		// Modifier
+		bytes = BitConverter.GetBytes(this.Modifier);
+		Array.Reverse(bytes);
+		Array.Copy(bytes, 0, workingData, 0, bytes.Length);
+		// Id
+		bytes = BitConverter.GetBytes(this.Id);
+		Array.Reverse(bytes);
+		Array.Copy(bytes, 0, workingData, 4, bytes.Length);
+		// Count
+		bytes = BitConverter.GetBytes(this.Count);
+		Array.Reverse(bytes);
+		Array.Copy(bytes, 0, workingData, 6, bytes.Length);
+		// Durability
+		bytes = BitConverter.GetBytes(this.Durability);
+		Array.Reverse(bytes);
+		Array.Copy(bytes, 0, workingData, 8, bytes.Length);
+		// Icon
+		bytes = BitConverter.GetBytes(this.Icon);
+		Array.Reverse(bytes);
+		Array.Copy(bytes, 0, workingData, 10, bytes.Length);
 		await stream.WriteAsync(workingData, 0, workingData.Length);
 	}
 	/* Static Methods */
@@ -54,13 +63,12 @@ public sealed class Item
 		var workingData = new byte[SIZE];
 		while (bytesRead < SIZE)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZE - bytesRead);
-		return new Item(
-			(ushort)((workingData[5] <<  8) | workingData[4]),                                                  // Id
-			(ushort)((workingData[7] <<  8) | workingData[6]),                                                  // Count
-			(ushort)((workingData[9] <<  8) | workingData[8]),                                                  // Durability
-			(uint)  ((workingData[3] << 32) | (workingData[2] << 16) | (workingData[1] << 8) | workingData[0]), // Modifier
-			(ushort)((workingData[11] << 8) | workingData[10])                                                  // Icon
-		);
+		var icon       = BitConverter.ToUInt16(new Span<byte>(workingData).Slice(10, 2));
+		var durability = BitConverter.ToUInt16(new Span<byte>(workingData).Slice(8, 2));
+		var count      = BitConverter.ToUInt16(new Span<byte>(workingData).Slice(6, 2));
+		var id         = BitConverter.ToUInt16(new Span<byte>(workingData).Slice(4, 2));
+		uint modifier  = BitConverter.ToUInt32(new Span<byte>(workingData).Slice(0, 4));
+		return new Item(id, count, durability, modifier, icon);
 	}
 	/* Properties */
 	public ushort Id;

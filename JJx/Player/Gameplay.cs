@@ -17,7 +17,7 @@ public enum Difficulty : byte
 	VeryHard
 }
 
-public struct Gameplay
+public sealed class Gameplay
 {
 	/* Constructors */
 	public Gameplay(Difficulty difficulty, Flag flags = Flag.None)
