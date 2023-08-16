@@ -111,13 +111,13 @@ public sealed class Player
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_UUID)
 			bytesRead += await stream.ReadAsync(workingData, 0, SIZEOF_UUID - bytesRead);
-		Guid id = new Guid(new Span<byte>(workingData).Slice(0, SIZEOF_UUID));
+		Guid id = new Guid(new Span<byte>(workingData, 0, SIZEOF_UUID));
 		// Name
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_NAME)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_NAME - bytesRead);
 		string name = Encoding.ASCII.GetString(
-			new Span<byte>(workingData).Slice(0, Array.IndexOf(workingData, byte.MinValue))
+			new Span<byte>(workingData, 0, Array.IndexOf(workingData, byte.MinValue))
 		);
 		//----Unknown----\\
 		stream.Seek(0x8, SeekOrigin.Current);
@@ -129,7 +129,7 @@ public sealed class Player
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_CHARACTER)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_CHARACTER - bytesRead);
-		var character = new Character(new Span<byte>(workingData).Slice(0, 2));
+		var character = new Character(new Span<byte>(workingData, 0, 2));
 		//----Unknown----\\
 		stream.Seek(0x2, SeekOrigin.Current);
 		// Gameplay: Difficulty
@@ -139,7 +139,7 @@ public sealed class Player
 		//----Unknown----\\
 		stream.Seek(0x3, SeekOrigin.Current);
 		// Items
-		var items = new Item[77];
+		var items = new Item[COUNT_ITEMS];
 		for (var i = 0; i < items.Length; ++i)
 			items[i] = await Item.FromStream(stream);
 		//----Unknown----\\
@@ -159,7 +159,7 @@ public sealed class Player
 	}
 	public readonly Character Character;
 	public readonly Gameplay Gameplay;
-	public readonly Item[] Items = new Item[77];
+	public readonly Item[] Items = new Item[COUNT_ITEMS];
 	public ArraySegment<Item> SurvivalHotbar { get { return new ArraySegment<Item>(this.Items,  0, 10); }}  // 10
 	public ArraySegment<Item> CreativeHotbar { get { return new ArraySegment<Item>(this.Items, 10, 10); }}  // 20
 	public ArraySegment<Item> CraftingSlots  { get { return new ArraySegment<Item>(this.Items, 20,  9); }}  // 29
@@ -175,4 +175,5 @@ public sealed class Player
 	private const byte SIZEOF_UUID      = 16;
 	private const byte SIZEOF_NAME      = 16;
 	private const byte SIZEOF_CHARACTER = 2;
+	private const byte COUNT_ITEMS      = 77;
 }

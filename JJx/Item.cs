@@ -32,41 +32,27 @@ public sealed class Item
 	}
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
-		// TODO: Ensure BitConverter.GetBytes<T> forces little endian
 	{
-		byte[] bytes;
 		var workingData = new byte[SIZE];
-		// Modifier
-		bytes = BitConverter.GetBytes(this.Modifier);
-		Array.Copy(bytes, 0, workingData, 0, bytes.Length);
-		// Id
-		bytes = BitConverter.GetBytes(this.Id);
-		Array.Copy(bytes, 0, workingData, 4, bytes.Length);
-		// Count
-		bytes = BitConverter.GetBytes(this.Count);
-		Array.Copy(bytes, 0, workingData, 6, bytes.Length);
-		// Durability
-		bytes = BitConverter.GetBytes(this.Durability);
-		Array.Copy(bytes, 0, workingData, 8, bytes.Length);
-		// Icon
-		bytes = BitConverter.GetBytes(this.Icon);
-		Array.Copy(bytes, 0, workingData, 10, bytes.Length);
-
+		Utils.ByteConverter.Write(new Span<byte>(workingData), this.Modifier,   0);
+		Utils.ByteConverter.Write(new Span<byte>(workingData), this.Id,         4);
+		Utils.ByteConverter.Write(new Span<byte>(workingData), this.Count,      6);
+		Utils.ByteConverter.Write(new Span<byte>(workingData), this.Durability, 8);
+		Utils.ByteConverter.Write(new Span<byte>(workingData), this.Icon,      10);
 		await stream.WriteAsync(workingData, 0, workingData.Length);
 	}
 	/* Static Methods */
 	public static async Task<Item> FromStream(Stream stream)
-		// TODO: Ensure BitConverter.To<T> forces little endian
 	{
 		var bytesRead = 0;
 		var workingData = new byte[SIZE];
 		while (bytesRead < SIZE)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZE - bytesRead);
-		var modifier   = BitConverter.ToUInt32(new Span<byte>(workingData).Slice(0, 4));
-		var id         = BitConverter.ToUInt16(new Span<byte>(workingData).Slice(4, 2));
-		var count      = BitConverter.ToUInt16(new Span<byte>(workingData).Slice(6, 2));
-		var durability = BitConverter.ToUInt16(new Span<byte>(workingData).Slice(8, 2));
-		var icon       = BitConverter.ToUInt16(new Span<byte>(workingData).Slice(10, 2));
+		var modifier   = Utils.ByteConverter.GetUInt32(new Span<byte>(workingData),  0);
+		var id         = Utils.ByteConverter.GetUInt16(new Span<byte>(workingData),  4);
+		var count      = Utils.ByteConverter.GetUInt16(new Span<byte>(workingData),  6);
+		var durability = Utils.ByteConverter.GetUInt16(new Span<byte>(workingData),  8);
+		var icon       = Utils.ByteConverter.GetUInt16(new Span<byte>(workingData), 10);
 		return new Item(id, count, durability, modifier, icon);
 	}
 	/* Properties */
