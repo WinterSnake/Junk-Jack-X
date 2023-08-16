@@ -4,9 +4,9 @@
 
 	Segment Breakdown:
 	------------------------------------------------------------------------------------------------------------------------
-	Segment[0x0 : 0x3] = X Position      | Length: 4  (0x04) | Type: uint32
-	Segment[0x4 : 0x7] = Y Position      | Length: 4  (0x04) | Type: uint32
-	Segment[0x8 : 0xB] = Item Count      | Length: 4  (0x04) | Type: uint32
+	Segment[0x0 : 0x3] = X Position | Length: 4  (0x4) | Type: uint32
+	Segment[0x4 : 0x7] = Y Position | Length: 4  (0x4) | Type: uint32
+	Segment[0x8 : 0xB] = Item Count | Length: 4  (0x4) | Type: uint32
 		<Item[]>
 	------------------------------------------------------------------------------------------------------------------------
 	Length: 7 (0x7)
@@ -19,17 +19,17 @@ using System.Threading.Tasks;
 
 namespace JJx;
 
-public sealed class Chest
+public sealed class ChestContainer
 {
 	/* Constructors */
-	public Chest((uint x, uint y) position, uint itemCount)
+	public ChestContainer((uint x, uint y) position, uint itemCount)
 	{
 		this.Position = position;
 		this.Items = new Item[itemCount];
 		for (var i = 0; i < itemCount; ++i)
 			this.Items[i] = new Item(0, 0);
 	}
-	private Chest((uint x, uint y) position, Item[] items)
+	private ChestContainer((uint x, uint y) position, Item[] items)
 	{
 		this.Position = position;
 		this.Items = items;
@@ -58,7 +58,7 @@ public sealed class Chest
 			await item.ToStream(stream);
 	}
 	/* Static Methods */
-	public static async Task<Chest> FromStream(Stream stream)
+	public static async Task<ChestContainer> FromStream(Stream stream)
 		// TODO: Ensure BitConverter.To<T> forces little endian
 	{
 		var bytesRead = 0;
@@ -76,7 +76,7 @@ public sealed class Chest
 		var items = new Item[size];
 		for (var i = 0; i < size; ++i)
 			items[i] = await Item.FromStream(stream);
-		return new Chest(position, items);
+		return new ChestContainer(position, items);
 	}
 	/* Properties */
 	public (uint X, uint Y) Position;
