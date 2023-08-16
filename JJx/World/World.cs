@@ -49,21 +49,33 @@
 	Segment[0x14C     :      0x1CF] = UNKNOWN FOR NOW                | Length: 131 (0x84) | Type: ???
 	Segment[{bg loc}  :  {bg size}] = Background Layer               | Length: {bg size}  | Type: uint16_t[{bg size}]      | Parent: Background
 	Segment[{wld loc} : {wld size}] = Compressed World Data {Blocks} | Length: {wld size} | Type: struct Block[{wld size}] | Parent: Blocks
-	{END OF COMPRESSED WORLD}
-	Segment[0x0       :        0x1] = Time ???                       | Length: 2   (0x2)  | Type: ???
-	Segment[0x2       :        0x3] = UNKNOWN FOR NOW                | Length: 2   (0x2)  | Type: ???
-	Segment[0x4]                    = Skybox {Day/Night} ???         | Length: 1   (0x1)  | Type: ???
-	Segment[0x5       :        0xB] = UNKNOWN FOR NOW                | Length: 2   (0x2)  | Type: ???
-	Segment[0xC]                    = Weather                        | Length: 1   (0x1)  | Type: ???
-	{CHEST FOOTER}
-	Segment[0x0       :        0x3] = # of chests                    | Length: 4   (0x4)  | Type: uint32
-		<Chest[]>
-	{SIGN FOOTER}
-	Segment[0x0       :        0x3] = # of signs                     | Length: 4   (0x4)  | Type: uint32
-		<Sign[]>
-	{ENTITY FOOTER}
-	Segment[0x0       :        0x3] = # of entities                  | Length: 4   (0x4)  | Type: uint32
-		<Entity[]>
+
+	{{END OF COMPRESSED WORLD}}
+	Segment[0x0 : 0x1] = Time ???                       | Length: 2   (0x2)  | Type: ???
+	Segment[0x2 : 0x3] = UNKNOWN FOR NOW                | Length: 2   (0x2)  | Type: ???
+	Segment[0x4]       = Skybox {Day/Night} ???         | Length: 1   (0x1)  | Type: ???
+	Segment[0x5 : 0xB] = UNKNOWN FOR NOW                | Length: 2   (0x2)  | Type: ???
+	Segment[0xC]       = Weather                        | Length: 1   (0x1)  | Type: ???
+
+	{{CHEST FOOTER}}
+	Segment[0x0 : 0x3] = # of chests   | Length: 4   (0x4)  | Type: uint32
+	<ChestContainer[]>
+
+	{{FORGE FOOTER}}
+	Segment[0x0 : 0x3] = # of forges   | Length: 4   (0x4)  | Type: uint32
+	<ForgeContainer[]>
+
+	{{SIGN FOOTER}}
+	Segment[0x0 : 0x3] = # of signs    | Length: 4   (0x4)  | Type: uint32
+	<Sign[]>
+
+	{{LAB FOOTER}}
+	Segment[0x0 : 0x3] = # of labs     | Length: 4   (0x4)  | Type: uint32
+	<LabContainer[]>
+
+	{{ENTITY FOOTER}}
+	Segment[0x0 : 0x3] = # of entities | Length: 4   (0x4)  | Type: uint32
+	<Entity[]>
 	----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	Written By: Ryan Smith

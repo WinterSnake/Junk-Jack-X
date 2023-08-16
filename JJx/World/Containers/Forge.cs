@@ -17,6 +17,8 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
+namespace JJx;
+
 public sealed class ForgeContainer
 {
 	/* Constructors */

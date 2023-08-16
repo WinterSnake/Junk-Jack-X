@@ -16,6 +16,8 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
+namespace JJx;
+
 public sealed class LabContainer
 {
 	/* Constructors */
@@ -59,8 +61,8 @@ public sealed class LabContainer
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZE - bytesRead);
 		// Position
 		var position = (
-			BitConverter.ToUInt32(new Span<byte>(workingData).Slice(0, 2)),
-			BitConverter.ToUInt32(new Span<byte>(workingData).Slice(2, 2))
+			BitConverter.ToUInt16(new Span<byte>(workingData).Slice(0, 2)),
+			BitConverter.ToUInt16(new Span<byte>(workingData).Slice(2, 2))
 		);
 		// Items
 		var items = new Item[COUNT_ITEMS];
