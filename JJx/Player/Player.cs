@@ -8,7 +8,8 @@
 	Segment[0x4   : 0x47]  = UNKNOWN FOR NOW     | Length: 71  (0x47)  | Type: ??? Possible Header/File Length/CRC
 	Segment[0x48  : 0x57]  = UUID                | Length: 16  (0x10)  | Type: uuid
 	Segment[0x58  : 0x67]  = Name                | Length: 16  (0x10)  | Type: char*
-	Segment[0x68  : 0x6F]  = UNKNOWN FOR NOW     | Length: 8   (0x8)   | Type: ???
+	Segment[0x68  : 0x6B]  = Game Version        | Length: 4   (0x4)   | Type: uint32          | Parent: JJx.Version
+	Segment[0x6C  : 0x6F]  = UNKNOWN FOR NOW     | Length: 4   (0x4)   | Type: ???
 	Segment[0x70]          = Gameplay Flags      | Length: 1   (0x1)   | Type: enum flag       | Parent: Gameplay.Flags
 	Segment[0x71  : 0x73]  = UNKNOWN FOR NOW     | Length: 3   (0x3)   | Type: ???
 	Segment[0x74]          = Hair Color          | Length: 1   (0x1)   | Type: enum            | Parent: Character

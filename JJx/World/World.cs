@@ -3,52 +3,71 @@
 
 	Segment Breakdown:
 	----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	Segment[0x0       :        0x3] = JJ World Header                | Length: 4   (0x4)  | Type: char[4]
-	Segment[0x4       :        0x5] = JJ Type Header                 | Length: 2   (0x2)  | Type: uint16 <01 00: world | 02 00: adventure>
-	Segment[0x6       :        0x9] = UNKNOWN FOR NOW                | Length: 10  (0xA)  | Type: ???
-	Segment[0x10      :       0x13] = World Info Location            | Length: 4   (0x4)  | Type: uint32
-	Segment[0x14      :       0x17] = World Info Size                | Length: 4   (0x4)  | Type: uint32
-	Segment[0x18      :       0x1B] = UNKNOWN FOR NOW                | Length: 4   (0x4)  | Type: ???
-	Segment[0x1C      :       0x1F] = Background Location            | Length: 4   (0x4)  | Type: uint32
-	Segment[0x20      :       0x23] = Background Size                | Length: 4   (0x4)  | Type: uint32
-	Segment[0x24      :       0x27] = UNKNOWN FOR NOW                | Length: 4   (0x4)  | Type: ???
-	Segment[0x28      :       0x2B] = Compressed World Location      | Length: 4   (0x4)  | Type: uint32
-	Segment[0x2C      :       0x2F] = Compressed World Size          | Length: 4   (0x4)  | Type: uint32
-	Segment[0x30      :       0x4B] = UNKNOWN FOR NOW                | Length: 28  (0x1C) | Type: ???
-	Segment[0x4C      :       0x4F] = Chest Footer Location          | Length: 4   (0x4)  | Type: uint32
-	Segment[0x50      :       0x53] = Chest Footer Size              | Length: 4   (0x4)  | Type: uint32
-	Segment[0x54      :       0x57] = UNKNOWN FOR NOW                | Length: 4   (0x4)  | Type: ???
-	Segment[0x58      :       0x5B] = Forge Footer Location          | Length: 4   (0x4)  | Type: uint32
-	Segment[0x5C      :       0x5F] = Forge Footer Size              | Length: 4   (0x4)  | Type: uint32
-	Segment[0x60      :       0x63] = UNKNOWN FOR NOW                | Length: 4   (0x4)  | Type: ???
-	Segment[0x64      :       0x67] = Sign Footer Location           | Length: 4   (0x4)  | Type: uint32
-	Segment[0x68      :       0x6B] = Sign Footer Size               | Length: 4   (0x4)  | Type: uint32
-	Segment[0x6C      :       0x6F] = UNKNOWN FOR NOW                | Length: 4   (0x4)  | Type: ???
-	Segment[0x7C      :       0x7F] = Lab Footer Location            | Length: 4   (0x4)  | Type: uint32
-	Segment[0x80      :       0x83] = Lab Footer Size                | Length: 4   (0x4)  | Type: uint32
-	Segment[0x6C      :       0x6F] = UNKNOWN FOR NOW                | Length: 4   (0x4)  | Type: ???
-	Segment[0xD4      :       0xDF] = Entity Footer Location         | Length: 4   (0x4)  | Type: uint32
-	Segment[0xE0      :       0xE3] = Entity Footer Size             | Length: 4   (0x4)  | Type: uint32
-	Segment[0xE4      :       0xEF] = UNKNOWN FOR NOW                | Length: 12  (0xC)  | Type: ???
-	Segment[0xF0      :       0xFF] = UUID                           | Length: 16  (0x10) | Type: uuid
-	Segment[0x100     :      0x107] = UNKNOWN FOR NOW                | Length: 8   (0x8)  | Type: ??? Possible long/epoch/DateTime
-	Segment[0x108     :      0x118] = Name                           | Length: 16  (0x10) | Type: char*
-	Segment[0x118     :      0x137] = UNKNOWN FOR NOW                | Length: 32  (0x20) | Type: ???
-	Segment[0x138     :      0x139] = World.Width                    | Length: 2   (0x2)  | Type uint32                    | Parent: Blocks.Width
-	Segment[0x13A     :      0x13B] = World.Height                   | Length: 2   (0x2)  | Type uint32                    | Parent: Blocks.Height
-	Segment[0x13C     :      0x13D] = Player.X                       | Length: 2   (0x2)  | Type uint32                    | Parent: Player.X
-	Segment[0x13E     :      0x13F] = Player.Y                       | Length: 2   (0x2)  | Type uint32                    | Parent: Player.Y
-	Segment[0x140     :      0x141] = Spawn.X                        | Length: 2   (0x2)  | Type uint32                    | Parent: Spawn.X
-	Segment[0x142     :      0x143] = Spawn.Y                        | Length: 2   (0x2)  | Type uint32                    | Parent: Spawn.Y
-	Segment[0x144     :      0x145] = Planet                         | Length: 2   (0x2)  | Type enum
-	Segment[0x146     :      0x147] = UNKNOWN FOR NOW                | Length: 2   (0x2)  | Type: ???
-	Segment[0x148]                  = Season                         | Length: 1   (0x1)  | Type: enum                     | Parent: Season
-	Segment[0x149]                  = Gamemode                       | Length: 1   (0x1)  | Type: enum                     | Parent: Gamemode
-	Segment[0x14A]                  = World Size                     | Length: 1   (0x1)  | Type: enum                     | Parent: Size
-	Segment[0x14B]                  = Sky Size                       | Length: 1   (0x1)  | Type: enum                     | Parent: Size
-	Segment[0x14C     :      0x1CF] = UNKNOWN FOR NOW                | Length: 131 (0x84) | Type: ???
-	Segment[{bg loc}  :  {bg size}] = Background Layer               | Length: {bg size}  | Type: uint16_t[{bg size}]      | Parent: Background
-	Segment[{wld loc} : {wld size}] = Compressed World Data {Blocks} | Length: {wld size} | Type: struct Block[{wld size}] | Parent: Blocks
+	Segment[0x0       :        0x3] = JJ World Header                     | Length: 4   (0x4)  | Type: char[4]
+	Segment[0x4       :        0x5] = JJ Type Header                      | Length: 2   (0x2)  | Type: uint16 <01 00: world | 02 00: adventure>
+	Segment[0x6       :        0x9] = UNKNOWN FOR NOW                     | Length: 10  (0xA)  | Type: ???
+	Segment[0x10      :       0x13] = World Info Location                 | Length: 4   (0x4)  | Type: uint32
+	Segment[0x14      :       0x17] = World Info Size                     | Length: 4   (0x4)  | Type: uint32
+	Segment[0x18      :       0x1B] = UNKNOWN FOR NOW                     | Length: 4   (0x4)  | Type: ???
+	Segment[0x1C      :       0x1F] = Background Location                 | Length: 4   (0x4)  | Type: uint32
+	Segment[0x20      :       0x23] = Background Size                     | Length: 4   (0x4)  | Type: uint32
+	Segment[0x24      :       0x27] = UNKNOWN FOR NOW                     | Length: 4   (0x4)  | Type: ???
+	Segment[0x28      :       0x2B] = Compressed World Location           | Length: 4   (0x4)  | Type: uint32
+	Segment[0x2C      :       0x2F] = Compressed World Size               | Length: 4   (0x4)  | Type: uint32
+	Segment[0x30      :       0x4B] = UNKNOWN FOR NOW                     | Length: 28  (0x1C) | Type: ???
+	:SURVIVAL
+	Segment[0x34      :       0x37] = Compressed Survival Footer Location | Length: 4   (0x4)  | Type: uint32
+	Segment[0x38      :       0x3B] = Compressed Survival Footer Size     | Length: 4   (0x4)  | Type: uint32
+	:ALL
+	Segment[0x4C      :       0x4F] = Chest Footer Location               | Length: 4   (0x4)  | Type: uint32
+	Segment[0x50      :       0x53] = Chest Footer Size                   | Length: 4   (0x4)  | Type: uint32
+	Segment[0x54      :       0x57] = UNKNOWN FOR NOW                     | Length: 4   (0x4)  | Type: ???
+	:SURVIVAL
+	Segment[0x64      :       0x67] = Forge Footer Location               | Length: 4   (0x4)  | Type: uint32
+	Segment[0x68      :       0x6B] = Forge Footer Size                   | Length: 4   (0x4)  | Type: uint32
+	:CREATIVE/FLAT
+	Segment[0x58(?)   :    0x5B(?)] = Forge Footer Location               | Length: 4   (0x4)  | Type: uint32
+	Segment[0x5C(?)   :    0x5F(?)] = Forge Footer Size                   | Length: 4   (0x4)  | Type: uint32
+	:ALL
+	Segment[0x60      :       0x63] = UNKNOWN FOR NOW                     | Length: 4   (0x4)  | Type: ???
+	Segment[0x64(?)   :    0x67(?)] = Sign Footer Location                | Length: 4   (0x4)  | Type: uint32
+	Segment[0x68(?)   :    0x6B(?)] = Sign Footer Size                    | Length: 4   (0x4)  | Type: uint32
+	Segment[0x6C      :       0x6F] = UNKNOWN FOR NOW                     | Length: 4   (0x4)  | Type: ???
+	:SURVIVAL
+	Segment[0x88      :       0x8B] = Lab Footer Location                 | Length: 4   (0x4)  | Type: uint32
+	Segment[0x8C      :       0x8F] = Lab Footer Size                     | Length: 4   (0x4)  | Type: uint32
+	:CREATIVE/FLAT
+	Segment[0x7C(?)   :    0x7F(?)] = Lab Footer Location                 | Length: 4   (0x4)  | Type: uint32
+	Segment[0x80(?)   :    0x83(?)] = Lab Footer Size                     | Length: 4   (0x4)  | Type: uint32
+	:ALL
+	Segment[0x6C      :       0x6F] = UNKNOWN FOR NOW                     | Length: 4   (0x4)  | Type: ???
+	Segment[0xD4(?)   :    0xDF(?)] = Entity Footer Location              | Length: 4   (0x4)  | Type: uint32
+	Segment[0xE0(?)   :    0xE3(?)] = Entity Footer Size                  | Length: 4   (0x4)  | Type: uint32
+	Segment[0xE4      :       0xEF] = UNKNOWN FOR NOW                     | Length: 12  (0xC)  | Type: ???
+	:<Map Header>
+	Segment[0xF0      :       0xFF] = UUID                                | Length: 16  (0x10) | Type: uuid
+	Segment[0x100     :      0x107] = Last Played Timestamp               | Length: 4   (0x4)  | Type: DateTime / Epoch / Timestamp / uint32
+	Segment[0x104     :      0x107] = Game Version                        | Length: 4   (0x4)  | Type: uint32                   | Parent: JJx.Version
+	Segment[0x108     :      0x127] = Name                                | Length: 32  (0x20) | Type: char*
+	Segment[0x128     :      0x137] = Author                              | Length: 16  (0x10) | Type: char*
+	Segment[0x138     :      0x139] = World.Width                         | Length: 2   (0x2)  | Type uint32                    | Parent: Blocks.Width
+	Segment[0x13A     :      0x13B] = World.Height                        | Length: 2   (0x2)  | Type uint32                    | Parent: Blocks.Height
+	Segment[0x13C     :      0x13D] = Player.X                            | Length: 2   (0x2)  | Type uint32                    | Parent: Player.X
+	Segment[0x13E     :      0x13F] = Player.Y                            | Length: 2   (0x2)  | Type uint32                    | Parent: Player.Y
+	Segment[0x140     :      0x141] = Spawn.X                             | Length: 2   (0x2)  | Type uint32                    | Parent: Spawn.X
+	Segment[0x142     :      0x143] = Spawn.Y                             | Length: 2   (0x2)  | Type uint32                    | Parent: Spawn.Y
+	Segment[0x144     :      0x145] = Planet                              | Length: 2   (0x2)  | Type enum
+	Segment[0x146     :      0x147] = UNKNOWN FOR NOW                     | Length: 2   (0x2)  | Type: ???
+	Segment[0x148]                  = Season                              | Length: 1   (0x1)  | Type: enum                     | Parent: Season
+	Segment[0x149]                  = Gamemode                            | Length: 1   (0x1)  | Type: enum                     | Parent: Gamemode
+	Segment[0x14A]                  = World Size                          | Length: 1   (0x1)  | Type: enum                     | Parent: Size
+	Segment[0x14B]                  = Sky Size                            | Length: 1   (0x1)  | Type: enum                     | Parent: Size
+	Segment[0x14C     :      0x14F] = UNKNOWN FOR NOW                     | Length: 4   (0x4)  | Type: ???
+	Segment[0x150     :      0x1CF] = Padding                             | Length: 128 (0x80) | Type: uint32[32] = {0}
+	:<Background>
+	Segment[{bg loc}  :  {bg size}] = Background Layer                    | Length: {bg size}  | Type: uint16[{bg size}]      | Parent: Background
+	:<World>
+	Segment[{wld loc} : {wld size}] = Compressed World Data {Blocks}      | Length: {wld size} | Type: struct Block[{wld size}] | Parent: Blocks
 
 	{{END OF COMPRESSED WORLD}}
 	Segment[0x0 : 0x1] = Time ???                       | Length: 2   (0x2)  | Type: ???
@@ -293,7 +312,8 @@ public sealed class World
 	public  const byte MAXLENGTH_NAME        = SIZEOF_NAME - 1;
 	private const byte BUFFER_SIZE           = 64;
 	private const byte SIZEOF_UUID           = 16;
-	private const byte SIZEOF_NAME           = 16;
+	private const byte SIZEOF_NAME           = 32;
+	private const byte SIZEOF_AUTHOR         = 16;
 	private const byte SIZEOF_PLAYERPOSITION = 4;
 	private const byte SIZEOF_SPAWNPOSITION  = 4;
 	private const byte SIZEOF_PLANET         = 2;
