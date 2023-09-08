@@ -65,7 +65,7 @@
 	Segment[0x14C     :      0x14F] = UNKNOWN FOR NOW                     | Length: 4   (0x4)  | Type: ???
 	Segment[0x150     :      0x1CF] = Padding                             | Length: 128 (0x80) | Type: uint32[32] = {0}
 	:<Background>
-	Segment[{bg loc}  :  {bg size}] = Background Layer                    | Length: {bg size}  | Type: uint16[{bg size}]      | Parent: Background
+	Segment[{bg loc}  :  {bg size}] = Background Layer                    | Length: {bg size}  | Type: uint16[{bg size}]        | Parent: Background
 	:<World>
 	Segment[{wld loc} : {wld size}] = Compressed World Data {Blocks}      | Length: {wld size} | Type: struct Block[{wld size}] | Parent: Blocks
 
