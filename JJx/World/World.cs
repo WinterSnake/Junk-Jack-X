@@ -3,11 +3,12 @@
 
 	Segment Breakdown:
 	----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	:<Header>
 	Segment[0x0       :        0x3] = JJ World Header                     | Length: 4   (0x4)  | Type: char[4]
 	Segment[0x4       :        0x5] = JJ Type Header                      | Length: 2   (0x2)  | Type: uint16 <01 00: world | 02 00: adventure>
 	Segment[0x6       :        0x9] = UNKNOWN FOR NOW                     | Length: 10  (0xA)  | Type: ???
-	Segment[0x10      :       0x13] = World Info Location                 | Length: 4   (0x4)  | Type: uint32
-	Segment[0x14      :       0x17] = World Info Size                     | Length: 4   (0x4)  | Type: uint32
+	Segment[0x10      :       0x13] = Info Location                       | Length: 4   (0x4)  | Type: uint32
+	Segment[0x14      :       0x17] = Info Size                           | Length: 4   (0x4)  | Type: uint32
 	Segment[0x18      :       0x1B] = UNKNOWN FOR NOW                     | Length: 4   (0x4)  | Type: ???
 	Segment[0x1C      :       0x1F] = Background Location                 | Length: 4   (0x4)  | Type: uint32
 	Segment[0x20      :       0x23] = Background Size                     | Length: 4   (0x4)  | Type: uint32
@@ -44,7 +45,7 @@
 	Segment[0xD4(?)   :    0xDF(?)] = Entity Footer Location              | Length: 4   (0x4)  | Type: uint32
 	Segment[0xE0(?)   :    0xE3(?)] = Entity Footer Size                  | Length: 4   (0x4)  | Type: uint32
 	Segment[0xE4      :       0xEF] = UNKNOWN FOR NOW                     | Length: 12  (0xC)  | Type: ???
-	:<Map Header>
+	:<Info>
 	Segment[0xF0      :       0xFF] = UUID                                | Length: 16  (0x10) | Type: uuid
 	Segment[0x100     :      0x107] = Last Played Timestamp               | Length: 4   (0x4)  | Type: DateTime / Epoch / Timestamp / uint32
 	Segment[0x104     :      0x107] = Game Version                        | Length: 4   (0x4)  | Type: uint32                   | Parent: JJx.Version
@@ -310,6 +311,7 @@ public sealed class World
 		*/
 	/* Class Properties */
 	public  const byte MAXLENGTH_NAME        = SIZEOF_NAME - 1;
+	public  const byte MAXLENGTH_AUTHOR      = SIZEOF_AUTHOR - 1;
 	private const byte BUFFER_SIZE           = 64;
 	private const byte SIZEOF_UUID           = 16;
 	private const byte SIZEOF_NAME           = 32;
