@@ -11,15 +11,15 @@
 	Segment[0x48  : 0x57]  = UUID                | Length: 16  (0x10)  | Type: uuid
 	Segment[0x58  : 0x67]  = Name                | Length: 16  (0x10)  | Type: char*
 	Segment[0x68  : 0x6B]  = Game Version        | Length: 4   (0x4)   | Type: uint32          | Parent: JJx.Version
-	Segment[0x6C  : 0x6F]  = UNKNOWN FOR NOW     | Length: 4   (0x4)   | Type: ???
+	Segment[0x6C  : 0x6F]  = Theme\Unlock Worlds | Length: 4   (0x4)   | Type: enum flag       | Parent: World.Planet [Follow todo and make world enum flag]
 	Segment[0x70  : 0x73]  = Gameplay Flags      | Length: 4   (0x4)   | Type: enum flag       | Parent: Gameplay.Flags
 	Segment[0x74]          = Hair Color          | Length: 1   (0x1)   | Type: enum            | Parent: Character
 	Segment[0x75]          = Gender/Skin/Hair    | Length: 1   (0x1)   | Type: bitfield        | Parent: Character
 	Segment[0x76  :  0x77] = UNKNOWN FOR NOW     | Length: 2   (0x2)   | Type: ???
 	Segment[0x78]          = Gameplay Difficulty | Length: 1   (0x1)   | Type: enum            | Parent: Gameplay.Difficulty
-	Segment[0x79  :  0x7C] = UNKNOWN FOR NOW     | Length: 3   (0x3)   | Type: ???
+	Segment[0x79  :  0x7B] = UNKNOWN FOR NOW     | Length: 3   (0x3)   | Type: ???
 	:<Inventory>
-	Segment[0x7D  :  0xF3] = Hotbar: Survival    | Length: 120 (0x78)  | Type: struct Item[10] | Parent: Items
+	Segment[0x7C  :  0xF3] = Hotbar: Survival    | Length: 120 (0x78)  | Type: struct Item[10] | Parent: Items
 	Segment[0xF4  : 0x16B] = Hotbar: Creative    | Length: 120 (0x78)  | Type: struct Item[10] | Parent: Items
 	Segment[0x16C : 0x16B] = Crafting Slots      | Length: 108 (0x6C)  | Type: struct Item[9]  | Parent: Items
 	Segment[0x1D8 : 0x387] = Inventory           | Length: 432 (0x1B0) | Type: struct Item[36] | Parent: Items

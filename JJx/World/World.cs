@@ -47,18 +47,17 @@
 	Segment[0xE4      :       0xEF] = UNKNOWN FOR NOW                     | Length: 12  (0xC)  | Type: ???
 	:<Info>
 	Segment[0xF0      :       0xFF] = UUID                                | Length: 16  (0x10) | Type: uuid
-	Segment[0x100     :      0x107] = Last Played Timestamp               | Length: 4   (0x4)  | Type: DateTime / Epoch / Timestamp / uint32
+	Segment[0x100     :      0x103] = Last Played Timestamp               | Length: 4   (0x4)  | Type: DateTime / Epoch / Timestamp / uint32
 	Segment[0x104     :      0x107] = Game Version                        | Length: 4   (0x4)  | Type: uint32                   | Parent: JJx.Version
 	Segment[0x108     :      0x127] = Name                                | Length: 32  (0x20) | Type: char*
 	Segment[0x128     :      0x137] = Author                              | Length: 16  (0x10) | Type: char*
-	Segment[0x138     :      0x139] = World.Width                         | Length: 2   (0x2)  | Type uint32                    | Parent: Blocks.Width
-	Segment[0x13A     :      0x13B] = World.Height                        | Length: 2   (0x2)  | Type uint32                    | Parent: Blocks.Height
-	Segment[0x13C     :      0x13D] = Player.X                            | Length: 2   (0x2)  | Type uint32                    | Parent: Player.X
-	Segment[0x13E     :      0x13F] = Player.Y                            | Length: 2   (0x2)  | Type uint32                    | Parent: Player.Y
-	Segment[0x140     :      0x141] = Spawn.X                             | Length: 2   (0x2)  | Type uint32                    | Parent: Spawn.X
-	Segment[0x142     :      0x143] = Spawn.Y                             | Length: 2   (0x2)  | Type uint32                    | Parent: Spawn.Y
-	Segment[0x144     :      0x145] = Planet                              | Length: 2   (0x2)  | Type enum
-	Segment[0x146     :      0x147] = UNKNOWN FOR NOW                     | Length: 2   (0x2)  | Type: ???
+	Segment[0x138     :      0x139] = World.Width                         | Length: 2   (0x2)  | Type: uint16                   | Parent: Blocks.Width
+	Segment[0x13A     :      0x13B] = World.Height                        | Length: 2   (0x2)  | Type: uint16                   | Parent: Blocks.Height
+	Segment[0x13C     :      0x13D] = Player.X                            | Length: 2   (0x2)  | Type: uint16                   | Parent: Player.X
+	Segment[0x13E     :      0x13F] = Player.Y                            | Length: 2   (0x2)  | Type: uint16                   | Parent: Player.Y
+	Segment[0x140     :      0x141] = Spawn.X                             | Length: 2   (0x2)  | Type: uint16                   | Parent: Spawn.X
+	Segment[0x142     :      0x143] = Spawn.Y                             | Length: 2   (0x2)  | Type: uint16                   | Parent: Spawn.Y
+	Segment[0x144     :      0x147] = Planet                              | Length: 4   (0x4)  | Type: enum flags
 	Segment[0x148]                  = Season                              | Length: 1   (0x1)  | Type: enum                     | Parent: Season
 	Segment[0x149]                  = Gamemode                            | Length: 1   (0x1)  | Type: enum                     | Parent: Gamemode
 	Segment[0x14A]                  = World Size                          | Length: 1   (0x1)  | Type: enum                     | Parent: Size
@@ -124,21 +123,22 @@ public enum Season : byte
 	None   = 0xF
 }
 
-public enum Planet : ushort
-	// TODO: Convert to byte enum
+[Flags]
+public enum Planet : uint
 {
-	Terra  = 0x0001,
-	Seth   = 0x0002,
-	Alba   = 0x0004,
-	Xeno   = 0x0008,
-	Magmar = 0x0010,
-	Cryo   = 0x0020,
-	Yuca   = 0x0040,
-	Lilith = 0x0080,
-	Thetis = 0x0100,
-	Mykon  = 0x0200,
-	Umbra  = 0x0400,
-	Tor    = 0x0800
+	Terra  = 0x00000001,
+	Seth   = 0x00000002,
+	Alba   = 0x00000004,
+	Xeno   = 0x00000008,
+	Magmar = 0x00000010,
+	Cryo   = 0x00000020,
+	Yuca   = 0x00000040,
+	Lilith = 0x00000080,
+	Thetis = 0x00000100,
+	Mykon  = 0x00000200,
+	Umbra  = 0x00000400,
+	Tor    = 0x00000800,
+	All    = Terra | Seth | Alba | Xeno | Magmar | Cryo | Yuca | Lilith | Thetis | Mykon | Umbra | Tor
 }
 
 public enum Weather: byte
