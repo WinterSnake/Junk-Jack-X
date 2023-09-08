@@ -1,6 +1,6 @@
 /*
-	Junk Jack X
-	- Utilities
+	Junk Jack X: Utilities
+	- Byte Converter
 
 	Written By: Ryan Smith
 */
