@@ -62,11 +62,11 @@ internal static class ByteConverter
 		{
 			if (bytes.Length + offset < length) throw new IndexOutOfRangeException();
 			return Encoding.ASCII.GetString(bytes.Slice(offset, length));
-			//return Encoding.ASCII.GetString(new Span<byte>(bytes, offset, length));
 		}
 		// Null termination
-		return "";
-		//new Span<byte>(workingData, 0, Array.IndexOf(workingData, byte.MinValue))
+		return Encoding.ASCII.GetString(
+			bytes.Slice(offset, bytes.IndexOf(byte.MinValue))
+		);
 	}
 	// Write
 	internal static void Write(Span<byte> bytes, bool @value, int offset = 0)
@@ -105,7 +105,7 @@ internal static class ByteConverter
 		bytes[offset + 1] = (byte)((@value & 0x000000000000FF00) >>   8);
 		bytes[offset + 0] = (byte)((@value & 0x00000000000000FF) >>   0);
 	}
-	internal static void Write(Span<byte> bytes, string @value, int offset = 0, bool nullTerminate = true)
+	internal static void Write(Span<byte> bytes, string @value, int offset = 0, int length = 0)
 	{
 	}
 }

@@ -1,6 +1,6 @@
 /*
-	Junk Jack X: Utilities
-	- Archiver Stream
+	Junk Jack X: Archiver
+	- Stream
 
 	Segment Breakdown:
 	------------------------------------------------------------------------------------------------------------------------
@@ -17,14 +17,40 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using JJx.Utilities;
 
-namespace JJx.Utilities;
+namespace JJx;
+
+internal enum ArchiverType : byte
+{
+	Unknown,
+	Player,
+	Adventure,
+	Map,
+	Stat
+}
 
 internal sealed class ArchiverStream : FileStream
 {
 	/* Constructors */
 	private ArchiverStream(string path, FileMode mode, FileAccess access): base(path, mode, access) {}
 	/* Instance Methods */
+	// Reading
+	public bool AtChunk(Chunk.Type type)
+	{
+		if (this.Position == _GetChunk(type).Location)
+			return true;
+		return false;
+	}
+	private Chunk _GetChunk(Chunk.Type type)
+	{
+		foreach (var chunk in this._Chunks)
+			if (chunk.Id == type)
+				return chunk;
+		throw new ArgumentException("Invalid chunk, not found in archiver stream");
+
+	}
+	// Writing
 	/* Static Methods */
 	public static async Task<ArchiverStream> Reader(string path)
 	{
@@ -38,41 +64,32 @@ internal sealed class ArchiverStream : FileStream
 		var headerType  = ByteConverter.GetUInt16(new Span<byte>(workingData), 4);
 		var chunkCount  = ByteConverter.GetUInt16(new Span<byte>(workingData), 6);
 		// Type
-		FileHeader header = FileHeader.Unknown;
 		if (headerMagic == "JJXC" && headerType == 0)
-			header = FileHeader.Player;
+			reader.Type = ArchiverType.Player;
 		else if (headerMagic == "JJXM")
 		{
 			if (headerType == 1)
-				header = FileHeader.Map;
+				reader.Type = ArchiverType.Map;
 			else if (headerType == 2)
-				header = FileHeader.Adventure;
+				reader.Type = ArchiverType.Adventure;
 		}
-		reader.Header = header;
 		// =UNKNOWN=
 		reader.Seek(4, SeekOrigin.Current);
 		// Chunk
 		var chunks = new Chunk[chunkCount];
 		for (var i = 0; i < chunkCount; ++i)
 			chunks[i] = await Chunk.FromStream(reader);
+		reader._Chunks = chunks;
 		return reader;
 	}
-	public static async Task<ArchiverStream> Writer(string path, FileHeader header)
+	public static async Task<ArchiverStream> Writer(string path, ArchiverType type)
 	{
 		var writer = new ArchiverStream(path, FileMode.Create, FileAccess.Write);
 		return writer;
 	}
 	/* Properties */
-	public FileHeader Header { get; private set; }
+	public ArchiverType Type { get; private set; } = ArchiverType.Unknown;
+	private Chunk[] _Chunks;
 	/* Class Properties */
 	private const byte SIZEOF_HEADER = 8;
-}
-
-public enum FileHeader : byte
-{
-	Unknown,
-	Player,
-	Adventure,
-	Map,
-	Stat
 }

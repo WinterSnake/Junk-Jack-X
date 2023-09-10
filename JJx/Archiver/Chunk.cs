@@ -1,6 +1,6 @@
 /*
-	Junk Jack X: Utilities
-	- Archiver Chunk
+	Junk Jack X: Archiver
+	- Chunk
 
 	Segment Breakdown:
 	------------------------------------------------------------------------------------------------------------------------
@@ -18,8 +18,9 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using JJx.Utilities;
 
-namespace JJx.Utilities;
+namespace JJx;
 
 internal sealed class Chunk
 {
@@ -31,6 +32,11 @@ internal sealed class Chunk
 		this.Compressed = compressed;
 		this.Location = location;
 		this.Size = size;
+	}
+	/* Instance Methods */
+	public override string ToString()
+	{
+		return $"Type:{this.Id}|Version:{this.Version}|Compressed:{this.Compressed}|Location:0x{this.Location:X4}|Size:0x{this.Size:X4}";
 	}
 	/* Static Methods */
 	public static async Task<Chunk> FromStream(Stream stream)
@@ -45,7 +51,9 @@ internal sealed class Chunk
 		var location   = ByteConverter.GetUInt32(new Span<byte>(workingData), 4);
 		var size       = ByteConverter.GetUInt32(new Span<byte>(workingData), 8);
 		if (!Enum.IsDefined(typeof(Type), id))
-			throw new ArgumentException($"Unknown chunk type '0x{id:X4}'");
+			throw new ArgumentException(
+				$"Unknown chunk type '0x{id:X4}|Version:{version}|Compressed:{compressed}|Location:0x{location:X4}|Size:0x{size:X4}'"
+			);
 		return new Chunk((Type)id, version, compressed, location, size);
 	}
 	/* Properties */
@@ -55,7 +63,7 @@ internal sealed class Chunk
 	public readonly uint Location;
 	public readonly uint Size;
 	/* Class Properties */
-	private const byte SIZE = 12;
+	internal const byte SIZE = 12;
 	/* Sub-Classes */
 	internal enum Type : ushort
 	{
