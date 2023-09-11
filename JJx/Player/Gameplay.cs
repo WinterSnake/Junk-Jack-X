@@ -1,6 +1,6 @@
 /*
 	Junk Jack X: Player
-	- Gameplay Data
+	- Gameplay
 
 	Written By: Ryan Smith
 */
@@ -20,22 +20,17 @@ public enum Difficulty : byte
 public sealed class Gameplay
 {
 	/* Constructors */
-	public Gameplay(Difficulty difficulty, Flag flags = Flag.None)
+	public Gameplay(Difficulty difficulty, Flag flags)
 	{
 		this.Difficulty = difficulty;
 		this.Flags = flags;
 	}
-	internal Gameplay(byte difficulty, byte flags)
-	{
-		this.Difficulty = (Difficulty)difficulty;
-		this.Flags = (Flag)flags;
-	}
 	/* Properties */
-	public Difficulty Difficulty;
 	public Flag Flags;
+	public Difficulty Difficulty;
 	/* Sub-Classes */
 	[Flags]
-	public enum Flag : byte
+	public enum Flag : uint
 	{
 		None = 0x00,
 		Hardcore = 0x01,

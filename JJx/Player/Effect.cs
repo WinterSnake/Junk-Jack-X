@@ -1,6 +1,6 @@
 /*
 	Junk Jack X: Player
-	- Status Effect
+	- Status
 
 	Written By: Ryan Smith
 */
@@ -8,8 +8,6 @@ using System;
 
 namespace JJx;
 
-public class Effect
+public sealed class Effect
 {
-	/* Properties */
-	public ushort Ticks { get; set; }
 }

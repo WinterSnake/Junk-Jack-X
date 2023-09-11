@@ -13,17 +13,17 @@ internal static class ByteConverter
 {
 	/* Static Methods */
 	// Read
-	internal static bool GetBool(ReadOnlySpan<byte> bytes, int offset = 0)
+	public static bool GetBool(ReadOnlySpan<byte> bytes, int offset = 0)
 	{
 		if (bytes.Length + offset < 1) throw new IndexOutOfRangeException();
 		return bytes[offset + 0] != 0;
 	}
-	internal static byte GetUInt8(ReadOnlySpan<byte> bytes, int offset = 0)
+	public static byte GetUInt8(ReadOnlySpan<byte> bytes, int offset = 0)
 	{
 		if (bytes.Length + offset < 1) throw new IndexOutOfRangeException();
 		return (byte)bytes[offset + 0];
 	}
-	internal static ushort GetUInt16(ReadOnlySpan<byte> bytes, int offset = 0)
+	public static ushort GetUInt16(ReadOnlySpan<byte> bytes, int offset = 0)
 	{
 		if (bytes.Length + offset < 2) throw new IndexOutOfRangeException();
 		return (ushort)(
@@ -31,7 +31,7 @@ internal static class ByteConverter
 			(bytes[offset + 0] << 0)
 		);
 	}
-	internal static uint GetUInt32(ReadOnlySpan<byte> bytes, int offset = 0)
+	public static uint GetUInt32(ReadOnlySpan<byte> bytes, int offset = 0)
 	{
 		if (bytes.Length + offset < 4) throw new IndexOutOfRangeException();
 		return (uint)(
@@ -41,7 +41,7 @@ internal static class ByteConverter
 			(bytes[offset + 0] <<  0)
 		);
 	}
-	internal static ulong GetUInt64(ReadOnlySpan<byte> bytes, int offset = 0)
+	public static ulong GetUInt64(ReadOnlySpan<byte> bytes, int offset = 0)
 	{
 		if (bytes.Length + offset < 8) throw new IndexOutOfRangeException();
 		return (ulong)(
@@ -55,7 +55,7 @@ internal static class ByteConverter
 			(bytes[offset + 0] <<   0)
 		);
 	}
-	internal static string GetString(ReadOnlySpan<byte> bytes, int offset = 0, int length = 0)
+	public static string GetString(ReadOnlySpan<byte> bytes, int offset = 0, int length = 0)
 	{
 		// Length Specific
 		if (length > 0)
@@ -69,23 +69,23 @@ internal static class ByteConverter
 		);
 	}
 	// Write
-	internal static void Write(Span<byte> bytes, bool @value, int offset = 0)
+	public static void Write(Span<byte> bytes, bool @value, int offset = 0)
 	{
 		if (bytes.Length + offset < 1) throw new IndexOutOfRangeException();
 		bytes[offset + 0] = (byte)(@value ? 1 : 0);
 	}
-	internal static void Write(Span<byte> bytes, byte @value, int offset = 0)
+	public static void Write(Span<byte> bytes, byte @value, int offset = 0)
 	{
 		if (bytes.Length + offset < 1) throw new IndexOutOfRangeException();
 		bytes[offset + 0] = @value;
 	}
-	internal static void Write(Span<byte> bytes, ushort @value, int offset = 0)
+	public static void Write(Span<byte> bytes, ushort @value, int offset = 0)
 	{
 		if (bytes.Length + offset < 2) throw new IndexOutOfRangeException();
 		bytes[offset + 1] = (byte)((@value & 0xFF00) >> 8);
 		bytes[offset + 0] = (byte)((@value & 0x00FF) >> 0);
 	}
-	internal static void Write(Span<byte> bytes, uint @value, int offset = 0)
+	public static void Write(Span<byte> bytes, uint @value, int offset = 0)
 	{
 		if (bytes.Length + offset < 4) throw new IndexOutOfRangeException();
 		bytes[offset + 3] = (byte)((@value & 0xFF000000) >> 32);
@@ -93,7 +93,7 @@ internal static class ByteConverter
 		bytes[offset + 1] = (byte)((@value & 0x0000FF00) >>  8);
 		bytes[offset + 0] = (byte)((@value & 0x000000FF) >>  0);
 	}
-	internal static void Write(Span<byte> bytes, ulong @value, int offset = 0)
+	public static void Write(Span<byte> bytes, ulong @value, int offset = 0)
 	{
 		if (bytes.Length + offset < 8) throw new IndexOutOfRangeException();
 		bytes[offset + 7] = (byte)((@value & 0xFF00000000000000) >> 512);
@@ -105,7 +105,7 @@ internal static class ByteConverter
 		bytes[offset + 1] = (byte)((@value & 0x000000000000FF00) >>   8);
 		bytes[offset + 0] = (byte)((@value & 0x00000000000000FF) >>   0);
 	}
-	internal static void Write(Span<byte> bytes, string @value, int offset = 0, int length = 0)
+	public static void Write(Span<byte> bytes, string @value, int offset = 0, int length = 0)
 	{
 	}
 }

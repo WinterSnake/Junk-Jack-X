@@ -1,13 +1,13 @@
 /*
 	Junk Jack X: Player
-	- Character Data
+	- Character
 
 	Segment Breakdown:
 	------------------------------------------------------------------------------------------------------------------------
 	Segment[0x0] = Hair.Color: data >> 4
 	Segment[0x1] = Tone: (data & 0xE0) >> 5 | Gender: (data & 0x10) >> 4 | Hair.Style: data & 0xF
 	------------------------------------------------------------------------------------------------------------------------
-	Length: 2 (0x2)
+	Size: 2 (0x2)
 
 	Written By: Ryan Smith
 */
@@ -15,79 +15,67 @@ using System;
 
 namespace JJx;
 
+public enum HairColor : byte {
+	White = 0x0,
+	Grey,
+	Black,
+	Brown,
+	DarkBrown,
+	LightBrown,
+	Blonde,
+	DirtyBlonde,
+	LightBlonde,
+	Ginger,
+	Red,
+	Purple,
+	Blue,
+	Teal,
+	Green,
+	Yellow
+}
+
 public sealed class Character
 {
 	/* Constructors */
-	public Character(bool gender, byte tone, byte hairStyle, Hair.HColor hairColor)
+	public Character(bool gender, byte skinTone, byte hairStyle, HairColor hairColor)
 	{
 		this.Gender = gender;
-		this.Tone = tone;
-		this.Hair = new Hair(hairStyle, hairColor);
-	}
-	internal Character(ReadOnlySpan<byte> bytes)
-	{
-		this.Gender = ((bytes[1] & 0x10) >> 4) == 1;
-		this._Tone = (byte)((bytes[1] & 0xE0) >> 5);
-		this.Hair = new Hair(bytes);
+		this.SkinTone = skinTone;
+		this.HairStyle = hairStyle;
+		this.HairColor = hairColor;
 	}
 	/* Instance Methods */
-	public void Pack(Span<byte> bytes)
+	public void Pack(Span<byte> bytes, int offset = 0)
 	{
-		bytes[0] = (byte)((byte)this.Hair.Color << 4);
-		bytes[1] = (byte)((((this._Tone << 1) | Convert.ToByte(this.Gender)) << 4) | this.Hair.Style);
+		if (bytes.Length + offset < SIZE) throw new IndexOutOfRangeException();
+		bytes[offset + 0] = (byte)((byte)this.HairColor << 4);
+		bytes[offset + 1] = (byte)((((this._SkinTone << 1) | Convert.ToByte(this.Gender)) << 4) | this._HairStyle);
+	}
+	/* Static Methods */
+	public static Character Unpack(ReadOnlySpan<byte> bytes, int offset = 0)
+	{
+		if (bytes.Length + offset < SIZE) throw new IndexOutOfRangeException();
+		var gender = ((bytes[offset + 1] & 0x10) >> 4) == 1;
+		var tone   = (byte)((bytes[offset + 1] & 0xE0) >> 5);
+		var style  = (byte)(bytes[offset + 1] & 0xF);
+		var color  = (HairColor)(bytes[offset + 0] >> 4);
+		return new Character(gender, tone, style, color);
 	}
 	/* Properties */
 	public bool Gender;  // Male: 0 | Female: 1
-	private byte _Tone;
-	public byte Tone {
-		// Min: 0 | Max: 4
-		get { return this._Tone; }
-		set { this._Tone = Math.Min(value, MAX_TONES); }
+	private byte _SkinTone;
+	public byte SkinTone {
+		get { return this._SkinTone; }
+		set { this._SkinTone = Math.Min(value, MAX_SKINTONES); }
 	}
-	public readonly Hair Hair;
+	private byte _HairStyle;
+	public byte HairStyle {
+		get { return this._HairStyle; }
+		set { this._HairStyle = Math.Min(value, MAX_HAIRSTYLES); }
+	}
+	public HairColor HairColor;
 	/* Class Properties */
-	public const byte MAX_TONES = 0x4;  // Maximum skin tones in game (5) [0-4]
-}
-public sealed class Hair
-{
-	/* Constructors */
-	public Hair(byte style, HColor color)
-	{
-		this.Style = style;
-		this.Color = color;
-	}
-	internal Hair(ReadOnlySpan<byte> bytes)
-	{
-		this._Style = (byte)(bytes[1] & 0xF);
-		this.Color = (HColor)(bytes[0] >> 4);
-	}
-	/* Properties */
-	public HColor Color;
-	private byte _Style;
-	public byte Style {
-		get { return this._Style; }
-		set { this._Style = Math.Min(value, MAX_STYLES); }
-	}
-	/* Class Properties */
-	public const byte MAX_STYLES = 0xD;  // Maximum hair styles in game (14) [0-D]
-	/* Sub-Classes */
-	public enum HColor : byte
-	{
-		White = 0x0,
-		Grey,
-		Black,
-		Brown,
-		DarkBrown,
-		LightBrown,
-		Blonde,
-		DirtyBlonde,
-		LightBlonde,
-		Ginger,
-		Red,
-		Purple,
-		Blue,
-		Teal,
-		Green,
-		Yellow
-	}
+	public   const byte MAX_SKINTONES  = 0x4;  // Maximum skin tones in game (5) [0-4]
+	public   const byte MAX_HAIRSTYLES = 0xD;  // Maximum hair styles in game (14) [0-D]
+	internal const byte SIZE           =   2;
 }
