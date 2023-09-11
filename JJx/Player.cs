@@ -24,7 +24,9 @@
 	Segment[0x400 : 0x40B] = Craft Slot             | Length: 12  (0xC)   | Type: struct Item     | Parent: Items
 	Segment[0x40C : 0x417] = Arrow Slot             | Length: 12  (0xC)   | Type: struct Item     | Parent: Items
 	:<Craftbook>
-	Segment[0x418 : 0x442] = Regular Recipes        | Length: 42  (0x2A)  | Type: struct Recipes
+	Segment[0x418 : 0x443] = Items                  | Length: 44  (0x2C)  | Type: struct Recipes  | Parent: ItemBook
+	Segment[0x444 : 0x497] = Unused                 | Length: 84  (0x54)  | Type: ???
+	Segment[0x498 : 0x517] = Potions                | Length: 128 (0x80)  | Type: struct Recipes  | Parent: PotionBook
 	:<Achievements>
 	:<Status>
 	------------------------------------------------------------------------------------------------------------------------
@@ -126,6 +128,12 @@ public sealed class Player
 		for (var i = 0; i < COUNT_ITEMS; ++i)
 			items[i] = await Item.FromStream(stream);
 		/// Craftbook
+		// Items
+		var itemBook = await ItemBook.FromStream(stream);
+		// Unused
+		stream.Seek(0x54, SeekOrigin.Current);
+		// Potions
+		var potionBook = await PotionBook.FromStream(stream);
 		/// Achievements
 		/// Status
 		// Health
@@ -171,6 +179,6 @@ public sealed class Player
 	private const byte SIZEOF_THEME          =  4;
 	private const byte SIZEOF_GAMEPLAY_FLAGS =  4;
 	private const byte COUNT_ITEMS           = 77;
-	private const byte COUNT_EFFECTS         =  4;
 	private const byte SIZEOF_HEALTH         =  4;
+	private const byte COUNT_EFFECTS         =  4;
 }
