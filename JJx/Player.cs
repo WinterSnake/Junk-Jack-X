@@ -11,9 +11,9 @@
 	Segment[0x70  : 0x73]  = Gameplay Flags         | Length: 4   (0x4)   | Type: enum flag[uint32] | Parent: Gameplay.Flags
 	Segment[0x74]          = Hair Color             | Length: 1   (0x1)   | Type: bitfield          | Parent: Character
 	Segment[0x75]          = Gender/Skin/Hair       | Length: 1   (0x1)   | Type: bitfield          | Parent: Character
-	Segment[0x76  :  0x77] = UNKNOWN FOR NOW        | Length: 2   (0x2)   | Type: ???
+	Segment[0x76  :  0x77] = UNKNOWN                | Length: 2   (0x2)   | Type: ???
 	Segment[0x78]          = Gameplay Difficulty    | Length: 1   (0x1)   | Type: enum[uint8]       | Parent: Gameplay.Difficulty
-	Segment[0x79  :  0x7B] = UNKNOWN FOR NOW        | Length: 3   (0x3)   | Type: ???
+	Segment[0x79  :  0x7B] = UNKNOWN                | Length: 3   (0x3)   | Type: ???
 	:<Inventory>
 	Segment[0x7C  :  0xF3] = Hotbar: Survival       | Length: 120 (0x78)  | Type: struct Item[10] | Parent: Items
 	Segment[0xF4  : 0x16B] = Hotbar: Creative       | Length: 120 (0x78)  | Type: struct Item[10] | Parent: Items
@@ -25,7 +25,7 @@
 	Segment[0x40C : 0x417] = Arrow Slot             | Length: 12  (0xC)   | Type: struct Item     | Parent: Items
 	:<Craftbook>
 	Segment[0x418 : 0x443] = Items                  | Length: 44  (0x2C)  | Type: struct Recipes  | Parent: ItemBook
-	Segment[0x444 : 0x497] = Unused                 | Length: 84  (0x54)  | Type: ???
+	Segment[0x444 : 0x497] = UNKNOWN \ UNUSED       | Length: 84  (0x54)  | Type: ???
 	Segment[0x498 : 0x517] = Potions                | Length: 128 (0x80)  | Type: struct Recipes  | Parent: PotionBook
 	:<Achievements>
 	:<Status>
@@ -130,7 +130,7 @@ public sealed class Player
 		/// Craftbook
 		// Items
 		var itemBook = await ItemBook.FromStream(stream);
-		// Unused
+		// =UNKNOWN | UNUSED=
 		stream.Seek(0x54, SeekOrigin.Current);
 		// Potions
 		var potionBook = await PotionBook.FromStream(stream);

@@ -10,6 +10,32 @@ using System.Threading.Tasks;
 
 namespace JJx;
 
+[Flags]
+public enum Potions
+/*
+	Segment[0x00]
+		- 0x00 - 0xFF: Giant
+			NOTE: odd only (?)
+	Segment[0x01]
+		NONE
+	Segment[0x02]
+		NONE
+	Segment[0x03]
+		- 0x00 - 0x3F: NONE
+		- 0x40 - 0x7F: Tools Expertise
+		- 0x80 - 0xBF: Climb/Jump Movement
+		- 0xC0 - 0xFF: Climb/Jump Movement | Tools Expertise
+	Segment[0x04]
+		- 0xFF: Dwarves | Pierce Damage
+*/
+{
+	ClimbJumpMovement,
+	Dwarves,
+	Giant,
+	PierceDamage,
+	ToolsExpertise,
+}
+
 public sealed class PotionBook
 {
 	/* Constructors */
@@ -28,6 +54,7 @@ public sealed class PotionBook
 		return new PotionBook();
 	}
 	/* Properties */
+
 	/* Class Properties */
 	private const byte SIZE = 128;
 }
