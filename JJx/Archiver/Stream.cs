@@ -15,6 +15,7 @@
 	Written By: Ryan Smith
 */
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using JJx.Utilities;
@@ -64,11 +65,38 @@ internal sealed class ArchiverStream : FileStream
 				this.Position = chunk.Location;
 	}
 	// Writing
+	public WritableChunk NewChunk(Chunk.Type type, byte version = 0, bool compressed = false) => new WritableChunk(type, version, compressed, this._Buffer, this._WriteChunks!.Add);
+	// Override
+	public override void Close()
+	{
+		if (this.CanWrite)
+		{
+			var workingData = new byte[SIZEOF_HEADER - 2];
+			// Write Chunk Count
+			var chunkCount = (ushort)this._WriteChunks!.Count;
+			Console.WriteLine($"Chunks: {chunkCount}");
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), chunkCount, 0);
+			// Add UNKNOWN | Padding
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)0, 0);
+			this.Write(workingData, 0, workingData.Length);
+			// Calculate Origin
+			var origin = (uint)(SIZEOF_HEADER + 4 + (this._WriteChunks!.Count * Chunk.SIZE));
+			Console.WriteLine(origin);
+			// Write chunks
+			foreach (var chunk in this._WriteChunks!)
+				chunk.ToStream(this, origin);
+			// Write buffer
+			this._Buffer.Position = 0;
+			this._Buffer!.CopyTo(this);
+			this._Buffer!.Dispose();
+			this._Buffer = null;
+		}
+		base.Close();
+	}
 	/* Static Methods */
 	public static async Task<ArchiverStream> Reader(string path)
 	{
 		var reader = new ArchiverStream(path, FileMode.Open, FileAccess.Read);
-		Console.WriteLine($"Read: {reader.CanRead} | Write: {reader.CanWrite}");
 		int bytesRead = 0;
 		var workingData = new byte[SIZEOF_HEADER];
 		while (bytesRead < SIZEOF_HEADER)
@@ -99,7 +127,8 @@ internal sealed class ArchiverStream : FileStream
 	public static async Task<ArchiverStream> Writer(string path, ArchiverType type)
 	{
 		var writer = new ArchiverStream(path, FileMode.Create, FileAccess.Write);
-		Console.WriteLine($"Read: {writer.CanRead} | Write: {writer.CanWrite}");
+		writer._Buffer = new MemoryStream(1024);
+		writer._WriteChunks = new List<Chunk>();
 		var workingData = new byte[SIZEOF_HEADER - 2];
 		switch (type)
 		{
@@ -132,8 +161,11 @@ internal sealed class ArchiverStream : FileStream
 	}
 	/* Properties */
 	public ArchiverType Type { get; private set; } = ArchiverType.Unknown;
+	// Read
 	private Chunk[]? _Chunks = null;
-	private readonly MemoryStream? _InternalBuffer = null;
+	// Write
+	private MemoryStream? _Buffer = null;
+	private List<Chunk>? _WriteChunks = null;
 	/* Class Properties */
 	private const byte SIZEOF_HEADER = 8;
 }

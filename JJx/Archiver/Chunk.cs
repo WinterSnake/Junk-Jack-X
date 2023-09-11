@@ -34,6 +34,16 @@ internal sealed class Chunk
 		this.Size = size;
 	}
 	/* Instance Methods */
+	public void ToStream(Stream stream, uint origin)
+	{
+		var workingData = new byte[SIZE];
+		Utilities.ByteConverter.Write(new Span<byte>(workingData), (ushort)this.Id,        0);
+		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Version,           2);
+		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Compressed,        3);
+		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Location + origin, 4);
+		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Size,              8);
+		stream.Write(workingData, 0, workingData.Length);
+	}
 	public override string ToString()
 	{
 		return $"Type:{this.Id}|Version:{this.Version}|Compressed:{this.Compressed}|Location:0x{this.Location:X4}|Size:0x{this.Size:X4}";
@@ -73,4 +83,33 @@ internal sealed class Chunk
 		PlayerAchievements = 0x8003,
 		PlayerStatus       = 0x8004,
 	}
+}
+
+internal sealed class WritableChunk : IDisposable
+{
+	/* Constructors */
+	public WritableChunk(Chunk.Type type, byte version, bool compressed, MemoryStream stream, Action<Chunk> func)
+	{
+		this.Id = type;
+		this.Version = version;
+		this.Compressed = compressed;
+		this.Location = (uint)stream.Position;
+		this._InternalStream = stream;
+		this._AddChunk = func;
+	}
+	/* Instance Methods */
+	public void Dispose()
+	{
+		var size = (uint)(this._InternalStream.Position - this.Location);
+		var chunk = new Chunk(this.Id, this.Version, this.Compressed, this.Location, size);
+		this._AddChunk(chunk);
+	}
+	public Task WriteAsync(byte[] bytes, int offset, int count) => this._InternalStream.WriteAsync(bytes, offset, count);
+	/* Properties */
+	private readonly Chunk.Type Id;
+	private readonly byte Version;
+	private readonly bool Compressed;
+	private readonly uint Location;
+	private readonly MemoryStream _InternalStream;
+	private readonly Action<Chunk> _AddChunk;
 }
