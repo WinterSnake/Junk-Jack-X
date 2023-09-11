@@ -107,5 +107,13 @@ internal static class ByteConverter
 	}
 	public static void Write(Span<byte> bytes, string @value, int offset = 0, int length = 0)
 	{
+		if (bytes.Length + offset < length) throw new IndexOutOfRangeException();
+		var valueBytes = Encoding.ASCII.GetBytes(@value);
+		length = length == 0 ? valueBytes.Length + 1 : length;
+		// Write string based on length (+1 for null termination if length = 0)
+		for (var i = offset; i < offset + length; ++i)
+		{
+			bytes[i] = i < valueBytes.Length ? valueBytes[i] : (byte)0;
+		}
 	}
 }

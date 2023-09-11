@@ -38,17 +38,23 @@ internal sealed class ArchiverStream : FileStream
 	// Reading
 	public bool AtChunk(Chunk.Type type)
 	{
-		if (this.Position == _GetChunk(type).Location)
-			return true;
+		foreach (var chunk in this._Chunks)
+			if (chunk.Id == type && this.Position == chunk.Location)
+				return true;
 		return false;
 	}
-	private Chunk _GetChunk(Chunk.Type type)
+	public bool HasChunk(Chunk.Type type)
 	{
 		foreach (var chunk in this._Chunks)
 			if (chunk.Id == type)
-				return chunk;
-		throw new ArgumentException("Invalid chunk, not found in archiver stream");
-
+				return true;
+		return false;
+	}
+	public void SeekChunk(Chunk.Type type)
+	{
+		foreach (var chunk in this._Chunks)
+			if (chunk.Id == type)
+				this.Position = chunk.Location;
 	}
 	// Writing
 	/* Static Methods */
@@ -61,16 +67,16 @@ internal sealed class ArchiverStream : FileStream
 			bytesRead += await reader.ReadAsync(workingData, bytesRead, SIZEOF_HEADER - bytesRead);
 		/// Header
 		var headerMagic = ByteConverter.GetString(new Span<byte>(workingData), 0, 4);
-		var headerType  = ByteConverter.GetUInt16(new Span<byte>(workingData), 4);
+		var headerId    = ByteConverter.GetUInt16(new Span<byte>(workingData), 4);
 		var chunkCount  = ByteConverter.GetUInt16(new Span<byte>(workingData), 6);
 		// Type
-		if (headerMagic == "JJXC" && headerType == 0)
+		if (headerMagic == "JJXC" && headerId == 0)
 			reader.Type = ArchiverType.Player;
 		else if (headerMagic == "JJXM")
 		{
-			if (headerType == 1)
+			if (headerId == 1)
 				reader.Type = ArchiverType.Map;
-			else if (headerType == 2)
+			else if (headerId == 2)
 				reader.Type = ArchiverType.Adventure;
 		}
 		// =UNKNOWN=
@@ -85,6 +91,34 @@ internal sealed class ArchiverStream : FileStream
 	public static async Task<ArchiverStream> Writer(string path, ArchiverType type)
 	{
 		var writer = new ArchiverStream(path, FileMode.Create, FileAccess.Write);
+		var workingData = new byte[SIZEOF_HEADER - 2];
+		switch (type)
+		{
+			case ArchiverType.Player:
+			{
+				Utilities.ByteConverter.Write(new Span<byte>(workingData), "JJXC", length: 4);
+				Utilities.ByteConverter.Write(new Span<byte>(workingData), (ushort)0, 4);
+			} break;
+			case ArchiverType.Map:
+			{
+				Utilities.ByteConverter.Write(new Span<byte>(workingData), (ushort)1, 4);
+				goto World;
+			}
+			case ArchiverType.Adventure:
+			{
+				Utilities.ByteConverter.Write(new Span<byte>(workingData), (ushort)2, 4);
+				goto World;
+			}
+			default:
+			{
+				throw new ArgumentException($"Unsupported writer format '{type}'");
+			}
+			World:
+			{
+				Utilities.ByteConverter.Write(new Span<byte>(workingData), "JJXM", length: 4);
+			} break;
+		}
+		await writer.WriteAsync(workingData, 0, workingData.Length);
 		return writer;
 	}
 	/* Properties */
