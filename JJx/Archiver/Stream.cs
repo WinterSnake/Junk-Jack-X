@@ -30,6 +30,7 @@ internal enum ArchiverType : byte
 	Stat
 }
 
+#nullable enable
 internal sealed class ArchiverStream : FileStream
 {
 	/* Constructors */
@@ -38,6 +39,8 @@ internal sealed class ArchiverStream : FileStream
 	// Reading
 	public bool AtChunk(Chunk.Type type)
 	{
+		if (!this.CanRead || this._Chunks == null)
+			return false;
 		foreach (var chunk in this._Chunks)
 			if (chunk.Id == type && this.Position == chunk.Location)
 				return true;
@@ -45,6 +48,8 @@ internal sealed class ArchiverStream : FileStream
 	}
 	public bool HasChunk(Chunk.Type type)
 	{
+		if (!this.CanRead || this._Chunks == null)
+			return false;
 		foreach (var chunk in this._Chunks)
 			if (chunk.Id == type)
 				return true;
@@ -52,6 +57,8 @@ internal sealed class ArchiverStream : FileStream
 	}
 	public void SeekChunk(Chunk.Type type)
 	{
+		if (!this.CanRead || this._Chunks == null)
+			return;
 		foreach (var chunk in this._Chunks)
 			if (chunk.Id == type)
 				this.Position = chunk.Location;
@@ -61,6 +68,7 @@ internal sealed class ArchiverStream : FileStream
 	public static async Task<ArchiverStream> Reader(string path)
 	{
 		var reader = new ArchiverStream(path, FileMode.Open, FileAccess.Read);
+		Console.WriteLine($"Read: {reader.CanRead} | Write: {reader.CanWrite}");
 		int bytesRead = 0;
 		var workingData = new byte[SIZEOF_HEADER];
 		while (bytesRead < SIZEOF_HEADER)
@@ -91,6 +99,7 @@ internal sealed class ArchiverStream : FileStream
 	public static async Task<ArchiverStream> Writer(string path, ArchiverType type)
 	{
 		var writer = new ArchiverStream(path, FileMode.Create, FileAccess.Write);
+		Console.WriteLine($"Read: {writer.CanRead} | Write: {writer.CanWrite}");
 		var workingData = new byte[SIZEOF_HEADER - 2];
 		switch (type)
 		{
@@ -123,7 +132,9 @@ internal sealed class ArchiverStream : FileStream
 	}
 	/* Properties */
 	public ArchiverType Type { get; private set; } = ArchiverType.Unknown;
-	private Chunk[] _Chunks;
+	private Chunk[]? _Chunks = null;
+	private readonly MemoryStream? _InternalBuffer = null;
 	/* Class Properties */
 	private const byte SIZEOF_HEADER = 8;
 }
+#nullable disable
