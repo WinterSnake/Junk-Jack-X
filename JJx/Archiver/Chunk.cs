@@ -105,6 +105,8 @@ internal sealed class WritableChunk : IDisposable
 		this._AddChunk(chunk);
 	}
 	public Task WriteAsync(byte[] bytes, int offset, int count) => this._InternalStream.WriteAsync(bytes, offset, count);
+	/* Static Methods */
+    public static implicit operator Stream(WritableChunk chunk) => chunk._InternalStream;
 	/* Properties */
 	private readonly Chunk.Type Id;
 	private readonly byte Version;

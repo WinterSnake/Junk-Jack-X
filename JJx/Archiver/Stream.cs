@@ -74,19 +74,17 @@ internal sealed class ArchiverStream : FileStream
 			var workingData = new byte[SIZEOF_HEADER - 2];
 			// Write Chunk Count
 			var chunkCount = (ushort)this._WriteChunks!.Count;
-			Console.WriteLine($"Chunks: {chunkCount}");
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), chunkCount, 0);
 			// Add UNKNOWN | Padding
-			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)0, 0);
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)0, 2);
 			this.Write(workingData, 0, workingData.Length);
 			// Calculate Origin
 			var origin = (uint)(SIZEOF_HEADER + 4 + (this._WriteChunks!.Count * Chunk.SIZE));
-			Console.WriteLine(origin);
 			// Write chunks
 			foreach (var chunk in this._WriteChunks!)
 				chunk.ToStream(this, origin);
 			// Write buffer
-			this._Buffer.Position = 0;
+			this._Buffer!.Position = 0;
 			this._Buffer!.CopyTo(this);
 			this._Buffer!.Dispose();
 			this._Buffer = null;

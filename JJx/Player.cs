@@ -61,7 +61,7 @@ public sealed class Player
 		this.Gameplay = new Gameplay(Difficulty.Normal, flags);
 		// Set items to none
 		for (var i = 0; i < this.Items.Length; ++i)
-			this.Items[i] = new Item(0, 0);
+			this.Items[i] = new Item(0xFFFF, 0);
 	}
 	private Player(Guid id, string name, Version version, Planet unlockedPlanets, Character character, Gameplay gameplay, Item[] items)
 	{
@@ -77,6 +77,57 @@ public sealed class Player
 	public async Task Save(string path)
 	{
 		using var stream = await ArchiverStream.Writer(path, ArchiverType.Player);
+		var workingData = new byte[BUFFER_SIZE];
+		/// Info
+		using (var info = stream.NewChunk(Chunk.Type.PlayerInfo))
+		{
+			// Uuid
+			var uuid = this.Id.ToByteArray();
+			await info.WriteAsync(uuid, 0, uuid.Length);
+			// Name
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), this._Name, length: SIZEOF_NAME);
+			await info.WriteAsync(workingData, 0, workingData.Length);
+			// Game Version
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)this.Version, 0);
+			// Themes/Unlocked Worlds
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)this.UnlockedPlanets, 4);
+			// Gameplay: Flags
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)this.Gameplay.Flags,  8);
+			// Character
+			this.Character.Pack(new Span<byte>(workingData), 12);
+			// =UNKNOWN=
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), (ushort)0, 14);
+			await info.WriteAsync(workingData, 0, workingData.Length);
+			// Gameplay: Difficulty
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), (byte)this.Gameplay.Difficulty, 1);
+			// =UNKNOWN=
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)0, 0);
+			await info.WriteAsync(workingData, 0, 4);
+		}
+		/// Inventory
+		using (var inventory = stream.NewChunk(Chunk.Type.PlayerInventory))
+		{
+			foreach (var item in this.Items)
+				await item.ToStream(inventory);
+		}
+		/// Craftbook
+		using (var craftbook = stream.NewChunk(Chunk.Type.PlayerCraftbook))
+		{
+			workingData = new byte[0x100];
+			await craftbook.WriteAsync(workingData, 0, workingData.Length);
+		}
+		/// Achievements
+		using (var craftbook = stream.NewChunk(Chunk.Type.PlayerAchievements, version: 1))
+		{
+			workingData = new byte[0x20];
+			await craftbook.WriteAsync(workingData, 0, workingData.Length);
+		}
+		/// Status
+		using (var craftbook = stream.NewChunk(Chunk.Type.PlayerStatus))
+		{
+			workingData = new byte[0x14];
+			await craftbook.WriteAsync(workingData, 0, workingData.Length);
+		}
 	}
 	/* Static Methods */
 	public static async Task<Player> Load(string path)
