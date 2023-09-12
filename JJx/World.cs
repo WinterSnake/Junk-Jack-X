@@ -36,31 +36,11 @@ using System.IO.Compression;
 
 namespace JJx;
 
-public enum InitSize : byte
-{
-	Tiny = 0x0,  // Size:  512 * 128
-	Small,       // Size:  768 * 256
-	Normal,      // Size: 1024 * 256
-	Large,       // Size: 2048 * 384
-	Huge,        // Size: 4096 * 512
-	Custom
-}
-
 public enum Gamemode : byte
 {
 	Survival = 0x0,
 	Creative,
 	Flat
-}
-
-[Flags]
-public enum Season : byte
-{
-	Spring = 0x1,
-	Summer = 0x2,
-	Autumn = 0x4,
-	Winter = 0x8,
-	None   = 0xF
 }
 
 public sealed class World

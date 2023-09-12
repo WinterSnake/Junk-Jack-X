@@ -1,6 +1,6 @@
 /*
 	Junk Jack X: World
-	- Planet
+	- Atmosphere
 
 	Written By: Ryan Smith
 */
@@ -24,4 +24,24 @@ public enum Planet : uint
 	Umbra  = 0x00000400,
 	Tor    = 0x00000800,
 	All    = Terra | Seth | Alba | Xeno | Magmar | Cryo | Yuca | Lilith | Thetis | Mykon | Umbra | Tor
+}
+
+[Flags]
+public enum Season : byte
+{
+	Spring = 0x1,
+	Summer = 0x2,
+	Autumn = 0x4,
+	Winter = 0x8,
+	None   = 0xF
+}
+
+public enum InitSize : byte
+{
+	Tiny = 0x0,  // Size:  512 * 128
+	Small,       // Size:  768 * 256
+	Normal,      // Size: 1024 * 256
+	Large,       // Size: 2048 * 384
+	Huge,        // Size: 4096 * 512
+	Custom
 }
