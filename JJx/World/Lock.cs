@@ -1,13 +1,12 @@
 /*
 	Junk Jack X: World
-	- Entity
+	- Lock
 
 	Segment Breakdown:
 	-----------------------------------------------------------------------
 	Segment[0x0 : 0x1] = X Position | Length: 2  (0x02) | Type: uint16
 	Segment[0x2 : 0x3] = Y Position | Length: 2  (0x02) | Type: uint16
 	Segment[0x4]       = Type       | Length: 1  (0x01) | Type: enum[uint8]
-	Segment[0x5 : 0x6] = Id         | Length: 2  (0x02) | Type: uint16
 	-----------------------------------------------------------------------
 
 	Written By: Ryan Smith
@@ -19,22 +18,21 @@ using System.Threading.Tasks;
 
 namespace JJx;
 
-public enum EntityType : byte
+public enum LockType : byte
 {
-	Creature,
-	Monster,
-	Pet,
-	Special,
+	Wooden   = 0x0A,
+	Iron     = 0x14,
+	Gold     = 0x28,
+	Titanium = 0x50
 }
 
-public sealed class Entity
+public sealed class Lock
 {
 	/* Constructors */
-	public Entity(ushort id, (ushort, ushort) position, EntityType type = EntityType.Creature)
+	public Lock(LockType type, (ushort, ushort) position)
 	{
-		this.Id = id;
-		this.Position = position;
 		this.Type = type;
+		this.Position = position;
 	}
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
@@ -45,12 +43,10 @@ public sealed class Entity
 		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Position.Y, 2);
 		// Type
 		Utilities.ByteConverter.Write(new Span<byte>(workingData), (byte)this.Type, 4);
-		// Id
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Id,         5);
 		await stream.WriteAsync(workingData, 0, workingData.Length);
 	}
 	/* Static Methods */
-	public static async Task<Entity> FromStream(Stream stream)
+	public static async Task<Lock> FromStream(Stream stream)
 	{
 		var bytesRead = 0;
 		var workingData = new byte[SIZE];
@@ -62,15 +58,12 @@ public sealed class Entity
 			Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 2)
 		);
 		// Type
-		var type = (EntityType)Utilities.ByteConverter.GetUInt8(new Span<byte>(workingData), 4);
-		// Id
-		var id = Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 5);
-		return new Entity(id, position, type);
+		var type = (LockType)Utilities.ByteConverter.GetUInt8(new Span<byte>(workingData), 4);
+		return new Lock(type, position);
 	}
 	/* Properties */
-	public ushort Id;
+	public LockType Type;
 	public (ushort X, ushort Y) Position;
-	public EntityType Type;
 	/* Class Properties */
-	private const byte SIZE = 7;
+	private const byte SIZE = 5;
 }

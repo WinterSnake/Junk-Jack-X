@@ -86,7 +86,8 @@ public sealed class World
 		Guid id, DateTime lastPlayed, Version version, string name, string author,
 		(ushort, ushort) size, (ushort, ushort) player, (ushort, ushort) spawn, Planet planet,
 		Season season, Gamemode gamemode, InitSize worldInitSize, InitSize skyInitSize, ushort[] borders,
-		Chest[] chests, Forge[] forges, Sign[] signs, Stable[] stables, Lab[] labs, Shelf[] shelves, Entity[] entities
+		Chest[] chests, Forge[] forges, Sign[] signs, Stable[] stables, Lab[] labs, Shelf[] shelves,
+		Lock[] locks, Entity[] entities
 	)
 	{
 		this.Id = id;
@@ -109,6 +110,7 @@ public sealed class World
 		this.Stables.AddRange(stables);
 		this.Labs.AddRange(labs);
 		this.Shelves.AddRange(shelves);
+		this.Locks.AddRange(locks);
 		this.Entities.AddRange(entities);
 	}
 	/* Instance Methods */
@@ -116,6 +118,10 @@ public sealed class World
 	{
 		using var stream = await ArchiverStream.Writer(path, ArchiverType.Map);
 		var workingData = new byte[BUFFER_SIZE];
+	}
+	public async Task SaveBlocks(string path)
+	{
+		using var stream = File.Open(path, FileMode.Create, FileAccess.Write);
 	}
 	/* Static Methods */
 	public static async Task<World> Load(string path)
@@ -288,7 +294,13 @@ public sealed class World
 		stream.Seek(4, SeekOrigin.Current);
 		/// Locks
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Locks Location: {stream.IsAtChunk(Chunk.Type.WorldLocks)} | Size: {stream.GetChunkSize(Chunk.Type.WorldLocks):X4}");
-		stream.Seek(4, SeekOrigin.Current);
+		bytesRead = 0;
+		while (bytesRead < SIZEOF_TILECOUNT)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
+		var lockCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
+		var locks = new Lock[lockCount];
+		for (var i = 0; i < locks.Length; ++i)
+			locks[i] = await Lock.FromStream(stream);
 		/// =UNKNOWN 11=
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = UNKOWN Location: {stream.IsAtChunk(Chunk.Type.WorldUnknown13)} | Size: {stream.GetChunkSize(Chunk.Type.WorldUnknown13):X4}");
 		stream.Seek(8, SeekOrigin.Current);
@@ -308,7 +320,7 @@ public sealed class World
 		return new World(
 			id, lastPlayed, version, name, author, worldSize, playerPos, spawnPos,
 			planet, season, gamemode, worldInitSize, skyInitSize, borders,
-			chests, forges, signs, stables, labs, shelves, entities
+			chests, forges, signs, stables, labs, shelves, locks, entities
 		);
 	}
 	/* Properties */
@@ -353,6 +365,7 @@ public sealed class World
 	public readonly List<Stable> Stables  = new List<Stable>();
 	public readonly List<Lab>    Labs     = new List<Lab>();
 	public readonly List<Shelf>  Shelves  = new List<Shelf>();
+	public readonly List<Lock>   Locks    = new List<Lock>();
 	public readonly List<Entity> Entities = new List<Entity>();
 	/* Class Properties */
 	private const byte BUFFER_SIZE           =  32;

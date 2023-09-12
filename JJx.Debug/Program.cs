@@ -107,6 +107,7 @@ internal static class Program
 		Console.WriteLine($"Stable Count: {world.Stables.Count}");
 		Console.WriteLine($"Lab Count: {world.Labs.Count}");
 		Console.WriteLine($"Shelves Count: {world.Shelves.Count}");
+		Console.WriteLine($"Lock Count: {world.Locks.Count}");
 		Console.WriteLine($"Entities Count: {world.Entities.Count}");
 	}
 }
