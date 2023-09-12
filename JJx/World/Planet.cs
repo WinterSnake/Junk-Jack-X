@@ -1,6 +1,8 @@
 /*
 	Junk Jack X: World
 	- Planet
+
+	Written By: Ryan Smith
 */
 using System;
 

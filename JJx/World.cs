@@ -15,11 +15,11 @@
 	Segment[0x13E     :      0x13F] = Player.Y                            | Length: 2   (0x2)  | Type: uint16                   | Parent: Player.Y
 	Segment[0x140     :      0x141] = Spawn.X                             | Length: 2   (0x2)  | Type: uint16                   | Parent: Spawn.X
 	Segment[0x142     :      0x143] = Spawn.Y                             | Length: 2   (0x2)  | Type: uint16                   | Parent: Spawn.Y
-	Segment[0x144     :      0x147] = Planet                              | Length: 4   (0x4)  | Type: enum flags
-	Segment[0x148]                  = Season                              | Length: 1   (0x1)  | Type: enum                     | Parent: Season
-	Segment[0x149]                  = Gamemode                            | Length: 1   (0x1)  | Type: enum                     | Parent: Gamemode
-	Segment[0x14A]                  = World Size                          | Length: 1   (0x1)  | Type: enum                     | Parent: Size
-	Segment[0x14B]                  = Sky Size                            | Length: 1   (0x1)  | Type: enum                     | Parent: Size
+	Segment[0x144     :      0x147] = Planet                              | Length: 4   (0x4)  | Type: enum flag[uint32]
+	Segment[0x148]                  = Season                              | Length: 1   (0x1)  | Type: enum[uint8]              | Parent: Season
+	Segment[0x149]                  = Gamemode                            | Length: 1   (0x1)  | Type: enum[uint8]              | Parent: Gamemode
+	Segment[0x14A]                  = World Size                          | Length: 1   (0x1)  | Type: enum[uint8]              | Parent: InitSize
+	Segment[0x14B]                  = Sky Size                            | Length: 1   (0x1)  | Type: enum[uint8]              | Parent: InitSize
 	Segment[0x14C     :      0x14F] = UNKNOWN FOR NOW                     | Length: 4   (0x4)  | Type: ???
 	Segment[0x150     :      0x1CF] = Padding                             | Length: 128 (0x80) | Type: uint32[32] = {0}
 	----------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -32,24 +32,88 @@ using System.Threading.Tasks;
 
 namespace JJx;
 
+public enum InitSize : byte
+{
+	Tiny = 0x0,  // Size:  512 * 128
+	Small,       // Size:  768 * 256
+	Normal,      // Size: 1024 * 256
+	Large,       // Size: 2048 * 384
+	Huge,        // Size: 4096 * 512
+	Custom
+}
+
+public enum Gamemode : byte
+{
+	Survival = 0x0,
+	Creative,
+	Flat
+}
+
+[Flags]
+public enum Season : byte
+{
+	Spring = 0x1,
+	Summer = 0x2,
+	Autumn = 0x4,
+	Winter = 0x8,
+	None   = 0xF
+}
+
 public sealed class World
 {
 	/* Constructors */
-	public World(string name, string author = "author")
+	public World(
+		string name, InitSize worldSize, string author = "author", InitSize skySize = InitSize.Normal,
+		Gamemode gamemode = Gamemode.Creative, Season season = Season.None, Planet planet = Planet.Terra,
+		(ushort, ushort)? customSize = null
+	)
 	{
 		this.Id = Guid.NewGuid();
 		this.LastPlayed = DateTime.Now;
 		this.Version = Version.Latest;
 		this.Name = name;
 		this.Author = author;
+		switch (worldSize)
+		{
+			case InitSize.Tiny:
+				this.Size = (512, 128); break;
+			case InitSize.Small:
+				this.Size = (768, 256); break;
+			case InitSize.Normal:
+				this.Size = (1024, 256); break;
+			case InitSize.Large:
+				this.Size = (2048, 384); break;
+			case InitSize.Huge:
+				this.Size = (4096, 512); break;
+			case InitSize.Custom:
+				this.Size = customSize.Value; break;
+		}
+		this.Player = (0, 1);
+		this.Spawn  = (0, 1);
+		this.Season = season;
+		this.Gamemode = gamemode;
+		this.WorldInitSize = worldSize;
+		this.SkyInitSize = skySize;
 	}
-	private World(Guid id, DateTime lastPlayed, Version version, string name, string author)
+	private World(
+		Guid id, DateTime lastPlayed, Version version, string name, string author,
+		(ushort, ushort) size, (ushort, ushort) player, (ushort, ushort) spawn, Planet planet,
+		Season season, Gamemode gamemode, InitSize worldInitSize, InitSize skyInitSize
+	)
 	{
 		this.Id = id;
 		this.LastPlayed = lastPlayed;
 		this.Version = version;
 		this._Name = name;
 		this._Author = author;
+		this.Size = size;
+		this.Player = player;
+		this.Spawn = spawn;
+		this.Planet = planet;
+		this.Season = season;
+		this.Gamemode = gamemode;
+		this.WorldInitSize = worldInitSize;
+		this.SkyInitSize = skyInitSize;
 	}
 	/* Instance Methods */
 	public async Task Save(string path)
@@ -90,12 +154,49 @@ public sealed class World
 		while (bytesRead < SIZEOF_AUTHOR)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_AUTHOR - bytesRead);
 		var author = Utilities.ByteConverter.GetString(new Span<byte>(workingData));
+		// {World Size, Player Location, Spawn Location}
+		bytesRead = 0;
+		while (bytesRead < SIZEOF_POSITION)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_POSITION - bytesRead);
+			// World Size
+			var worldSize = (
+				Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData),  0),
+				Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData),  2)
+			);
+			// Player Location
+			var playerPos = (
+				Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData),  4),
+				Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData),  6)
+			);
+			// Spawn Location
+			var spawnPos = (
+				Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData),  8),
+				Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 10)
+			);
+		// Planet
+		bytesRead = 0;
+		while (bytesRead < SIZEOF_PLANET)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_PLANET - bytesRead);
+		var planet = (Planet)Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
+		// Season
+		var season = (Season)((byte)stream.ReadByte());
+		// Gamemode
+		var gamemode = (Gamemode)((byte)stream.ReadByte());
+		// World Init Size
+		var worldInitSize = (InitSize)((byte)stream.ReadByte());
+		// Sky Init Size
+		var skyInitSize = (InitSize)((byte)stream.ReadByte());
+		// =UNKNOWN=
+		stream.Seek(4, SeekOrigin.Current);
+		// Padding
+		stream.Seek(SIZEOF_PADDING, SeekOrigin.Current);
 		/// Border
 		Console.WriteLine($"position = border: {stream.AtChunk(Chunk.Type.WorldBorders)}");
 		/// Blocks
-		return new World(id, lastPlayed, version, name, author);
+		return new World(id, lastPlayed, version, name, author, worldSize, playerPos, spawnPos, planet, season, gamemode, worldInitSize, skyInitSize);
 	}
 	/* Properties */
+	// Info
 	public readonly Guid Id;
 	public DateTime LastPlayed;
 	public readonly Version Version;
@@ -117,11 +218,23 @@ public sealed class World
 			else this._Author = value.Substring(0, SIZEOF_AUTHOR - 1);
 		}
 	}
+	public (ushort width, ushort height) Size;
+	public (ushort x, ushort y) Player;
+	public (ushort x, ushort y) Spawn;
+	public Planet Planet;
+	public Season Season;
+	public Gamemode Gamemode;
+	public readonly InitSize WorldInitSize;
+	public readonly InitSize SkyInitSize;
+	// Border
 	/* Class Properties */
-	private const byte BUFFER_SIZE           = 32;
-	private const byte SIZEOF_UUID           = 16;
-	private const byte SIZEOF_TIMESTAMP      =  4;
-	private const byte SIZEOF_VERSION        =  4;
-	private const byte SIZEOF_NAME           = 32;
-	private const byte SIZEOF_AUTHOR         = 16;
+	private const byte BUFFER_SIZE           =  32;
+	private const byte SIZEOF_UUID           =  16;
+	private const byte SIZEOF_TIMESTAMP      =   4;
+	private const byte SIZEOF_VERSION        =   4;
+	private const byte SIZEOF_NAME           =  32;
+	private const byte SIZEOF_AUTHOR         =  16;
+	private const byte SIZEOF_POSITION       = 2 * 6;  // World.Width, World.Height, Player.X, Player.Y, Spawn.X, Spawn.Y
+	private const byte SIZEOF_PLANET         =   4;
+	private const byte SIZEOF_PADDING        = 128;
 }

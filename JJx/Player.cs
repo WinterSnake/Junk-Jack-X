@@ -7,7 +7,7 @@
 	Segment[0x48  : 0x57]  = UUID                   | Length: 16  (0x10)  | Type: uuid
 	Segment[0x58  : 0x67]  = Name                   | Length: 16  (0x10)  | Type: char*
 	Segment[0x68  : 0x6B]  = Game Version           | Length: 4   (0x4)   | Type: enum[uint32]      | Parent: JJx.Version
-	Segment[0x6C  : 0x6F]  = Theme\Unlocked Planets | Length: 4   (0x4)   | Type: enum flag[uint32] | Parent: World.Planet [Follow todo and make world enum flag]
+	Segment[0x6C  : 0x6F]  = Theme\Unlocked Planets | Length: 4   (0x4)   | Type: enum flag[uint32] | Parent: World.Planet
 	Segment[0x70  : 0x73]  = Gameplay Flags         | Length: 4   (0x4)   | Type: enum flag[uint32] | Parent: Gameplay.Flags
 	Segment[0x74]          = Hair Color             | Length: 1   (0x1)   | Type: bitfield          | Parent: Character
 	Segment[0x75]          = Gender/Skin/Hair       | Length: 1   (0x1)   | Type: bitfield          | Parent: Character

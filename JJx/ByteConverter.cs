@@ -68,7 +68,7 @@ internal static class ByteConverter
 			bytes.Slice(offset, bytes.IndexOf(byte.MinValue))
 		);
 	}
-	public static DateTime GetDateTime(ReadOnlySpan<byte> bytes, int offset = 0) => DateTimeOffset.FromUnixTimeSeconds(GetUInt32(bytes, offset)).DateTime;
+	public static DateTime GetDateTime(ReadOnlySpan<byte> bytes, int offset = 0) => DateTimeOffset.FromUnixTimeSeconds(GetUInt32(bytes, offset)).LocalDateTime;
 	// Write
 	public static void Write(Span<byte> bytes, bool @value, int offset = 0)
 	{
