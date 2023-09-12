@@ -29,6 +29,7 @@
 	Written By: Ryan Smith
 */
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.IO.Compression;
@@ -104,7 +105,8 @@ public sealed class World
 	private World(
 		Guid id, DateTime lastPlayed, Version version, string name, string author,
 		(ushort, ushort) size, (ushort, ushort) player, (ushort, ushort) spawn, Planet planet,
-		Season season, Gamemode gamemode, InitSize worldInitSize, InitSize skyInitSize, ushort[] borders
+		Season season, Gamemode gamemode, InitSize worldInitSize, InitSize skyInitSize, ushort[] borders,
+		Chest[] chests
 	)
 	{
 		this.Id = id;
@@ -121,6 +123,7 @@ public sealed class World
 		this.WorldInitSize = worldInitSize;
 		this.SkyInitSize = skyInitSize;
 		this.Borders = borders;
+		this.Chests.AddRange(chests);
 	}
 	/* Instance Methods */
 	public async Task Save(string path)
@@ -236,12 +239,13 @@ public sealed class World
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Weather Location: {stream.IsAtChunk(Chunk.Type.WorldWeather)} | Size: {stream.GetChunkSize(Chunk.Type.WorldWeather):X4}");
 		stream.Seek(8, SeekOrigin.Current);
 		/// Chests
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Chests Location: {stream.IsAtChunk(Chunk.Type.WorldChests)} | Size: {stream.GetChunkSize(Chunk.Type.WorldChests):X4}");
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
 		var chestCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
-		Console.WriteLine($"Chests: {chestCount}");
+		var chests = new Chest[chestCount];
+		for (var i = 0; i < chestCount; ++i)
+			chests[i] = await Chest.FromStream(stream);
 		/// Forges
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Forges Location: {stream.IsAtChunk(Chunk.Type.WorldForges)} | Size: {stream.GetChunkSize(Chunk.Type.WorldForges):X4}");
 		bytesRead = 0;
@@ -302,7 +306,11 @@ public sealed class World
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
 		var entityCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
 		Console.WriteLine($"Entities: {entityCount}");
-		return new World(id, lastPlayed, version, name, author, worldSize, playerPos, spawnPos, planet, season, gamemode, worldInitSize, skyInitSize, borders);
+		return new World(
+			id, lastPlayed, version, name, author, worldSize, playerPos, spawnPos,
+			planet, season, gamemode, worldInitSize, skyInitSize, borders,
+			chests
+		);
 	}
 	/* Properties */
 	// Info
@@ -335,8 +343,12 @@ public sealed class World
 	public Gamemode Gamemode;
 	public readonly InitSize WorldInitSize;
 	public readonly InitSize SkyInitSize;
-	public ushort[] Borders { get; private set; }
 	// Border
+	public ushort[] Borders { get; private set; }
+	// Time
+	// Weather
+	// Containers {Chest}
+	public readonly List<Chest> Chests = new List<Chest>();
 	/* Class Properties */
 	private const byte BUFFER_SIZE           =  32;
 	private const byte SIZEOF_UUID           =  16;
