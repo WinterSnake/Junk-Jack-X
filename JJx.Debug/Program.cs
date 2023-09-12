@@ -58,7 +58,7 @@ internal static class Program
 				world = await JJx.World.Load(args[2]);
 			}
 			else
-				world = new JJx.World(args[1]);
+				world = new JJx.World(args[1], JJx.InitSize.Normal);
 			// Edit world
 			PrintWorld(world);
 			// Save world
@@ -92,6 +92,17 @@ internal static class Program
 		Console.WriteLine($"Last Played: {world.LastPlayed}");
 		Console.WriteLine($"Version: {world.Version}");
 		Console.WriteLine($"Name: {world.Name}");
-		Console.WriteLine($"Name: {world.Author}");
+		Console.WriteLine($"Author: {world.Author}");
+		Console.WriteLine($"Size: {world.Size}");
+		Console.WriteLine($"Player: {world.Player}");
+		Console.WriteLine($"Spawn: {world.Spawn}");
+		Console.WriteLine($"Planet: {world.Planet}");
+		Console.WriteLine($"Season: {world.Season}");
+		Console.WriteLine($"Gamemode: {world.Gamemode}");
+		Console.WriteLine($"World Init Size: {world.WorldInitSize}");
+		Console.WriteLine($"Sky Init Size: {world.SkyInitSize}");
+		Console.WriteLine("Borders:");
+		foreach (var border in world.Borders)
+			Console.WriteLine($"\t{border:X2}");
 	}
 }

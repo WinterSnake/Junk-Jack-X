@@ -103,6 +103,7 @@ internal sealed class Chunk
 		WorldUnknown14     = 0x0010,
 		WorldUnknown15     = 0x0013,
 		WorldUnknown16     = 0x0000,
+		WorldUnknown17     = 0x0003,
 	}
 }
 

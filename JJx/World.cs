@@ -22,6 +22,8 @@
 	Segment[0x14B]                  = Sky Size                            | Length: 1   (0x1)  | Type: enum[uint8]              | Parent: InitSize
 	Segment[0x14C     :      0x14F] = UNKNOWN FOR NOW                     | Length: 4   (0x4)  | Type: ???
 	Segment[0x150     :      0x1CF] = Padding                             | Length: 128 (0x80) | Type: uint32[32] = {0}
+	G:<Border>
+
 	----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	Written By: Ryan Smith
@@ -94,11 +96,14 @@ public sealed class World
 		this.Gamemode = gamemode;
 		this.WorldInitSize = worldSize;
 		this.SkyInitSize = skySize;
+		this.Borders = new ushort[this.Size.Width];
+		for (var i = 0; i < this.Borders.Length; ++i)
+			this.Borders[i] = (ushort)(this.Size.Height / 2);
 	}
 	private World(
 		Guid id, DateTime lastPlayed, Version version, string name, string author,
 		(ushort, ushort) size, (ushort, ushort) player, (ushort, ushort) spawn, Planet planet,
-		Season season, Gamemode gamemode, InitSize worldInitSize, InitSize skyInitSize
+		Season season, Gamemode gamemode, InitSize worldInitSize, InitSize skyInitSize, ushort[] borders
 	)
 	{
 		this.Id = id;
@@ -114,6 +119,7 @@ public sealed class World
 		this.Gamemode = gamemode;
 		this.WorldInitSize = worldInitSize;
 		this.SkyInitSize = skyInitSize;
+		this.Borders = borders;
 	}
 	/* Instance Methods */
 	public async Task Save(string path)
@@ -156,10 +162,10 @@ public sealed class World
 		var author = Utilities.ByteConverter.GetString(new Span<byte>(workingData));
 		// {World Size, Player Location, Spawn Location}
 		bytesRead = 0;
-		while (bytesRead < SIZEOF_POSITION)
-			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_POSITION - bytesRead);
+		while (bytesRead < SIZEOF_POSITIONS)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_POSITIONS - bytesRead);
 			// World Size
-			var worldSize = (
+			(ushort width, ushort height) worldSize = (
 				Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData),  0),
 				Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData),  2)
 			);
@@ -191,9 +197,23 @@ public sealed class World
 		// Padding
 		stream.Seek(SIZEOF_PADDING, SeekOrigin.Current);
 		/// Border
-		Console.WriteLine($"position = border: {stream.AtChunk(Chunk.Type.WorldBorders)}");
+		Console.WriteLine($"Position: {stream.Position:X8} | | Postion = Border Location: {stream.AtChunk(Chunk.Type.WorldBorders)}");
+		var borders = new ushort[worldSize.width];
+		for (var i = 0; i < borders.Length / (workingData.Length / 2); ++i)
+		{
+			bytesRead = 0;
+			while (bytesRead < workingData.Length)
+				bytesRead += await stream.ReadAsync(workingData, bytesRead, workingData.Length - bytesRead);
+			for (var j = 0; j < workingData.Length / 2; ++j)
+			{
+				var index = j + (i * (workingData.Length / 2));
+				var offset = j * 2;
+				borders[index] = Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), offset);
+			}
+		}
 		/// Blocks
-		return new World(id, lastPlayed, version, name, author, worldSize, playerPos, spawnPos, planet, season, gamemode, worldInitSize, skyInitSize);
+		Console.WriteLine($"Position: {stream.Position:X8} | | Postion = Block Location: {stream.AtChunk(Chunk.Type.WorldBlocks)}");
+		return new World(id, lastPlayed, version, name, author, worldSize, playerPos, spawnPos, planet, season, gamemode, worldInitSize, skyInitSize, borders);
 	}
 	/* Properties */
 	// Info
@@ -218,14 +238,15 @@ public sealed class World
 			else this._Author = value.Substring(0, SIZEOF_AUTHOR - 1);
 		}
 	}
-	public (ushort width, ushort height) Size;
-	public (ushort x, ushort y) Player;
-	public (ushort x, ushort y) Spawn;
+	public (ushort Width, ushort Height) Size { get; private set; }
+	public (ushort X, ushort Y) Player;
+	public (ushort X, ushort Y) Spawn;
 	public Planet Planet;
 	public Season Season;
 	public Gamemode Gamemode;
 	public readonly InitSize WorldInitSize;
 	public readonly InitSize SkyInitSize;
+	public ushort[] Borders { get; private set; }
 	// Border
 	/* Class Properties */
 	private const byte BUFFER_SIZE           =  32;
@@ -234,7 +255,7 @@ public sealed class World
 	private const byte SIZEOF_VERSION        =   4;
 	private const byte SIZEOF_NAME           =  32;
 	private const byte SIZEOF_AUTHOR         =  16;
-	private const byte SIZEOF_POSITION       = 2 * 6;  // World.Width, World.Height, Player.X, Player.Y, Spawn.X, Spawn.Y
+	private const byte SIZEOF_POSITIONS      = 2 * 6;  // World.Width, World.Height, Player.X, Player.Y, Spawn.X, Spawn.Y
 	private const byte SIZEOF_PLANET         =   4;
 	private const byte SIZEOF_PADDING        = 128;
 }
