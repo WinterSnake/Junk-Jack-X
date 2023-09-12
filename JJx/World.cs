@@ -237,22 +237,46 @@ public sealed class World
 		stream.Seek(8, SeekOrigin.Current);
 		/// Chests
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Chests Location: {stream.IsAtChunk(Chunk.Type.WorldChests)} | Size: {stream.GetChunkSize(Chunk.Type.WorldChests):X4}");
-		stream.Seek(4, SeekOrigin.Current);
+		bytesRead = 0;
+		while (bytesRead < SIZEOF_TILECOUNT)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
+		var chestCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
+		Console.WriteLine($"Chests: {chestCount}");
 		/// Forges
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Forges Location: {stream.IsAtChunk(Chunk.Type.WorldForges)} | Size: {stream.GetChunkSize(Chunk.Type.WorldForges):X4}");
-		stream.Seek(4, SeekOrigin.Current);
+		bytesRead = 0;
+		while (bytesRead < SIZEOF_TILECOUNT)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
+		var forgeCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
+		Console.WriteLine($"Forges: {forgeCount}");
 		/// Signs
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Signs Location: {stream.IsAtChunk(Chunk.Type.WorldSigns)} | Size: {stream.GetChunkSize(Chunk.Type.WorldSigns):X4}");
-		stream.Seek(4, SeekOrigin.Current);
+		bytesRead = 0;
+		while (bytesRead < SIZEOF_TILECOUNT)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
+		var signCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
+		Console.WriteLine($"Signs: {signCount}");
 		/// Stables
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Stables Location: {stream.IsAtChunk(Chunk.Type.WorldStables)} | Size: {stream.GetChunkSize(Chunk.Type.WorldStables):X4}");
-		stream.Seek(4, SeekOrigin.Current);
+		bytesRead = 0;
+		while (bytesRead < SIZEOF_TILECOUNT)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
+		var stableCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
+		Console.WriteLine($"Stables: {stableCount}");
 		/// Labs
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Labs Location: {stream.IsAtChunk(Chunk.Type.WorldLabs)} | Size: {stream.GetChunkSize(Chunk.Type.WorldLabs):X4}");
-		stream.Seek(4, SeekOrigin.Current);
+		bytesRead = 0;
+		while (bytesRead < SIZEOF_TILECOUNT)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
+		var labCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
+		Console.WriteLine($"Labs: {labCount}");
 		/// Shelves
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Shelves Location: {stream.IsAtChunk(Chunk.Type.WorldShelves)} | Size: {stream.GetChunkSize(Chunk.Type.WorldShelves):X4}");
-		stream.Seek(4, SeekOrigin.Current);
+		bytesRead = 0;
+		while (bytesRead < SIZEOF_TILECOUNT)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
+		var shelfCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
+		Console.WriteLine($"Shelves: {shelfCount}");
 		/// =UNKNOWN 07=
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = UNKOWN Location: {stream.IsAtChunk(Chunk.Type.WorldUnknown09)} | Size: {stream.GetChunkSize(Chunk.Type.WorldUnknown09):X4}");
 		stream.Seek(4, SeekOrigin.Current);
@@ -273,7 +297,11 @@ public sealed class World
 		stream.Seek(16, SeekOrigin.Current);
 		/// Entities
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Entities Location: {stream.IsAtChunk(Chunk.Type.WorldEntities)} | Size: {stream.GetChunkSize(Chunk.Type.WorldEntities):X4}");
-		stream.Seek(4, SeekOrigin.Current);
+		bytesRead = 0;
+		while (bytesRead < SIZEOF_TILECOUNT)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
+		var entityCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
+		Console.WriteLine($"Entities: {entityCount}");
 		return new World(id, lastPlayed, version, name, author, worldSize, playerPos, spawnPos, planet, season, gamemode, worldInitSize, skyInitSize, borders);
 	}
 	/* Properties */
@@ -319,4 +347,5 @@ public sealed class World
 	private const byte SIZEOF_POSITIONS      = 2 * 6;  // World.Width, World.Height, Player.X, Player.Y, Spawn.X, Spawn.Y
 	private const byte SIZEOF_PLANET         =   4;
 	private const byte SIZEOF_PADDING        = 128;
+	private const byte SIZEOF_TILECOUNT      =   4;
 }
