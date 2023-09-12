@@ -8,68 +8,90 @@ using System.IO;
 using System.Threading.Tasks;
 using JJx;
 
-internal class Program
+/*
+
+	Usage:
+	<program> --player "name" [--store]
+	<program> --player --load <path> [--store]
+
+*/
+internal static class Program
 {
 	/* Static Methods */
 	private static async Task Main(string[] args)
 	{
-		if (args.Length < 2 || args.Length > 3) return;
+		if (args.Length < 2) return;
 		// Player Editing
 		if (args[0] == "-p" || args[0] == "--player")
 		{
+			// Create or load player
+			bool loaded = false;
 			JJx.Player player;
-			// Read player from file
-			Console.WriteLine("Loading player from file...");
-			using (var fs = File.Open(args[1], FileMode.Open, FileAccess.Read))
+			if (args.Length > 2 && (args[1] == "-l" || args[1] == "--load"))
 			{
-				player = await Player.FromStream(fs);
+				loaded = true;
+				player = await JJx.Player.Load(args[2]);
 			}
-			// Do changes
-			// Write player to file (if flagged)
-			if (args.Length == 2 || (args.Length == 3 && args[2] != "--store")) return;
-			Console.WriteLine("Writing player to file...");
-			using (var fs = File.Open(args[1], FileMode.Open, FileAccess.Write))
+			else
+				player = new JJx.Player(args[1]);
+			// Edit player
+			PrintPlayer(player);
+			// Save player
+			if (
+				(args.Length > 2 && (args[2] == "-s" || args[2] == "--store")) ||
+				(args.Length > 3 && (args[3] == "-s" || args[3] == "--store"))
+			)
 			{
-				await player.ToStream(fs);
+				string path = loaded ? args[2] : player.Name + ".dat";
+				await player.Save(path);
 			}
 		}
 		// World Editing
-		else if (args[0] == "-w" || args[0] == "--world")
+		if (args[0] == "-w" || args[0] == "--world")
 		{
+			// Create or load world
+			bool loaded = false;
 			JJx.World world;
-			// Read world from file
-			Console.WriteLine("Loading world from file..");
-			using (var fs = File.Open(args[1], FileMode.Open, FileAccess.Read))
+			if (args.Length > 2 && (args[1] == "-l" || args[1] == "--load"))
 			{
-				world = await World.FromStream(fs);
+				loaded = true;
+				world = await JJx.World.Load(args[2]);
 			}
-			// Do changes
-			// Write world to file (if flagged)
-			if (args.Length == 2 || (args.Length == 3 && args[2] != "--store")) return;
-			Console.WriteLine("Writing world to file..");
-			using (var fs = File.Open(args[1], FileMode.Open, FileAccess.Write))
+			else
+				world = new JJx.World(args[1]);
+			// Edit world
+			PrintWorld(world);
+			// Save world
+			if (
+				(args.Length > 2 && (args[2] == "-s" || args[2] == "--store")) ||
+				(args.Length > 3 && (args[3] == "-s" || args[3] == "--store"))
+			)
 			{
-				await world.ToStream(fs);
-			}
-		}
-		// Adventure Editing
-		else if (args[0] == "-a" || args[0] == "--adventure")
-		{
-			JJx.Adventure adventure;
-			// Read world from file
-			Console.WriteLine("Loading adventure from file..");
-			using (var fs = File.Open(args[1], FileMode.Open, FileAccess.Read))
-			{
-				adventure = await Adventure.FromStream(fs);
-			}
-			// Do changes
-			// Write world to file (if flagged)
-			if (args.Length == 2 || (args.Length == 3 && args[2] != "--store")) return;
-			Console.WriteLine("Writing adventure to file..");
-			using (var fs = File.Open(args[1], FileMode.Open, FileAccess.Write))
-			{
-				await adventure.ToStream(fs);
+				string path = loaded ? args[2] : world.Name + ".dat";
+				await world.Save(path);
 			}
 		}
+	}
+	private static void PrintPlayer(JJx.Player player)
+	{
+		Console.WriteLine($"Id: {player.Id}");
+		Console.WriteLine($"Name: {player.Name}");
+		Console.WriteLine($"Version: {player.Version}");
+		Console.WriteLine($"Unlocked Planets: {player.UnlockedPlanets}");
+		var gender = player.Character.Gender ? "Female" : "Male";
+		Console.WriteLine($"Character.Gender: {gender}");
+		Console.WriteLine($"Character.SkinTone: {player.Character.SkinTone}");
+		Console.WriteLine($"Character.HairStyle: {player.Character.HairStyle}");
+		Console.WriteLine($"Character.HairColor: {player.Character.HairColor}");
+		Console.WriteLine($"Gameplay.Difficulty: {player.Gameplay.Difficulty}");
+		Console.WriteLine($"Gameplay.Flags: {player.Gameplay.Flags}");
+	}
+	private static void PrintWorld(JJx.World world)
+	{
+		Console.WriteLine($"Id: {world.Id}");
+		Console.WriteLine($"Last Played: {world.LastPlayed}");
+		Console.WriteLine($"Version: {world.Version}");
+		Console.WriteLine($"Name: {world.Name}");
+		Console.WriteLine($"Name: {world.Author}");
 	}
 }

@@ -68,6 +68,10 @@ internal static class ByteConverter
 			bytes.Slice(offset, bytes.IndexOf(byte.MinValue))
 		);
 	}
+	public static DateTime GetDateTime(ReadOnlySpan<byte> bytes, int offset = 0)
+	{
+		return DateTime.Now;
+	}
 	// Write
 	public static void Write(Span<byte> bytes, bool @value, int offset = 0)
 	{
@@ -115,5 +119,9 @@ internal static class ByteConverter
 		{
 			bytes[i] = i < valueBytes.Length ? valueBytes[i] : (byte)0;
 		}
+	}
+	public static void Write(Span<byte> bytes, DateTime @value, int offset = 0)
+	{
+
 	}
 }
