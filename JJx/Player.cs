@@ -79,7 +79,7 @@ public sealed class Player
 		using var stream = await ArchiverStream.Writer(path, ArchiverType.Player);
 		var workingData = new byte[BUFFER_SIZE];
 		/// Info
-		using (var info = stream.NewChunk(Chunk.Type.PlayerInfo))
+		using (var info = stream.NewChunk(ChunkType.PlayerInfo))
 		{
 			// Uuid
 			var uuid = this.Id.ToByteArray();
@@ -107,25 +107,25 @@ public sealed class Player
 			await info.WriteAsync(workingData, 0, 4);
 		}
 		/// Inventory
-		using (var inventory = stream.NewChunk(Chunk.Type.PlayerInventory))
+		using (var inventory = stream.NewChunk(ChunkType.PlayerInventory))
 		{
 			foreach (var item in this.Items)
 				await item.ToStream(inventory);
 		}
 		/// Craftbook
-		using (var craftbook = stream.NewChunk(Chunk.Type.PlayerCraftbook))
+		using (var craftbook = stream.NewChunk(ChunkType.PlayerCraftbook))
 		{
 			workingData = new byte[0x100];
 			await craftbook.WriteAsync(workingData, 0, workingData.Length);
 		}
 		/// Achievements
-		using (var craftbook = stream.NewChunk(Chunk.Type.PlayerAchievements, version: 1))
+		using (var craftbook = stream.NewChunk(ChunkType.PlayerAchievements, version: 1))
 		{
 			workingData = new byte[0x20];
 			await craftbook.WriteAsync(workingData, 0, workingData.Length);
 		}
 		/// Status
-		using (var craftbook = stream.NewChunk(Chunk.Type.PlayerStatus))
+		using (var craftbook = stream.NewChunk(ChunkType.PlayerStatus))
 		{
 			workingData = new byte[0x14];
 			await craftbook.WriteAsync(workingData, 0, workingData.Length);
