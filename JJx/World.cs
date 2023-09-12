@@ -86,7 +86,7 @@ public sealed class World
 		Guid id, DateTime lastPlayed, Version version, string name, string author,
 		(ushort, ushort) size, (ushort, ushort) player, (ushort, ushort) spawn, Planet planet,
 		Season season, Gamemode gamemode, InitSize worldInitSize, InitSize skyInitSize, ushort[] borders,
-		Chest[] chests
+		Chest[] chests, Forge[] forges, Sign[] signs, Stable[] stables, Lab[] labs, Shelf[] shelves, Entity[] entities
 	)
 	{
 		this.Id = id;
@@ -104,6 +104,12 @@ public sealed class World
 		this.SkyInitSize = skyInitSize;
 		this.Borders = borders;
 		this.Chests.AddRange(chests);
+		this.Forges.AddRange(forges);
+		this.Signs.AddRange(signs);
+		this.Stables.AddRange(stables);
+		this.Labs.AddRange(labs);
+		this.Shelves.AddRange(shelves);
+		this.Entities.AddRange(entities);
 	}
 	/* Instance Methods */
 	public async Task Save(string path)
@@ -224,7 +230,7 @@ public sealed class World
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
 		var chestCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
 		var chests = new Chest[chestCount];
-		for (var i = 0; i < chestCount; ++i)
+		for (var i = 0; i < chests.Length; ++i)
 			chests[i] = await Chest.FromStream(stream);
 		/// Forges
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Forges Location: {stream.IsAtChunk(Chunk.Type.WorldForges)} | Size: {stream.GetChunkSize(Chunk.Type.WorldForges):X4}");
@@ -232,35 +238,45 @@ public sealed class World
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
 		var forgeCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
-		Console.WriteLine($"Forges: {forgeCount}");
+		var forges = new Forge[forgeCount];
+		for (var i = 0; i < forges.Length; ++i)
+			forges[i] = await Forge.FromStream(stream);
 		/// Signs
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Signs Location: {stream.IsAtChunk(Chunk.Type.WorldSigns)} | Size: {stream.GetChunkSize(Chunk.Type.WorldSigns):X4}");
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
 		var signCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
-		Console.WriteLine($"Signs: {signCount}");
+		var signs = new Sign[signCount];
+		for (var i = 0; i < signs.Length; ++i)
+			signs[i] = await Sign.FromStream(stream);
 		/// Stables
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Stables Location: {stream.IsAtChunk(Chunk.Type.WorldStables)} | Size: {stream.GetChunkSize(Chunk.Type.WorldStables):X4}");
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
 		var stableCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
-		Console.WriteLine($"Stables: {stableCount}");
+		var stables = new Stable[stableCount];
+		for (var i = 0; i < stables.Length; ++i)
+			stables[i] = await Stable.FromStream(stream);
 		/// Labs
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Labs Location: {stream.IsAtChunk(Chunk.Type.WorldLabs)} | Size: {stream.GetChunkSize(Chunk.Type.WorldLabs):X4}");
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
 		var labCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
-		Console.WriteLine($"Labs: {labCount}");
+		var labs = new Lab[labCount];
+		for (var i = 0; i < labs.Length; ++i)
+			labs[i] = await Lab.FromStream(stream);
 		/// Shelves
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Shelves Location: {stream.IsAtChunk(Chunk.Type.WorldShelves)} | Size: {stream.GetChunkSize(Chunk.Type.WorldShelves):X4}");
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
 		var shelfCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
-		Console.WriteLine($"Shelves: {shelfCount}");
+		var shelves = new Shelf[shelfCount];
+		for (var i = 0; i < shelves.Length; ++i)
+			shelves[i] = await Shelf.FromStream(stream);
 		/// =UNKNOWN 07=
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = UNKOWN Location: {stream.IsAtChunk(Chunk.Type.WorldUnknown09)} | Size: {stream.GetChunkSize(Chunk.Type.WorldUnknown09):X4}");
 		stream.Seek(4, SeekOrigin.Current);
@@ -285,11 +301,14 @@ public sealed class World
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
 		var entityCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
-		Console.WriteLine($"Entities: {entityCount}");
+		var entities = new Entity[entityCount];
+		for (var i = 0; i < entities.Length; ++i)
+			entities[i] = await Entity.FromStream(stream);
+
 		return new World(
 			id, lastPlayed, version, name, author, worldSize, playerPos, spawnPos,
 			planet, season, gamemode, worldInitSize, skyInitSize, borders,
-			chests
+			chests, forges, signs, stables, labs, shelves, entities
 		);
 	}
 	/* Properties */
