@@ -3,16 +3,15 @@
 	- Lab
 
 	Segment Breakdown:
-	--------------------------------
-	Segment[0x0 : 0x3] = X Position | Length: 4  (0x4) | Type: uint32
-	Segment[0x4 : 0x7] = Y Position | Length: 4  (0x4) | Type: uint32
-	Segment[0x8 : 0xB] = Item Count | Length: 4  (0x4) | Type: uint32
-	--------------------------------
+	----------------------------------------------------------------
+	Segment[0x0 : 0x1] = X Position | Length: 2 (0x2) | Type: uint16
+	Segment[0x2 : 0x3] = Y Position | Length: 2 (0x2) | Type: uint16
+	----------------------------------------------------------------
+	Size: 4 (0x4)
 
 	Written By: Ryan Smith
 */
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
