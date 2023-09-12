@@ -3,13 +3,15 @@
 	- Block
 
 	Segment Breakdown:
-	--------------------------------
-	--------------------------------
+	------------------------------------------------------------------
+	------------------------------------------------------------------
+	Size: 16 (0x10)
+
 
 	Written By: Ryan Smith
 */
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -18,20 +20,27 @@ namespace JJx;
 public sealed class Block
 {
 	/* Constructors */
-	public Block()
+	private Block(byte[] buffer)
 	{
-
+		this._Block = buffer;
 	}
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
 	{
-
+		await stream.WriteAsync(this._Block, 0, this._Block.Length);
 	}
 	/* Static Methods */
 	public static async Task<Block> FromStream(Stream stream)
 	{
-		return new Block();
+		var bytesRead = 0;
+		var workingData = new byte[SIZE];
+		while (bytesRead < SIZE)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZE - bytesRead);
+		Console.WriteLine($"Block: [{String.Join(", ", workingData.Select(x => x.ToString("X2")))}]");
+		return new Block(workingData);
 	}
 	/* Properties */
+	public byte[] _Block;
 	/* Class Properties */
+	private const byte SIZE = 16;
 }

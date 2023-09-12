@@ -81,13 +81,14 @@ public sealed class World
 		this.Borders = new ushort[this.Size.Width];
 		for (var i = 0; i < this.Borders.Length; ++i)
 			this.Borders[i] = (ushort)(this.Size.Height / 2);
+		this.Blocks = new Block[this.Size.Width * this.Size.Height];
 	}
 	private World(
 		Guid id, DateTime lastPlayed, Version version, string name, string author,
 		(ushort, ushort) size, (ushort, ushort) player, (ushort, ushort) spawn, Planet planet,
 		Season season, Gamemode gamemode, InitSize worldInitSize, InitSize skyInitSize, ushort[] borders,
-		Chest[] chests, Forge[] forges, Sign[] signs, Stable[] stables, Lab[] labs, Shelf[] shelves,
-		Plant[] plants, Lock[] locks, Entity[] entities
+		Block[] blocks, Chest[] chests, Forge[] forges, Sign[] signs, Stable[] stables, Lab[] labs,
+		Shelf[] shelves, Plant[] plants, Lock[] locks, Entity[] entities
 	)
 	{
 		this.Id = id;
@@ -104,6 +105,7 @@ public sealed class World
 		this.WorldInitSize = worldInitSize;
 		this.SkyInitSize = skyInitSize;
 		this.Borders = borders;
+		this.Blocks = blocks;
 		this.Chests.AddRange(chests);
 		this.Forges.AddRange(forges);
 		this.Signs.AddRange(signs);
@@ -299,7 +301,7 @@ public sealed class World
 		if (this.Gamemode == Gamemode.Creative || this.Gamemode == Gamemode.Flat)
 			stream.EmptyChunk();
 	}
-	public async Task SaveBlocks(string path)
+	public async Task SaveBlocks(string path, bool compressed = false)
 	{
 		using var stream = File.Open(path, FileMode.Create, FileAccess.Write);
 	}
@@ -391,17 +393,20 @@ public sealed class World
 			}
 		}
 		/// Blocks
+		var blocks = new Block[worldSize.width * worldSize.height];
 		var blocksCompressionSize = stream.GetChunkSize(ChunkType.WorldBlocks);
 		using (var blocksCompressedStream = new MemoryStream((int)blocksCompressionSize))
 		{
 			// Clone block compressed data to memory stream
 			bytesRead = 0;
+			blocksCompressedStream.SetLength(blocksCompressionSize.Value);
 			while (bytesRead < blocksCompressionSize)
 				bytesRead += await stream.ReadAsync(blocksCompressedStream.GetBuffer(), bytesRead, (int)blocksCompressionSize - bytesRead);
-			blocksCompressedStream.SetLength(blocksCompressionSize.Value);
 			// Decompress stream
 			using (var blocksDecompressedStream = new GZipStream(blocksCompressedStream, CompressionMode.Decompress))
 			{
+				for (var i = 0; i < blocks.Length; ++i)
+					blocks[i] = await Block.FromStream(blocksDecompressedStream);
 			}
 		}
 		/// =UNKNOWN=
@@ -505,7 +510,7 @@ public sealed class World
 
 		return new World(
 			id, lastPlayed, version, name, author, worldSize, playerPos, spawnPos,
-			planet, season, gamemode, worldInitSize, skyInitSize, borders,
+			planet, season, gamemode, worldInitSize, skyInitSize, borders, blocks,
 			chests, forges, signs, stables, labs, shelves, plants, locks, entities
 		);
 	}
@@ -543,6 +548,7 @@ public sealed class World
 	// Border
 	public ushort[] Borders { get; private set; }
 	// Blocks
+	public Block[] Blocks { get; private set; }
 	// Time
 	// Weather
 	// Containers

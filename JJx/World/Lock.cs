@@ -8,6 +8,7 @@
 	Segment[0x2 : 0x3] = Y Position | Length: 2  (0x02) | Type: uint16
 	Segment[0x4]       = Radius     | Length: 1  (0x01) | Type: uint8
 	------------------------------------------------------------------
+	Size: 5 (0x5)
 
 	Written By: Ryan Smith
 */

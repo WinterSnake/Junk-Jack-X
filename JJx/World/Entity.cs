@@ -9,6 +9,7 @@
 	Segment[0x4]       = Type       | Length: 1  (0x01) | Type: enum[uint8]
 	Segment[0x5 : 0x6] = Id         | Length: 2  (0x02) | Type: uint16
 	-----------------------------------------------------------------------
+	Size: 7 (0x7)
 
 	Written By: Ryan Smith
 */
