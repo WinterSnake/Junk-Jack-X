@@ -77,6 +77,7 @@ internal sealed class Chunk
 	/* Sub-Classes */
 	internal enum Type : ushort
 	{
+		Padding            = 0x0000,  // Used in Creative/Flat maps to fill 19th chunk
 		// Player
 		PlayerInfo         = 0x8000,
 		PlayerInventory    = 0x8001,
@@ -84,26 +85,25 @@ internal sealed class Chunk
 		PlayerAchievements = 0x8003,
 		PlayerStatus       = 0x8004,
 		// World
-		WorldUnknown16     = 0x0000,
 		WorldInfo          = 0x0001,
 		WorldBlocks        = 0x0002,
 		WorldUnknown17     = 0x0003,
 		WorldBorders       = 0x0004,
-		WorldUnknown03     = 0x0005,
-		WorldUnknown04     = 0x0006,
-		WorldUnknown06     = 0x0007,
-		WorldUnknown07     = 0x0008,
-		WorldUnknown05     = 0x0009,
-		WorldUnknown08     = 0x000A,
+		WorldChests        = 0x0005,
+		WorldForges        = 0x0006,
+		WorldStables       = 0x0007,
+		WorldLabs          = 0x0008,
+		WorldSigns         = 0x0009,
+		WorldShelves       = 0x000A,
 		WorldUnknown09     = 0x000B,
 		WorldUnknown10     = 0x000C,
 		WorldUnknown11     = 0x000D,
-		WorldUnknown12     = 0x000E,
+		WorldLocks         = 0x000E,
 		WorldUnknown13     = 0x000F,
 		WorldUnknown14     = 0x0010,
-		WorldUnknown02     = 0x0011,
+		WorldWeather       = 0x0011,
 		WorldTime          = 0x0012,
-		WorldUnknown15     = 0x0013,
+		WorldEntities      = 0x0013,
 	}
 }
 

@@ -230,7 +230,50 @@ public sealed class World
 			}
 		}
 		/// Time
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Time(?) Location: {stream.IsAtChunk(Chunk.Type.WorldTime)} | Size: {stream.GetChunkSize(Chunk.Type.WorldTime):X4}");
+		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Time Location: {stream.IsAtChunk(Chunk.Type.WorldTime)} | Size: {stream.GetChunkSize(Chunk.Type.WorldTime):X4}");
+		stream.Seek(8, SeekOrigin.Current);
+		/// Weather
+		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Weather Location: {stream.IsAtChunk(Chunk.Type.WorldWeather)} | Size: {stream.GetChunkSize(Chunk.Type.WorldWeather):X4}");
+		stream.Seek(8, SeekOrigin.Current);
+		/// Chests
+		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Chests Location: {stream.IsAtChunk(Chunk.Type.WorldChests)} | Size: {stream.GetChunkSize(Chunk.Type.WorldChests):X4}");
+		stream.Seek(4, SeekOrigin.Current);
+		/// Forges
+		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Forges Location: {stream.IsAtChunk(Chunk.Type.WorldForges)} | Size: {stream.GetChunkSize(Chunk.Type.WorldForges):X4}");
+		stream.Seek(4, SeekOrigin.Current);
+		/// Signs
+		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Signs Location: {stream.IsAtChunk(Chunk.Type.WorldSigns)} | Size: {stream.GetChunkSize(Chunk.Type.WorldSigns):X4}");
+		stream.Seek(4, SeekOrigin.Current);
+		/// Stables
+		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Stables Location: {stream.IsAtChunk(Chunk.Type.WorldStables)} | Size: {stream.GetChunkSize(Chunk.Type.WorldStables):X4}");
+		stream.Seek(4, SeekOrigin.Current);
+		/// Labs
+		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Labs Location: {stream.IsAtChunk(Chunk.Type.WorldLabs)} | Size: {stream.GetChunkSize(Chunk.Type.WorldLabs):X4}");
+		stream.Seek(4, SeekOrigin.Current);
+		/// Shelves
+		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Shelves Location: {stream.IsAtChunk(Chunk.Type.WorldShelves)} | Size: {stream.GetChunkSize(Chunk.Type.WorldShelves):X4}");
+		stream.Seek(4, SeekOrigin.Current);
+		/// =UNKNOWN 07=
+		Console.WriteLine($"Position: {stream.Position:X8} | Postion = UNKOWN Location: {stream.IsAtChunk(Chunk.Type.WorldUnknown09)} | Size: {stream.GetChunkSize(Chunk.Type.WorldUnknown09):X4}");
+		stream.Seek(4, SeekOrigin.Current);
+		/// =UNKNOWN 08=
+		Console.WriteLine($"Position: {stream.Position:X8} | Postion = UNKOWN Location: {stream.IsAtChunk(Chunk.Type.WorldUnknown10)} | Size: {stream.GetChunkSize(Chunk.Type.WorldUnknown10):X4}");
+		stream.Seek(4, SeekOrigin.Current);
+		/// =UNKNOWN 09=
+		Console.WriteLine($"Position: {stream.Position:X8} | Postion = UNKOWN Location: {stream.IsAtChunk(Chunk.Type.WorldUnknown11)} | Size: {stream.GetChunkSize(Chunk.Type.WorldUnknown11):X4}");
+		stream.Seek(4, SeekOrigin.Current);
+		/// Locks
+		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Locks Location: {stream.IsAtChunk(Chunk.Type.WorldLocks)} | Size: {stream.GetChunkSize(Chunk.Type.WorldLocks):X4}");
+		stream.Seek(4, SeekOrigin.Current);
+		/// =UNKNOWN 11=
+		Console.WriteLine($"Position: {stream.Position:X8} | Postion = UNKOWN Location: {stream.IsAtChunk(Chunk.Type.WorldUnknown13)} | Size: {stream.GetChunkSize(Chunk.Type.WorldUnknown13):X4}");
+		stream.Seek(8, SeekOrigin.Current);
+		/// =UNKNOWN 12=
+		Console.WriteLine($"Position: {stream.Position:X8} | Postion = UNKOWN Location: {stream.IsAtChunk(Chunk.Type.WorldUnknown14)} | Size: {stream.GetChunkSize(Chunk.Type.WorldUnknown14):X4}");
+		stream.Seek(16, SeekOrigin.Current);
+		/// Entities
+		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Entities Location: {stream.IsAtChunk(Chunk.Type.WorldEntities)} | Size: {stream.GetChunkSize(Chunk.Type.WorldEntities):X4}");
+		stream.Seek(4, SeekOrigin.Current);
 		return new World(id, lastPlayed, version, name, author, worldSize, playerPos, spawnPos, planet, season, gamemode, worldInitSize, skyInitSize, borders);
 	}
 	/* Properties */
