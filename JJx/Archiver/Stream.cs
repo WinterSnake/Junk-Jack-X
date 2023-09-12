@@ -109,6 +109,10 @@ internal sealed class ArchiverStream : FileStream
 	}
 	// Writing
 	public WritableChunk NewChunk(ChunkType type, byte version = 0, bool compressed = false) => new WritableChunk(type, version, compressed, this._Buffer, this._WriteChunks!.Add);
+	public void EmptyChunk(byte version = 64)
+	{
+		this._WriteChunks!.Add(new Chunk(ChunkType.Padding, version, false, 0, 0));
+	}
 	/* Static Methods */
 	public static async Task<ArchiverStream> Reader(string path)
 	{

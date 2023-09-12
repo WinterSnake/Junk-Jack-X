@@ -71,15 +71,15 @@ public sealed class Chest
 	public (uint X, uint Y) Position;
 	public readonly List<Item> Items = new List<Item>();
 	/* Class Properties */
-	public  const uint ITEMCOUNT_WOOD       = 12;
-	public  const uint ITEMCOUNT_COPPER     = 24;
-	public  const uint ITEMCOUNT_IRON       = 24;
-	public  const uint ITEMCOUNT_SILVER     = 36;
-	public  const uint ITEMCOUNT_GOLD       = 36;
-	public  const uint ITEMCOUNT_MITHRIL    = 48;
-	public  const uint ITEMCOUNT_ANTANIUM   = 60;
-	public  const uint ITEMCOUNT_GALVANIUM  = 72;
-	public  const uint ITEMCOUNT_TITANIUM   = 72;
-	public  const uint ITEMCOUNT_BOTTOMLESS = 120;
+	public const uint ITEMCOUNT_WOOD       = 12;
+	public const uint ITEMCOUNT_COPPER     = 24;
+	public const uint ITEMCOUNT_IRON       = 24;
+	public const uint ITEMCOUNT_SILVER     = 36;
+	public const uint ITEMCOUNT_GOLD       = 36;
+	public const uint ITEMCOUNT_MITHRIL    = 48;
+	public const uint ITEMCOUNT_ANTANIUM   = 60;
+	public const uint ITEMCOUNT_GALVANIUM  = 72;
+	public const uint ITEMCOUNT_TITANIUM   = 72;
+	public const uint ITEMCOUNT_BOTTOMLESS = 120;
 	private const byte SIZE = 12;
 }

@@ -46,7 +46,7 @@ internal enum ChunkType : ushort
 	WorldUnknown01     = 0x000C,
 	WorldUnknown02     = 0x000D,
 	WorldLocks         = 0x000E,
-	WorldUnknown03     = 0x000F,
+	WorldFluid         = 0x000F,
 	WorldUnknown04     = 0x0010,
 	WorldWeather       = 0x0011,
 	WorldTime          = 0x0012,
