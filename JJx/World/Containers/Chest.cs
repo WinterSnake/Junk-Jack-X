@@ -1,7 +1,15 @@
 /*
-	Junk Jack X: Containers
-	- Chest, Forge, Lab, Sign, Stable
+	Junk Jack X: World Container
+	- Chest
 
+	Segment Breakdown:
+	--------------------------------
+	Segment[0x0 : 0x3] = X Position | Length: 4  (0x4) | Type: uint32
+	Segment[0x4 : 0x7] = Y Position | Length: 4  (0x4) | Type: uint32
+	Segment[0x8 : 0xB] = Item Count | Length: 4  (0x4) | Type: uint32
+	--------------------------------
+
+	Written By: Ryan Smith
 */
 using System;
 using System.Collections.Generic;
@@ -11,14 +19,6 @@ using System.Threading.Tasks;
 namespace JJx;
 
 public sealed class Chest
-/*
-	Segment Breakdown:
-	--------------------------------
-	Segment[0x0 : 0x3] = X Position | Length: 4  (0x4) | Type: uint32
-	Segment[0x4 : 0x7] = Y Position | Length: 4  (0x4) | Type: uint32
-	Segment[0x8 : 0xB] = Item Count | Length: 4  (0x4) | Type: uint32
-	--------------------------------
-*/
 {
 	/* Constructors */
 	public Chest((uint, uint) position, uint itemCount)
@@ -35,7 +35,15 @@ public sealed class Chest
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
 	{
-
+		var workingData = new byte[SIZE];
+		// Position
+		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Position.X, 0);
+		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Position.Y, 4);
+		// Item Count
+		Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)this.Items.Count, 8);
+		// Items
+		foreach (var item in this.Items)
+			await item.ToStream(stream);
 	}
 	/* Static Methods */
 	public static async Task<Chest> FromStream(Stream stream)
@@ -46,11 +54,11 @@ public sealed class Chest
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZE - bytesRead);
 		// Position
 		var position = (
-			BitConverter.ToUInt32(new Span<byte>(workingData).Slice(0, 4)),
-			BitConverter.ToUInt32(new Span<byte>(workingData).Slice(4, 4))
+			Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData), 0),
+			Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData), 4)
 		);
 		// Item Count
-		var size = BitConverter.ToUInt32(new Span<byte>(workingData).Slice(8, 4));
+		var size = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData), 8);
 		// Items
 		var items = new Item[size];
 		for (var i = 0; i < size; ++i)
@@ -72,60 +80,4 @@ public sealed class Chest
 	public  const uint ITEMCOUNT_TITANIUM   = 72;
 	public  const uint ITEMCOUNT_BOTTOMLESS = 120;
 	private const byte SIZE = 12;
-}
-
-public sealed class Forge
-/*
-	Segment Breakdown:
-	--------------------------------
-	--------------------------------
-*/
-{
-	/* Constructors */
-	/* Instance Methods */
-	/* Static Methods */
-	/* Properties */
-	/* Class Properties */
-}
-
-public sealed class Lab
-/*
-	Segment Breakdown:
-	--------------------------------
-	--------------------------------
-*/
-{
-	/* Constructors */
-	/* Instance Methods */
-	/* Static Methods */
-	/* Properties */
-	/* Class Properties */
-}
-
-public sealed class Sign
-/*
-	Segment Breakdown:
-	--------------------------------
-	--------------------------------
-*/
-{
-	/* Constructors */
-	/* Instance Methods */
-	/* Static Methods */
-	/* Properties */
-	/* Class Properties */
-}
-
-public sealed class Stable
-/*
-	Segment Breakdown:
-	--------------------------------
-	--------------------------------
-*/
-{
-	/* Constructors */
-	/* Instance Methods */
-	/* Static Methods */
-	/* Properties */
-	/* Class Properties */
 }

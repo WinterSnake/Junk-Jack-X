@@ -1,6 +1,6 @@
 /*
-	Junk Jack X: World
-	- Block
+	Junk Jack X: World Container
+	- Sign
 
 	Segment Breakdown:
 	--------------------------------
@@ -15,10 +15,10 @@ using System.Threading.Tasks;
 
 namespace JJx;
 
-public sealed class Block
+public sealed class Sign
 {
 	/* Constructors */
-	public Block()
+	public Sign()
 	{
 
 	}
@@ -28,9 +28,9 @@ public sealed class Block
 
 	}
 	/* Static Methods */
-	public static async Task<Block> FromStream(Stream stream)
+	public static async Task<Sign> FromStream(Stream stream)
 	{
-		return new Block();
+		return new Sign();
 	}
 	/* Properties */
 	/* Class Properties */

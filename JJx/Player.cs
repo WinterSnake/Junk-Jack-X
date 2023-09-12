@@ -182,7 +182,7 @@ public sealed class Player
 		stream.Seek(3, SeekOrigin.Current);
 		/// Inventory
 		var items = new Item[COUNT_ITEMS];
-		for (var i = 0; i < COUNT_ITEMS; ++i)
+		for (var i = 0; i < items.Length; ++i)
 			items[i] = await Item.FromStream(stream);
 		/// Craftbook
 		// Items

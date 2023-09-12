@@ -341,14 +341,20 @@ public sealed class World
 	public Planet Planet;
 	public Season Season;
 	public Gamemode Gamemode;
-	public readonly InitSize WorldInitSize;
-	public readonly InitSize SkyInitSize;
+	public InitSize WorldInitSize;
+	public InitSize SkyInitSize;
 	// Border
 	public ushort[] Borders { get; private set; }
 	// Time
 	// Weather
-	// Containers {Chest}
-	public readonly List<Chest> Chests = new List<Chest>();
+	// Containers
+	public readonly List<Chest>  Chests   = new List<Chest>();
+	public readonly List<Forge>  Forges   = new List<Forge>();
+	public readonly List<Sign>   Signs    = new List<Sign>();
+	public readonly List<Stable> Stables  = new List<Stable>();
+	public readonly List<Lab>    Labs     = new List<Lab>();
+	public readonly List<Shelf>  Shelves  = new List<Shelf>();
+	public readonly List<Entity> Entities = new List<Entity>();
 	/* Class Properties */
 	private const byte BUFFER_SIZE           =  32;
 	private const byte SIZEOF_UUID           =  16;

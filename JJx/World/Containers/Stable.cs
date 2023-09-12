@@ -1,6 +1,6 @@
 /*
-	Junk Jack X: World
-	- Block
+	Junk Jack X: World Container
+	- Stable
 
 	Segment Breakdown:
 	--------------------------------
@@ -15,10 +15,10 @@ using System.Threading.Tasks;
 
 namespace JJx;
 
-public sealed class Block
+public sealed class Stable
 {
 	/* Constructors */
-	public Block()
+	public Stable()
 	{
 
 	}
@@ -28,9 +28,9 @@ public sealed class Block
 
 	}
 	/* Static Methods */
-	public static async Task<Block> FromStream(Stream stream)
+	public static async Task<Stable> FromStream(Stream stream)
 	{
-		return new Block();
+		return new Stable();
 	}
 	/* Properties */
 	/* Class Properties */
