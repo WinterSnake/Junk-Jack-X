@@ -62,7 +62,7 @@ internal sealed class Chunk
 		var size       = ByteConverter.GetUInt32(new Span<byte>(workingData), 8);
 		if (!Enum.IsDefined(typeof(Type), id))
 			throw new ArgumentException(
-				$"Unknown chunk type '0x{id:X4}|Version:{version}|Compressed:{compressed}|Location:0x{location:X4}|Size:0x{size:X4}'"
+				$"Unknown chunk type: [Id: 0x{id:X4} | Version:{version} | Compressed:{compressed} | Location:0x{location:X4} | Size:0x{size:X4}]"
 			);
 		return new Chunk((Type)id, version, compressed, location, size);
 	}
@@ -77,11 +77,32 @@ internal sealed class Chunk
 	/* Sub-Classes */
 	internal enum Type : ushort
 	{
+		// Player
 		PlayerInfo         = 0x8000,
 		PlayerInventory    = 0x8001,
 		PlayerCraftbook    = 0x8002,
 		PlayerAchievements = 0x8003,
 		PlayerStatus       = 0x8004,
+		// World
+		WorldInfo          = 0x0001,
+		WorldBorders       = 0x0004,
+		WorldBlocks        = 0x0002,
+		WorldUnknown01     = 0x0012,
+		WorldUnknown02     = 0x0011,
+		WorldUnknown03     = 0x0005,
+		WorldUnknown04     = 0x0006,
+		WorldUnknown05     = 0x0009,
+		WorldUnknown06     = 0x0007,
+		WorldUnknown07     = 0x0008,
+		WorldUnknown08     = 0x000A,
+		WorldUnknown09     = 0x000B,
+		WorldUnknown10     = 0x000C,
+		WorldUnknown11     = 0x000D,
+		WorldUnknown12     = 0x000E,
+		WorldUnknown13     = 0x000F,
+		WorldUnknown14     = 0x0010,
+		WorldUnknown15     = 0x0013,
+		WorldUnknown16     = 0x0000,
 	}
 }
 

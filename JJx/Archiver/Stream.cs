@@ -56,6 +56,15 @@ internal sealed class ArchiverStream : FileStream
 				return true;
 		return false;
 	}
+	public uint? ChunkSize(Chunk.Type type)
+	{
+		if (!this.CanRead || this._Chunks == null)
+			return null;
+		foreach (var chunk in this._Chunks)
+			if (chunk.Id == type)
+				return chunk.Size;
+		return null;
+	}
 	public void SeekChunk(Chunk.Type type)
 	{
 		if (!this.CanRead || this._Chunks == null)
