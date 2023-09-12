@@ -42,6 +42,7 @@ public sealed class Forge
 		// =UNKNOWN=
 		Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)0,  4);
 		Utilities.ByteConverter.Write(new Span<byte>(workingData), (ulong)0, 8);
+		await stream.WriteAsync(workingData, 0, workingData.Length);
 		// Items
 		foreach (var item in this.Items)
 			await item.ToStream(stream);

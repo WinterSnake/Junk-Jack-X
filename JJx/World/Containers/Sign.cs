@@ -40,6 +40,7 @@ public sealed class Sign
 		Utilities.ByteConverter.Write(new Span<byte>(workingData), (ushort)this.Text.Length, 4);
 		// Text
 		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Text, 6);
+		await stream.WriteAsync(workingData, 0, workingData.Length);
 	}
 	/* Static Methods */
 	public static async Task<Sign> FromStream(Stream stream)

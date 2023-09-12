@@ -3,11 +3,11 @@
 	- Chest
 
 	Segment Breakdown:
-	--------------------------------
+	-----------------------------------------------------------------
 	Segment[0x0 : 0x3] = X Position | Length: 4  (0x4) | Type: uint32
 	Segment[0x4 : 0x7] = Y Position | Length: 4  (0x4) | Type: uint32
 	Segment[0x8 : 0xB] = Item Count | Length: 4  (0x4) | Type: uint32
-	--------------------------------
+	-----------------------------------------------------------------
 	Size: 12 (0xC)
 
 	Written By: Ryan Smith
@@ -42,6 +42,7 @@ public sealed class Chest
 		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Position.Y, 4);
 		// Item Count
 		Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)this.Items.Count, 8);
+		await stream.WriteAsync(workingData, 0, workingData.Length);
 		// Items
 		foreach (var item in this.Items)
 			await item.ToStream(stream);
