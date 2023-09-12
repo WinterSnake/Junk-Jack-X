@@ -36,11 +36,10 @@ public sealed class Block
 		var workingData = new byte[SIZE];
 		while (bytesRead < SIZE)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZE - bytesRead);
-		Console.WriteLine($"Block: [{String.Join(", ", workingData.Select(x => x.ToString("X2")))}]");
 		return new Block(workingData);
 	}
 	/* Properties */
 	public byte[] _Block;
 	/* Class Properties */
-	private const byte SIZE = 16;
+	internal const byte SIZE = 16;
 }

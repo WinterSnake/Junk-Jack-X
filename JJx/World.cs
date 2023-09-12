@@ -301,9 +301,26 @@ public sealed class World
 		if (this.Gamemode == Gamemode.Creative || this.Gamemode == Gamemode.Flat)
 			stream.EmptyChunk();
 	}
+	public async Task LoadBlocks(string path, bool compressed = false)
+	{
+		using var stream = File.Open(path, FileMode.Open, FileAccess.Read);
+		if (!compressed)
+		{
+			this.Blocks = new Block[stream.Length / Block.SIZE];
+			for (var i = 0; i < this.Blocks.Length; ++i)
+				this.Blocks[i] = await Block.FromStream(stream);
+			return;
+		}
+	}
 	public async Task SaveBlocks(string path, bool compressed = false)
 	{
 		using var stream = File.Open(path, FileMode.Create, FileAccess.Write);
+		if (!compressed)
+		{
+			foreach (var block in this.Blocks)
+				await block.ToStream(stream);
+			return;
+		}
 	}
 	/* Static Methods */
 	public static async Task<World> Load(string path)
