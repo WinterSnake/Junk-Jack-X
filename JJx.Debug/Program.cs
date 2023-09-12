@@ -101,5 +101,12 @@ internal static class Program
 		Console.WriteLine($"Gamemode: {world.Gamemode}");
 		Console.WriteLine($"World Init Size: {world.WorldInitSize}");
 		Console.WriteLine($"Sky Init Size: {world.SkyInitSize}");
+		Console.WriteLine($"Chest Count: {world.Chests.Count}");
+		Console.WriteLine($"Forge Count: {world.Forges.Count}");
+		Console.WriteLine($"Sign Count: {world.Signs.Count}");
+		Console.WriteLine($"Stable Count: {world.Stables.Count}");
+		Console.WriteLine($"Lab Count: {world.Labs.Count}");
+		Console.WriteLine($"Shelves Count: {world.Shelves.Count}");
+		Console.WriteLine($"Entities Count: {world.Entities.Count}");
 	}
 }

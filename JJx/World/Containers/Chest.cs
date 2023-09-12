@@ -8,6 +8,7 @@
 	Segment[0x4 : 0x7] = Y Position | Length: 4  (0x4) | Type: uint32
 	Segment[0x8 : 0xB] = Item Count | Length: 4  (0x4) | Type: uint32
 	--------------------------------
+	Size: 12 (0xC)
 
 	Written By: Ryan Smith
 */
@@ -27,7 +28,7 @@ public sealed class Chest
 		for (var i = 0; i < itemCount; ++i)
 			this.Items.Add(new Item(0xFFFF, 0));
 	}
-	public Chest((uint, uint) position, Item[] items)
+	private Chest((uint, uint) position, Item[] items)
 	{
 		this.Position = position;
 		this.Items.AddRange(items);
