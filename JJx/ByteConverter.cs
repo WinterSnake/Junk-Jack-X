@@ -109,6 +109,11 @@ internal static class ByteConverter
 	public static void Write(Span<byte> bytes, string @value, int offset = 0, int length = 0)
 	{
 		if (bytes.Length < offset + length) throw new IndexOutOfRangeException();
+		if (String.IsNullOrEmpty(@value))
+		{
+			bytes[offset] = 0;
+			return;
+		}
 		var valueBytes = Encoding.ASCII.GetBytes(@value);
 		length = length == 0 ? valueBytes.Length + 1 : length;
 		// Write string based on length (+1 for null termination if length = 0)
@@ -119,6 +124,10 @@ internal static class ByteConverter
 	}
 	public static void Write(Span<byte> bytes, DateTime @value, int offset = 0)
 	{
-
+		if (bytes.Length < offset + 4) throw new IndexOutOfRangeException();
+		bytes[offset + 3] = 0xCD;
+		bytes[offset + 2] = 0xBC;
+		bytes[offset + 1] = 0xAB;
+		bytes[offset + 0] = 0xDE;
 	}
 }

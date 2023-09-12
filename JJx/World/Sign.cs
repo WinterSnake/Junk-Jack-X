@@ -31,7 +31,7 @@ public sealed class Sign
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
 	{
-		var workingData = new byte[SIZE + this.Text.Length];
+		var workingData = new byte[SIZE + this.Text.Length + 1];
 		// Position
 		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Position.X, 0);
 		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Position.Y, 2);
