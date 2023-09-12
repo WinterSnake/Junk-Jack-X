@@ -31,6 +31,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.IO.Compression;
 
 namespace JJx;
 
@@ -133,6 +134,10 @@ public sealed class World
 		using var stream = await ArchiverStream.Reader(path);
 		if (stream.Type != ArchiverType.Map)
 			throw new ArgumentException($"Expected world stream, found {stream.Type}");
+		// DEBUG
+		#if DEBUG
+			Console.WriteLine(String.Join("\n", stream.GetChunkStrings()));
+		#endif
 		int bytesRead = 0;
 		var workingData = new byte[BUFFER_SIZE];
 		/// Info
@@ -197,7 +202,6 @@ public sealed class World
 		// Padding
 		stream.Seek(SIZEOF_PADDING, SeekOrigin.Current);
 		/// Border
-		Console.WriteLine($"Position: {stream.Position:X8} | | Postion = Border Location: {stream.AtChunk(Chunk.Type.WorldBorders)}");
 		var borders = new ushort[worldSize.width];
 		for (var i = 0; i < borders.Length / (workingData.Length / 2); ++i)
 		{
@@ -212,7 +216,21 @@ public sealed class World
 			}
 		}
 		/// Blocks
-		Console.WriteLine($"Position: {stream.Position:X8} | | Postion = Block Location: {stream.AtChunk(Chunk.Type.WorldBlocks)}");
+		var blocksCompressionSize = stream.GetChunkSize(Chunk.Type.WorldBlocks);
+		using (var blocksCompressedStream = new MemoryStream((int)blocksCompressionSize))
+		{
+			// Clone block compressed data to memory stream
+			bytesRead = 0;
+			while (bytesRead < blocksCompressionSize)
+				bytesRead += await stream.ReadAsync(blocksCompressedStream.GetBuffer(), bytesRead, (int)blocksCompressionSize - bytesRead);
+			blocksCompressedStream.SetLength(blocksCompressionSize.Value);
+			// Decompress stream
+			using (var blocksDecompressedStream = new GZipStream(blocksCompressedStream, CompressionMode.Decompress))
+			{
+			}
+		}
+		/// Time
+		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Time(?) Location: {stream.IsAtChunk(Chunk.Type.WorldTime)} | Size: {stream.GetChunkSize(Chunk.Type.WorldTime):X4}");
 		return new World(id, lastPlayed, version, name, author, worldSize, playerPos, spawnPos, planet, season, gamemode, worldInitSize, skyInitSize, borders);
 	}
 	/* Properties */

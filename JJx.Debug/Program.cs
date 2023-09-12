@@ -101,8 +101,5 @@ internal static class Program
 		Console.WriteLine($"Gamemode: {world.Gamemode}");
 		Console.WriteLine($"World Init Size: {world.WorldInitSize}");
 		Console.WriteLine($"Sky Init Size: {world.SkyInitSize}");
-		Console.WriteLine("Borders:");
-		foreach (var border in world.Borders)
-			Console.WriteLine($"\t{border:X2}");
 	}
 }

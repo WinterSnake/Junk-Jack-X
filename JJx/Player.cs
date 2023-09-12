@@ -137,6 +137,10 @@ public sealed class Player
 		using var stream = await ArchiverStream.Reader(path);
 		if (stream.Type != ArchiverType.Player)
 			throw new ArgumentException($"Expected player stream, found {stream.Type}");
+		// DEBUG
+		#if DEBUG
+			Console.WriteLine(String.Join("\n", stream.GetChunkStrings()));
+		#endif
 		int bytesRead = 0;
 		var workingData = new byte[BUFFER_SIZE];
 		/// Info

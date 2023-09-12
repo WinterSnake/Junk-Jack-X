@@ -37,44 +37,6 @@ internal sealed class ArchiverStream : FileStream
 	/* Constructors */
 	private ArchiverStream(string path, FileMode mode, FileAccess access): base(path, mode, access) {}
 	/* Instance Methods */
-	// Reading
-	public bool AtChunk(Chunk.Type type)
-	{
-		if (!this.CanRead || this._Chunks == null)
-			return false;
-		foreach (var chunk in this._Chunks)
-			if (chunk.Id == type && this.Position == chunk.Location)
-				return true;
-		return false;
-	}
-	public bool HasChunk(Chunk.Type type)
-	{
-		if (!this.CanRead || this._Chunks == null)
-			return false;
-		foreach (var chunk in this._Chunks)
-			if (chunk.Id == type)
-				return true;
-		return false;
-	}
-	public uint? ChunkSize(Chunk.Type type)
-	{
-		if (!this.CanRead || this._Chunks == null)
-			return null;
-		foreach (var chunk in this._Chunks)
-			if (chunk.Id == type)
-				return chunk.Size;
-		return null;
-	}
-	public void SeekChunk(Chunk.Type type)
-	{
-		if (!this.CanRead || this._Chunks == null)
-			return;
-		foreach (var chunk in this._Chunks)
-			if (chunk.Id == type)
-				this.Position = chunk.Location;
-	}
-	// Writing
-	public WritableChunk NewChunk(Chunk.Type type, byte version = 0, bool compressed = false) => new WritableChunk(type, version, compressed, this._Buffer, this._WriteChunks!.Add);
 	// Override
 	public override void Close()
 	{
@@ -100,6 +62,53 @@ internal sealed class ArchiverStream : FileStream
 		}
 		base.Close();
 	}
+	public string[]? GetChunkStrings()
+	{
+		if (!this.CanRead || this._Chunks == null)
+			return null;
+		string[] chunkStrings = new string[this._Chunks.Length];
+		for (var i = 0; i < this._Chunks.Length; ++i)
+			chunkStrings[i] = this._Chunks[i].ToString();
+		return chunkStrings;
+	}
+	// Reading
+	public bool IsAtChunk(Chunk.Type type)
+	{
+		if (!this.CanRead || this._Chunks == null)
+			return false;
+		foreach (var chunk in this._Chunks)
+			if (chunk.Id == type && this.Position == chunk.Location)
+				return true;
+		return false;
+	}
+	public bool HasChunk(Chunk.Type type)
+	{
+		if (!this.CanRead || this._Chunks == null)
+			return false;
+		foreach (var chunk in this._Chunks)
+			if (chunk.Id == type)
+				return true;
+		return false;
+	}
+	public uint? GetChunkSize(Chunk.Type type)
+	{
+		if (!this.CanRead || this._Chunks == null)
+			return null;
+		foreach (var chunk in this._Chunks)
+			if (chunk.Id == type)
+				return chunk.Size;
+		return null;
+	}
+	public void SeekToChunk(Chunk.Type type)
+	{
+		if (!this.CanRead || this._Chunks == null)
+			return;
+		foreach (var chunk in this._Chunks)
+			if (chunk.Id == type)
+				this.Position = chunk.Location;
+	}
+	// Writing
+	public WritableChunk NewChunk(Chunk.Type type, byte version = 0, bool compressed = false) => new WritableChunk(type, version, compressed, this._Buffer, this._WriteChunks!.Add);
 	/* Static Methods */
 	public static async Task<ArchiverStream> Reader(string path)
 	{

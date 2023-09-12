@@ -34,6 +34,10 @@ internal sealed class Chunk
 		this.Size = size;
 	}
 	/* Instance Methods */
+	public override string ToString()
+	{
+		return $"Type:{this.Id}|Version:{this.Version}|Compressed:{this.Compressed}|Location:0x{this.Location:X4}|Size:0x{this.Size:X4}";
+	}
 	public void ToStream(Stream stream, uint origin)
 	{
 		var workingData = new byte[SIZE];
@@ -43,10 +47,6 @@ internal sealed class Chunk
 		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Location + origin, 4);
 		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Size,              8);
 		stream.Write(workingData, 0, workingData.Length);
-	}
-	public override string ToString()
-	{
-		return $"Type:{this.Id}|Version:{this.Version}|Compressed:{this.Compressed}|Location:0x{this.Location:X4}|Size:0x{this.Size:X4}";
 	}
 	/* Static Methods */
 	public static async Task<Chunk> FromStream(Stream stream)
@@ -84,16 +84,16 @@ internal sealed class Chunk
 		PlayerAchievements = 0x8003,
 		PlayerStatus       = 0x8004,
 		// World
+		WorldUnknown16     = 0x0000,
 		WorldInfo          = 0x0001,
-		WorldBorders       = 0x0004,
 		WorldBlocks        = 0x0002,
-		WorldUnknown01     = 0x0012,
-		WorldUnknown02     = 0x0011,
+		WorldUnknown17     = 0x0003,
+		WorldBorders       = 0x0004,
 		WorldUnknown03     = 0x0005,
 		WorldUnknown04     = 0x0006,
-		WorldUnknown05     = 0x0009,
 		WorldUnknown06     = 0x0007,
 		WorldUnknown07     = 0x0008,
+		WorldUnknown05     = 0x0009,
 		WorldUnknown08     = 0x000A,
 		WorldUnknown09     = 0x000B,
 		WorldUnknown10     = 0x000C,
@@ -101,9 +101,9 @@ internal sealed class Chunk
 		WorldUnknown12     = 0x000E,
 		WorldUnknown13     = 0x000F,
 		WorldUnknown14     = 0x0010,
+		WorldUnknown02     = 0x0011,
+		WorldTime          = 0x0012,
 		WorldUnknown15     = 0x0013,
-		WorldUnknown16     = 0x0000,
-		WorldUnknown17     = 0x0003,
 	}
 }
 
