@@ -177,7 +177,17 @@ public sealed class World
 		/// Blocks
 		using (var chunk = stream.NewChunk(ChunkType.WorldBlocks, 1, compressed: true))
 		{
-
+			using var blocksCompressedStream = new MemoryStream();
+			using var blocksDecompressedStream = new MemoryStream(this.Blocks.Length * Block.SIZE);
+			foreach (var block in this.Blocks)
+				await block.ToStream(blocksDecompressedStream);
+			blocksDecompressedStream.Position = 0;
+			using (var blocksCompressionStream = new GZipStream(blocksCompressedStream, CompressionMode.Compress))
+			{
+				await blocksDecompressedStream.CopyToAsync(blocksCompressionStream);
+				blocksCompressedStream.Position = 0;
+				await blocksCompressedStream.CopyToAsync(chunk);
+			}
 		}
 		/// =UNKNOWN=
 		if (this.Gamemode == Gamemode.Survival)
@@ -329,7 +339,7 @@ public sealed class World
 		if (stream.Type != ArchiverType.Map)
 			throw new ArgumentException($"Expected world stream, found {stream.Type}");
 		// DEBUG
-		#if DEBUG
+		#if (PRINT_CHUNKS)
 			Console.WriteLine(String.Join("\n", stream.GetChunkStrings()));
 		#endif
 		int bytesRead = 0;
@@ -410,20 +420,20 @@ public sealed class World
 			}
 		}
 		/// Blocks
+		bytesRead = 0;
 		var blocks = new Block[worldSize.width * worldSize.height];
 		var blocksCompressionSize = stream.GetChunkSize(ChunkType.WorldBlocks);
 		using (var blocksCompressedStream = new MemoryStream((int)blocksCompressionSize))
 		{
 			// Clone block compressed data to memory stream
-			bytesRead = 0;
 			blocksCompressedStream.SetLength(blocksCompressionSize.Value);
 			while (bytesRead < blocksCompressionSize)
 				bytesRead += await stream.ReadAsync(blocksCompressedStream.GetBuffer(), bytesRead, (int)blocksCompressionSize - bytesRead);
 			// Decompress stream
-			using (var blocksDecompressedStream = new GZipStream(blocksCompressedStream, CompressionMode.Decompress))
+			using (var blocksDecompressionStream = new GZipStream(blocksCompressedStream, CompressionMode.Decompress))
 			{
 				for (var i = 0; i < blocks.Length; ++i)
-					blocks[i] = await Block.FromStream(blocksDecompressedStream);
+					blocks[i] = await Block.FromStream(blocksDecompressionStream);
 			}
 		}
 		/// =UNKNOWN=
