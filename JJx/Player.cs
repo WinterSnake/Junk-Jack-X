@@ -83,6 +83,8 @@ public sealed class Player
 		{
 			// Uuid
 			var uuid = this.Id.ToByteArray();
+			for (var i = uuid.Length - 1; i <= 0; --i)
+				workingData[uuid.Length - i] = uuid[i];
 			await info.WriteAsync(uuid, 0, uuid.Length);
 			// Name
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), this._Name, length: SIZEOF_NAME);
@@ -99,9 +101,9 @@ public sealed class Player
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (ushort)0, 14);
 			await info.WriteAsync(workingData, 0, workingData.Length);
 			// Gameplay: Difficulty
-			Utilities.ByteConverter.Write(new Span<byte>(workingData), (byte)this.Gameplay.Difficulty, 1);
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), (byte)this.Gameplay.Difficulty, 0);
 			// =UNKNOWN=
-			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)0, 0);
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)0, 1);
 			await info.WriteAsync(workingData, 0, 4);
 		}
 		/// Inventory
@@ -180,11 +182,11 @@ public sealed class Player
 			items[i] = await Item.FromStream(stream);
 		/// Craftbook
 		// Items
-		var itemBook = await ItemBook.FromStream(stream);
+		//var itemBook = await ItemBook.FromStream(stream);
 		// =UNKNOWN | UNUSED=
-		stream.Seek(0x54, SeekOrigin.Current);
+		//stream.Seek(0x54, SeekOrigin.Current);
 		// Potions
-		var potionBook = await PotionBook.FromStream(stream);
+		//var potionBook = await PotionBook.FromStream(stream);
 		/// Achievements
 		/// Status
 		// Health
