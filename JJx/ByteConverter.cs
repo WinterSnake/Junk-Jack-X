@@ -35,7 +35,7 @@ internal static class ByteConverter
 	{
 		if (bytes.Length < offset + 4) throw new IndexOutOfRangeException();
 		return (uint)(
-			(bytes[offset + 3] << 32) |
+			(bytes[offset + 3] << 24) |
 			(bytes[offset + 2] << 16) |
 			(bytes[offset + 1] <<  8) |
 			(bytes[offset + 0] <<  0)
@@ -45,14 +45,14 @@ internal static class ByteConverter
 	{
 		if (bytes.Length < offset + 8) throw new IndexOutOfRangeException();
 		return (ulong)(
-			(bytes[offset + 7] << 512) |
-			(bytes[offset + 6] << 256) |
-			(bytes[offset + 5] << 128) |
-			(bytes[offset + 4] <<  64) |
-			(bytes[offset + 3] <<  32) |
-			(bytes[offset + 2] <<  16) |
-			(bytes[offset + 1] <<   8) |
-			(bytes[offset + 0] <<   0)
+			(bytes[offset + 7] << 56) |
+			(bytes[offset + 6] << 48) |
+			(bytes[offset + 5] << 40) |
+			(bytes[offset + 4] << 32) |
+			(bytes[offset + 3] << 24) |
+			(bytes[offset + 2] << 16) |
+			(bytes[offset + 1] <<  8) |
+			(bytes[offset + 0] <<  0)
 		);
 	}
 	public static string GetString(ReadOnlySpan<byte> bytes, int offset = 0, int length = 0)
@@ -68,10 +68,7 @@ internal static class ByteConverter
 			bytes.Slice(offset, bytes.IndexOf(byte.MinValue))
 		);
 	}
-	public static DateTime GetDateTime(ReadOnlySpan<byte> bytes, int offset = 0)
-	{
-		return DateTime.Now;
-	}
+	public static DateTime GetDateTime(ReadOnlySpan<byte> bytes, int offset = 0) => DateTimeOffset.FromUnixTimeSeconds(GetUInt32(bytes, offset)).DateTime;
 	// Write
 	public static void Write(Span<byte> bytes, bool @value, int offset = 0)
 	{
@@ -92,7 +89,7 @@ internal static class ByteConverter
 	public static void Write(Span<byte> bytes, uint @value, int offset = 0)
 	{
 		if (bytes.Length < offset + 4) throw new IndexOutOfRangeException();
-		bytes[offset + 3] = (byte)((@value & 0xFF000000) >> 32);
+		bytes[offset + 3] = (byte)((@value & 0xFF000000) >> 24);
 		bytes[offset + 2] = (byte)((@value & 0x00FF0000) >> 16);
 		bytes[offset + 1] = (byte)((@value & 0x0000FF00) >>  8);
 		bytes[offset + 0] = (byte)((@value & 0x000000FF) >>  0);
@@ -100,14 +97,14 @@ internal static class ByteConverter
 	public static void Write(Span<byte> bytes, ulong @value, int offset = 0)
 	{
 		if (bytes.Length < offset + 8) throw new IndexOutOfRangeException();
-		bytes[offset + 7] = (byte)((@value & 0xFF00000000000000) >> 512);
-		bytes[offset + 6] = (byte)((@value & 0x00FF000000000000) >> 256);
-		bytes[offset + 5] = (byte)((@value & 0x0000FF0000000000) >> 128);
-		bytes[offset + 4] = (byte)((@value & 0x000000FF00000000) >>  64);
-		bytes[offset + 3] = (byte)((@value & 0x00000000FF000000) >>  32);
-		bytes[offset + 2] = (byte)((@value & 0x0000000000FF0000) >>  16);
-		bytes[offset + 1] = (byte)((@value & 0x000000000000FF00) >>   8);
-		bytes[offset + 0] = (byte)((@value & 0x00000000000000FF) >>   0);
+		bytes[offset + 7] = (byte)((@value & 0xFF00000000000000) >> 56);
+		bytes[offset + 6] = (byte)((@value & 0x00FF000000000000) >> 48);
+		bytes[offset + 5] = (byte)((@value & 0x0000FF0000000000) >> 40);
+		bytes[offset + 4] = (byte)((@value & 0x000000FF00000000) >> 32);
+		bytes[offset + 3] = (byte)((@value & 0x00000000FF000000) >> 24);
+		bytes[offset + 2] = (byte)((@value & 0x0000000000FF0000) >> 16);
+		bytes[offset + 1] = (byte)((@value & 0x000000000000FF00) >>  8);
+		bytes[offset + 0] = (byte)((@value & 0x00000000000000FF) >>  0);
 	}
 	public static void Write(Span<byte> bytes, string @value, int offset = 0, int length = 0)
 	{
