@@ -177,17 +177,12 @@ public sealed class World
 		/// Blocks
 		using (var chunk = stream.NewChunk(ChunkType.WorldBlocks, 1, compressed: true))
 		{
-			using var blocksCompressedStream = new MemoryStream();
 			using var blocksDecompressedStream = new MemoryStream(this.Blocks.Length * Block.SIZE);
 			foreach (var block in this.Blocks)
 				await block.ToStream(blocksDecompressedStream);
 			blocksDecompressedStream.Position = 0;
-			using (var blocksCompressionStream = new GZipStream(blocksCompressedStream, CompressionMode.Compress))
-			{
+			using (var blocksCompressionStream = new GZipStream(chunk, CompressionLevel.Optimal, true))
 				await blocksDecompressedStream.CopyToAsync(blocksCompressionStream);
-				blocksCompressedStream.Position = 0;
-				await blocksCompressedStream.CopyToAsync(chunk);
-			}
 		}
 		/// =UNKNOWN=
 		if (this.Gamemode == Gamemode.Survival)
@@ -422,13 +417,13 @@ public sealed class World
 		/// Blocks
 		bytesRead = 0;
 		var blocks = new Block[worldSize.width * worldSize.height];
-		var blocksCompressionSize = stream.GetChunkSize(ChunkType.WorldBlocks);
-		using (var blocksCompressedStream = new MemoryStream((int)blocksCompressionSize))
+		var blocksCompressedSize = stream.GetChunkSize(ChunkType.WorldBlocks);
+		using (var blocksCompressedStream = new MemoryStream((int)blocksCompressedSize))
 		{
 			// Clone block compressed data to memory stream
-			blocksCompressedStream.SetLength(blocksCompressionSize.Value);
-			while (bytesRead < blocksCompressionSize)
-				bytesRead += await stream.ReadAsync(blocksCompressedStream.GetBuffer(), bytesRead, (int)blocksCompressionSize - bytesRead);
+			blocksCompressedStream.SetLength(blocksCompressedSize.Value);
+			while (bytesRead < blocksCompressedSize)
+				bytesRead += await stream.ReadAsync(blocksCompressedStream.GetBuffer(), bytesRead, (int)blocksCompressedSize - bytesRead);
 			// Decompress stream
 			using (var blocksDecompressionStream = new GZipStream(blocksCompressedStream, CompressionMode.Decompress))
 			{

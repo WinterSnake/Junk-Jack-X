@@ -36,7 +36,7 @@ public sealed class Sign
 		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Position.X, 0);
 		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Position.Y, 2);
 		// Text Length
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), (ushort)this.Text.Length, 4);
+		Utilities.ByteConverter.Write(new Span<byte>(workingData), (ushort)(this.Text.Length + 1), 4);
 		// Text
 		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Text, 6);
 		await stream.WriteAsync(workingData, 0, workingData.Length);
