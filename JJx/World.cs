@@ -571,6 +571,15 @@ public sealed class World
 	public ushort[] Borders { get; private set; }
 	// Blocks
 	public Block[] Blocks { get; private set; }
+	/*
+		TODO: Memory Mapped File Implementation
+		https://learn.microsoft.com/en-us/dotnet/api/system.io.memorymappedfiles.memorymappedfile?view=net-7.0
+		https://learn.microsoft.com/en-us/dotnet/api/system.io.memorymappedfiles.memorymappedviewstream?view=net-7.0
+		Implement Block array as memory mapped file with a viewer and getblock/setblock implementation
+		
+		Separate Blocks class with x/y indexer class
+		https://stackoverflow.com/questions/6111049/2d-array-property
+	*/
 	// Time
 	// Weather
 	// Containers
