@@ -81,13 +81,13 @@ public sealed class World
 		this.Borders = new ushort[this.Size.Width];
 		for (var i = 0; i < this.Borders.Length; ++i)
 			this.Borders[i] = (ushort)(this.Size.Height / 2);
-		this.Blocks = new Block[this.Size.Width, this.Size.Height];
+		this.Blocks = new Tile[this.Size.Width, this.Size.Height];
 	}
 	private World(
 		Guid id, DateTime lastPlayed, Version version, string name, string author,
 		(ushort, ushort) size, (ushort, ushort) player, (ushort, ushort) spawn, Planet planet,
 		Season season, Gamemode gamemode, InitSize worldInitSize, InitSize skyInitSize, ushort[] borders,
-		Block[,] blocks, Chest[] chests, Forge[] forges, Sign[] signs, Stable[] stables, Lab[] labs,
+		Tile[,] blocks, Chest[] chests, Forge[] forges, Sign[] signs, Stable[] stables, Lab[] labs,
 		Shelf[] shelves, Plant[] plants, Lock[] locks, Entity[] entities
 	)
 	{
@@ -117,7 +117,7 @@ public sealed class World
 		this.Entities.AddRange(entities);
 	}
 	/* Instance Methods */
-	public ulong GetBlockFlatPosition(ushort x, ushort y) => (ulong)((y + x * this.Size.Height) * Block.SIZE);
+	public ulong GetTileFlatPosition(ushort x, ushort y) => (ulong)((y + x * this.Size.Height) * Tile.SIZE);
 	public async Task Save(string path)
 	{
 		using var stream = await ArchiverStream.Writer(path, ArchiverType.Map);
@@ -178,7 +178,7 @@ public sealed class World
 		/// Blocks
 		using (var chunk = stream.NewChunk(ChunkType.WorldBlocks, 1, compressed: true))
 		{
-			using var blocksDecompressedStream = new MemoryStream(this.Blocks.Length * Block.SIZE);
+			using var blocksDecompressedStream = new MemoryStream(this.Size.Width * this.Size.Height * Tile.SIZE);
 			for (var x = 0; x < this.Size.Width; ++x)
 				for (var y = 0; y < this.Size.Height; ++y)
 					await this.Blocks[x, y].ToStream(blocksDecompressedStream);
@@ -186,10 +186,10 @@ public sealed class World
 			using (var blocksCompressionStream = new GZipStream(chunk, CompressionLevel.Optimal, true))
 				await blocksDecompressedStream.CopyToAsync(blocksCompressionStream);
 		}
-		/// =UNKNOWN=
+		/// Fog
 		if (this.Gamemode == Gamemode.Survival)
 		{
-			using (var chunk = stream.NewChunk(ChunkType.WorldUnknown00, compressed: true))
+			using (var chunk = stream.NewChunk(ChunkType.WorldFog, compressed: true))
 			{
 
 			}
@@ -290,7 +290,7 @@ public sealed class World
 			await chunk.WriteAsync(workingData, 0, 8);
 		}
 		/// =UNKNOWN=
-		using (var chunk = stream.NewChunk(ChunkType.WorldUnknown04))
+		using (var chunk = stream.NewChunk(ChunkType.WorldUnknown03))
 		{
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (ulong)0, 0);
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (ulong)0, 0);
@@ -315,7 +315,7 @@ public sealed class World
 		{
 			for (var x = 0; x < this.Size.Width; ++x)
 				for (var y = 0; y < this.Size.Height; ++y)
-					this.Blocks[x, y] = await Block.FromStream(stream);
+					this.Blocks[x, y] = await Tile.FromStream(stream);
 			return;
 		}
 	}
@@ -419,7 +419,7 @@ public sealed class World
 		}
 		/// Blocks
 		bytesRead = 0;
-		var blocks = new Block[worldSize.width, worldSize.height];
+		var blocks = new Tile[worldSize.width, worldSize.height];
 		var blocksCompressedSize = stream.GetChunkSize(ChunkType.WorldBlocks);
 		using (var blocksCompressedStream = new MemoryStream((int)blocksCompressedSize))
 		{
@@ -432,17 +432,17 @@ public sealed class World
 			{
 				for (var x = 0; x < worldSize.width; ++x)
 					for (var y = 0; y < worldSize.height; ++y)
-						blocks[x, y] = await Block.FromStream(blocksDecompressionStream);
+						blocks[x, y] = await Tile.FromStream(blocksDecompressionStream);
 			}
 		}
-		/// =UNKNOWN=
-		if (stream.IsAtChunk(ChunkType.WorldUnknown00))
-			stream.Seek(stream.GetChunkSize(ChunkType.WorldUnknown00).Value, SeekOrigin.Current);
+		/// Fog
+		if (stream.IsAtChunk(ChunkType.WorldFog))
+			stream.Seek(stream.GetChunkSize(ChunkType.WorldFog).Value, SeekOrigin.Current);
 		/// Time
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Time Location: {stream.IsAtChunk(ChunkType.WorldTime)} | Size: {stream.GetChunkSize(ChunkType.WorldTime):X4}");
+		//Console.WriteLine($"Position: {stream.Position:X8} | Postion = Time Location: {stream.IsAtChunk(ChunkType.WorldTime)} | Size: {stream.GetChunkSize(ChunkType.WorldTime):X4}");
 		stream.Seek(8, SeekOrigin.Current);
 		/// Weather
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Weather Location: {stream.IsAtChunk(ChunkType.WorldWeather)} | Size: {stream.GetChunkSize(ChunkType.WorldWeather):X4}");
+		//Console.WriteLine($"Position: {stream.Position:X8} | Postion = Weather Location: {stream.IsAtChunk(ChunkType.WorldWeather)} | Size: {stream.GetChunkSize(ChunkType.WorldWeather):X4}");
 		stream.Seek(8, SeekOrigin.Current);
 		/// Chests
 		bytesRead = 0;
@@ -469,16 +469,17 @@ public sealed class World
 		for (var i = 0; i < signs.Length; ++i)
 			signs[i] = await Sign.FromStream(stream);
 		/// Stables
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Stables Location: {stream.IsAtChunk(ChunkType.WorldStables)} | Size: {stream.GetChunkSize(ChunkType.WorldStables):X4}");
+		//Console.WriteLine($"Position: {stream.Position:X8} | Postion = Stables Location: {stream.IsAtChunk(ChunkType.WorldStables)} | Size: {stream.GetChunkSize(ChunkType.WorldStables):X4}");
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
 		var stableCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
 		var stables = new Stable[stableCount];
-		for (var i = 0; i < stables.Length; ++i)
-			stables[i] = await Stable.FromStream(stream);
+		//for (var i = 0; i < stables.Length; ++i)
+		//	stables[i] = await Stable.FromStream(stream);
+		stream.Seek(stream.GetChunkSize(ChunkType.WorldStables).Value - 4, SeekOrigin.Current);
 		/// Labs
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Labs Location: {stream.IsAtChunk(ChunkType.WorldLabs)} | Size: {stream.GetChunkSize(ChunkType.WorldLabs):X4}");
+		//Console.WriteLine($"Position: {stream.Position:X8} | Postion = Labs Location: {stream.IsAtChunk(ChunkType.WorldLabs)} | Size: {stream.GetChunkSize(ChunkType.WorldLabs):X4}");
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
@@ -495,22 +496,23 @@ public sealed class World
 		for (var i = 0; i < shelves.Length; ++i)
 			shelves[i] = await Shelf.FromStream(stream);
 		/// Plants
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Plants Location: {stream.IsAtChunk(ChunkType.WorldPlants)} | Size: {stream.GetChunkSize(ChunkType.WorldPlants):X4}");
+		//Console.WriteLine($"Position: {stream.Position:X8} | Postion = Plants Location: {stream.IsAtChunk(ChunkType.WorldPlants)} | Size: {stream.GetChunkSize(ChunkType.WorldPlants):X4}");
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
 		var plantCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
 		var plants = new Plant[plantCount];
-		for (var i = 0; i < plants.Length; ++i)
-			plants[i] = await Plant.FromStream(stream);
+		//for (var i = 0; i < plants.Length; ++i)
+		//	plants[i] = await Plant.FromStream(stream);
+		stream.Seek(stream.GetChunkSize(ChunkType.WorldPlants).Value - 4, SeekOrigin.Current);
 		/// =UNKNOWN=
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = UNKOWN Location: {stream.IsAtChunk(ChunkType.WorldUnknown01)} | Size: {stream.GetChunkSize(ChunkType.WorldUnknown01):X4}");
-		stream.Seek(4, SeekOrigin.Current);
+		//Console.WriteLine($"Position: {stream.Position:X8} | Postion = UNKOWN Location: {stream.IsAtChunk(ChunkType.WorldUnknown01)} | Size: {stream.GetChunkSize(ChunkType.WorldUnknown01):X4}");
+		stream.Seek(stream.GetChunkSize(ChunkType.WorldUnknown01).Value, SeekOrigin.Current);
 		/// =UNKNOWN=
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = UNKOWN Location: {stream.IsAtChunk(ChunkType.WorldUnknown02)} | Size: {stream.GetChunkSize(ChunkType.WorldUnknown02):X4}");
-		stream.Seek(4, SeekOrigin.Current);
+		//Console.WriteLine($"Position: {stream.Position:X8} | Postion = UNKOWN Location: {stream.IsAtChunk(ChunkType.WorldUnknown02)} | Size: {stream.GetChunkSize(ChunkType.WorldUnknown02):X4}");
+		stream.Seek(stream.GetChunkSize(ChunkType.WorldUnknown02).Value, SeekOrigin.Current);
 		/// Locks
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Locks Location: {stream.IsAtChunk(ChunkType.WorldLocks)} | Size: {stream.GetChunkSize(ChunkType.WorldLocks):X4}");
+		//Console.WriteLine($"Position: {stream.Position:X8} | Postion = Locks Location: {stream.IsAtChunk(ChunkType.WorldLocks)} | Size: {stream.GetChunkSize(ChunkType.WorldLocks):X4}");
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
@@ -519,13 +521,14 @@ public sealed class World
 		for (var i = 0; i < locks.Length; ++i)
 			locks[i] = await Lock.FromStream(stream);
 		/// Fluid
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Fluid Location: {stream.IsAtChunk(ChunkType.WorldFluid)} | Size: {stream.GetChunkSize(ChunkType.WorldFluid):X4}");
-		stream.Seek(8, SeekOrigin.Current);
+		//Console.WriteLine($"Position: {stream.Position:X8} | Postion = Fluid Location: {stream.IsAtChunk(ChunkType.WorldFluid)} | Size: {stream.GetChunkSize(ChunkType.WorldFluid):X4}");
+		stream.Seek(stream.GetChunkSize(ChunkType.WorldFluid).Value, SeekOrigin.Current);
+		//stream.Seek(8, SeekOrigin.Current);
 		/// =UNKNOWN=
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = UNKNOWN Location: {stream.IsAtChunk(ChunkType.WorldUnknown04)} | Size: {stream.GetChunkSize(ChunkType.WorldUnknown04):X4}");
-		stream.Seek(16, SeekOrigin.Current);
+		//Console.WriteLine($"Position: {stream.Position:X8} | Postion = UNKNOWN Location: {stream.IsAtChunk(ChunkType.WorldUnknown03)} | Size: {stream.GetChunkSize(ChunkType.WorldUnknown03):X4}");
+		stream.Seek(stream.GetChunkSize(ChunkType.WorldUnknown03).Value, SeekOrigin.Current);
 		/// Entities
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Entities Location: {stream.IsAtChunk(ChunkType.WorldEntities)} | Size: {stream.GetChunkSize(ChunkType.WorldEntities):X4}");
+		//Console.WriteLine($"Position: {stream.Position:X8} | Postion = Entities Location: {stream.IsAtChunk(ChunkType.WorldEntities)} | Size: {stream.GetChunkSize(ChunkType.WorldEntities):X4}");
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
@@ -574,7 +577,7 @@ public sealed class World
 	// Border
 	public ushort[] Borders { get; private set; }
 	// Blocks
-	public Block[,] Blocks { get; private set; }
+	public Tile[,] Blocks { get; private set; }
 	/*
 		TODO: Memory Mapped File Implementation
 		https://learn.microsoft.com/en-us/dotnet/api/system.io.memorymappedfiles.memorymappedfile?view=net-7.0

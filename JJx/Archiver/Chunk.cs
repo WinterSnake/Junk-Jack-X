@@ -34,7 +34,7 @@ internal enum ChunkType : ushort
 	// World
 	WorldInfo          = 0x0001,
 	WorldBlocks        = 0x0002,
-	WorldUnknown00     = 0x0003,
+	WorldFog           = 0x0003,  // WorldManager.cpp line: 487
 	WorldBorders       = 0x0004,
 	WorldChests        = 0x0005,
 	WorldForges        = 0x0006,
@@ -47,7 +47,7 @@ internal enum ChunkType : ushort
 	WorldUnknown02     = 0x000D,
 	WorldLocks         = 0x000E,
 	WorldFluid         = 0x000F,
-	WorldUnknown04     = 0x0010,
+	WorldUnknown03     = 0x0010,
 	WorldWeather       = 0x0011,
 	WorldTime          = 0x0012,
 	WorldEntities      = 0x0013,
