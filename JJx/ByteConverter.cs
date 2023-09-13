@@ -68,7 +68,17 @@ internal static class ByteConverter
 			bytes.Slice(offset, bytes.IndexOf(byte.MinValue))
 		);
 	}
-	public static DateTime GetDateTime(ReadOnlySpan<byte> bytes, int offset = 0) => DateTimeOffset.FromUnixTimeSeconds(GetUInt32(bytes, offset)).LocalDateTime;
+	public static DateTime GetDateTime(ReadOnlySpan<byte> bytes, int offset = 0)
+	{
+		if (bytes.Length < offset + 4) throw new IndexOutOfRangeException();
+		var epoch = (int)(
+			(bytes[offset + 3] << 24) |
+			(bytes[offset + 2] << 16) |
+			(bytes[offset + 1] <<  8) |
+			(bytes[offset + 0] <<  0)
+		);
+		return DateTimeOffset.FromUnixTimeSeconds(epoch).LocalDateTime;
+	}
 	// Write
 	public static void Write(Span<byte> bytes, bool @value, int offset = 0)
 	{
@@ -124,9 +134,10 @@ internal static class ByteConverter
 	public static void Write(Span<byte> bytes, DateTime @value, int offset = 0)
 	{
 		if (bytes.Length < offset + 4) throw new IndexOutOfRangeException();
-		bytes[offset + 3] = 0xCD;
-		bytes[offset + 2] = 0xBC;
-		bytes[offset + 1] = 0xAB;
-		bytes[offset + 0] = 0xDE;
+		var epoch = new DateTimeOffset(@value).ToUnixTimeSeconds();
+		bytes[offset + 3] = (byte)((epoch & 0xFF000000) >> 24);
+		bytes[offset + 2] = (byte)((epoch & 0x00FF0000) >> 16);
+		bytes[offset + 1] = (byte)((epoch & 0x0000FF00) >>  8);
+		bytes[offset + 0] = (byte)((epoch & 0x000000FF) >>  0);
 	}
 }
