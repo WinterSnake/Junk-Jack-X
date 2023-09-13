@@ -1,0 +1,262 @@
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+- World Header Lock - [Tiny]:
+	• (0000002C-0000002F): Little Endian Int32: Compressed World Size + 0000
+	• (00000034-00000037): Little Endian Int32: Compressed World Size + 1488
+	• (00000040-00000043): Little Endian Int32: Compressed World Size + 1496 (+08)
+	• (0000004C-0000004F): Little Endian Int32: Compressed World Size + 1504 (+08)
+	• (00000058-0000005B): Little Endian Int32: Compressed World Size + 1508 (+04)
+	• (00000064-00000067): Little Endian Int32: Compressed World Size + 1512 (+04)
+	• (00000070-00000073): Little Endian Int32: Compressed World Size + 1516 (+04)
+	• (0000007C-0000007F): Little Endian Int32: Compressed World Size + 1520 (+04)
+	• (00000088-0000008B): Little Endian Int32: Compressed World Size + 1524 (+04)
+	• (00000094-00000097): Little Endian Int32: Compressed World Size + 1528 (+04)
+	• (000000A0-000000A3): Little Endian Int32: Compressed World Size + 1532 (+04)
+	• (000000AC-000000AF): Little Endian Int32: Compressed World Size + 1536 (+04)
+	• (000000B8-000000BB): Little Endian Int32: Compressed World Size + 1540 (+04)
+	• (000000C4-000000C7): Little Endian Int32: Compressed World Size + 1544 (+04)
+	• (000000D0-000000D3): Little Endian Int32: Compressed World Size + 1552 (+08)
+	• (000000DC-000000DF): Little Endian Int32: Compressed World Size + 1568 (+16)
+	• [Tiny] World Size (Static):
+		• + 0000 = 
+		• + 1488 = 
+		• + 1496 = 
+		• + 1504 = 
+		• + 1508 = 
+		• + 1512 = 
+		• + 1516 = 
+		• + 1520 = 
+		• + 1524 = 
+		• + 1528 = 
+		• + 1532 = 
+		• + 1536 = 
+		• + 1540 = 
+		• + 1544 = 
+		• + 1552 = 
+		• + 1568 = 
+
+- World Header Lock - [Small]:
+	• (0000002C-0000002F): Little Endian Int32: Compressed World Size + 0000
+	• (00000034-00000037): Little Endian Int32: Compressed World Size + 2000
+	• (00000040-00000043): Little Endian Int32: Compressed World Size + 2008 (+08)
+	• (0000004C-0000004F): Little Endian Int32: Compressed World Size + 2016 (+08)
+	• (00000058-0000005B): Little Endian Int32: Compressed World Size + 2020 (+04)
+	• (00000064-00000067): Little Endian Int32: Compressed World Size + 2024 (+04)
+	• (00000070-00000073): Little Endian Int32: Compressed World Size + 2028 (+04)
+	• (0000007C-0000007F): Little Endian Int32: Compressed World Size + 2032 (+04)
+	• (00000088-0000008B): Little Endian Int32: Compressed World Size + 2036 (+04)
+	• (00000094-00000097): Little Endian Int32: Compressed World Size + 2040 (+04)
+	• (000000A0-000000A3): Little Endian Int32: Compressed World Size + 2044 (+04)
+	• (000000AC-000000AF): Little Endian Int32: Compressed World Size + 2048 (+04)
+	• (000000B8-000000BB): Little Endian Int32: Compressed World Size + 2052 (+04)
+	• (000000C4-000000C7): Little Endian Int32: Compressed World Size + 2056 (+04)
+	• (000000D0-000000D3): Little Endian Int32: Compressed World Size + 2064 (+08)
+	• (000000DC-000000DF): Little Endian Int32: Compressed World Size + 2080 (+16)
+	• [Small] World Size (Static):
+		• + 0000 = 
+		• + 2000 = 
+		• + 2008 = 
+		• + 2016 = 
+		• + 2020 = 
+		• + 2024 = 
+		• + 2028 = 
+		• + 2032 = 
+		• + 2036 = 
+		• + 2040 = 
+		• + 2044 = 
+		• + 2048 = 
+		• + 2052 = 
+		• + 2056 = 
+		• + 2064 = 
+		• + 2080 = 
+
+- World Header Lock - [Normal]:
+	• (0000002C-0000002F): Little Endian Int32: Compressed World Size + 0000
+	• (00000034-00000037): Little Endian Int32: Compressed World Size + 2512
+	• (00000040-00000043): Little Endian Int32: Compressed World Size + 2520 (+08)
+	• (0000004C-0000004F): Little Endian Int32: Compressed World Size + 2528 (+08)
+	• (00000058-0000005B): Little Endian Int32: Compressed World Size + 2532 (+04)
+	• (00000064-00000067): Little Endian Int32: Compressed World Size + 2536 (+04)
+	• (00000070-00000073): Little Endian Int32: Compressed World Size + 2540 (+04)
+	• (0000007C-0000007F): Little Endian Int32: Compressed World Size + 2544 (+04)
+	• (00000088-0000008B): Little Endian Int32: Compressed World Size + 2548 (+04)
+	• (00000094-00000097): Little Endian Int32: Compressed World Size + 2552 (+04)
+	• (000000A0-000000A3): Little Endian Int32: Compressed World Size + 2556 (+04)
+	• (000000AC-000000AF): Little Endian Int32: Compressed World Size + 2560 (+04)
+	• (000000B8-000000BB): Little Endian Int32: Compressed World Size + 2564 (+04)
+	• (000000C4-000000C7): Little Endian Int32: Compressed World Size + 2568 (+04)
+	• (000000D0-000000D3): Little Endian Int32: Compressed World Size + 2576 (+08)
+	• (000000DC-000000DF): Little Endian Int32: Compressed World Size + 2592 (+16)
+	• [Normal] World Size (Static):
+		• + 0000 = 
+		• + 2512 = 
+		• + 2520 = 
+		• + 2528 = 
+		• + 2532 = 
+		• + 2536 = 
+		• + 2540 = 
+		• + 2544 = 
+		• + 2548 = 
+		• + 2552 = 
+		• + 2556 = 
+		• + 2560 = 
+		• + 2564 = 
+		• + 2568 = 
+		• + 2576 = 
+		• + 2592 =
+
+- World Header Lock - [Large]:
+	• (0000002C-0000002F): Little Endian Int32: Compressed World Size + 0000
+	• (00000034-00000037): Little Endian Int32: Compressed World Size + 4560
+	• (00000040-00000043): Little Endian Int32: Compressed World Size + 4568 (+08)
+	• (0000004C-0000004F): Little Endian Int32: Compressed World Size + 4576 (+08)
+	• (00000058-0000005B): Little Endian Int32: Compressed World Size + 4580 (+04)
+	• (00000064-00000067): Little Endian Int32: Compressed World Size + 4584 (+04)
+	• (00000070-00000073): Little Endian Int32: Compressed World Size + 4588 (+04)
+	• (0000007C-0000007F): Little Endian Int32: Compressed World Size + 4592 (+04)
+	• (00000088-0000008B): Little Endian Int32: Compressed World Size + 4596 (+04)
+	• (00000094-00000097): Little Endian Int32: Compressed World Size + 4600 (+04)
+	• (000000A0-000000A3): Little Endian Int32: Compressed World Size + 4604 (+04)
+	• (000000AC-000000AF): Little Endian Int32: Compressed World Size + 4608 (+04)
+	• (000000B8-000000BB): Little Endian Int32: Compressed World Size + 4612 (+04)
+	• (000000C4-000000C7): Little Endian Int32: Compressed World Size + 4616 (+04)
+	• (000000D0-000000D3): Little Endian Int32: Compressed World Size + 4624 (+08)
+	• (000000DC-000000DF): Little Endian Int32: Compressed World Size + 4640 (+16)
+	• [Large] World Size (Static):
+		• + 0000 = 
+		• + 4560 = 
+		• + 4568 = 
+		• + 4576 = 
+		• + 4580 = 
+		• + 4584 = 
+		• + 4588 = 
+		• + 4592 = 
+		• + 4596 = 
+		• + 4600 = 
+		• + 4604 = 
+		• + 4608 = 
+		• + 4612 = 
+		• + 4616 = 
+		• + 4624 = 
+		• + 4640 =
+
+- World Header Lock - [Huge]:
+	• (0000002C-0000002F): Little Endian Int32: Compressed World Size + 0000
+	• (00000034-00000037): Little Endian Int32: Compressed World Size + 8656
+	• (00000040-00000043): Little Endian Int32: Compressed World Size + 8664 (+08)
+	• (0000004C-0000004F): Little Endian Int32: Compressed World Size + 8672 (+08)
+	• (00000058-0000005B): Little Endian Int32: Compressed World Size + 8676 (+04)
+	• (00000064-00000067): Little Endian Int32: Compressed World Size + 8680 (+04)
+	• (00000070-00000073): Little Endian Int32: Compressed World Size + 8684 (+04)
+	• (0000007C-0000007F): Little Endian Int32: Compressed World Size + 8688 (+04)
+	• (00000088-0000008B): Little Endian Int32: Compressed World Size + 8692 (+04)
+	• (00000094-00000097): Little Endian Int32: Compressed World Size + 8696 (+04)
+	• (000000A0-000000A3): Little Endian Int32: Compressed World Size + 8700 (+04)
+	• (000000AC-000000AF): Little Endian Int32: Compressed World Size + 8704 (+04)
+	• (000000B8-000000BB): Little Endian Int32: Compressed World Size + 8708 (+04)
+	• (000000C4-000000C7): Little Endian Int32: Compressed World Size + 8712 (+04)
+	• (000000D0-000000D3): Little Endian Int32: Compressed World Size + 8720 (+08)
+	• (000000DC-000000DF): Little Endian Int32: Compressed World Size + 8736 (+16)
+	• [Huge] World Size (Static):
+		• + 0000 = 
+		• + 8656 = 
+		• + 8664 = 
+		• + 8672 = 
+		• + 8676 = 
+		• + 8680 = 
+		• + 8684 = 
+		• + 8688 = 
+		• + 8692 = 
+		• + 8696 = 
+		• + 8700 = 
+		• + 8704 = 
+		• + 8708 = 
+		• + 8712 = 
+		• + 8720 = 
+		• + 8736 =
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+	• Compressed World Size
+	• Compressed World Size + Header
+		- TINY: 1488
+		- SMALL: 2000
+		- NORMAL: 2512
+		- LARGE: 4560
+		- HUGE: 8656
+
+	• Compressed World Size + Survival Compression Data (?)
+
+	• Compressed World Size + 
+
+	• Compressed World Size + 
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+- World Sizes:
+	• Tiny	 =	[X = 0512 / Y = 128 / Area = 0065536 * 2]
+	• Small	 =	[X = 0768 / Y = 256 / Area = 0196256 * 2]
+	• Normal =	[X = 1024 / Y = 256 / Area = 0262144 * 2]
+	• Large	 =	[X = 2048 / Y = 384 / Area = 0786432 * 2]
+	• Huge	 =	[X = 4096 / Y = 512 / Area = 2097152 * 2]
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+- World Data:
+	• (00000108-00000126): World Name
+
+	• (0000013C-0000013F): Player Position 
+		• X = [C (small step)]
+		• X = [D (major step)]
+		• Y = [E (small step)]
+		• Y = [F (major step)]
+
+	• (00000140-00000143): World Spawn
+		• X:[0 (small step)]
+		• X:[1 (major step)]
+		• Y:[2 (small step)]
+		• Y:[3 (major step)]
+
+	• (00000144-00000145): Planet Data
+		• Terra  = [01 00]
+		• Seth   = [02 00]
+		• Alba   = [04 00]
+		• Xeno   = [08 00]
+		• Magmar = [10 00]
+		• Cryo   = [20 00]
+		• Yuca   = [40 00]
+		• Lilith = [80 00]
+		• Thetis = [00 01]
+		• Mykon  = [00 02]
+		• Umbra  = [00 04]
+
+	• (00000149): Game Mode
+		• Survival  = [00]
+		• Creative  = [01]
+		• Flat      = [02]
+		• Adventure = [03]
+
+	• 
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+World Editing Data:
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+- Block Properties:
+	• Foreground Block ID 			= [xxxxxxx0 - xxxxxxx1] ID + 0080
+	• Background Block ID 			= [xxxxxxx2 - xxxxxxx3]
+	• Block Modifier ID				= [xxxxxxx4 - xxxxxxx5] ID + 0000: Foreground | ID + 0080: Background
+	• Block Modifier ID				= [xxxxxxx6 - xxxxxxx7] ID + 0000: Foreground | ID + 0080: Background
+	• Block Modifier ID				= [xxxxxxx8 - xxxxxxx9] ID + 0000: Foreground | ID + 0080: Background
+	• Block Modifier ID				= [xxxxxxxA - xxxxxxxB] ID + 0000: Foreground | ID + 0080: Background
+	• Liquid Layer ID				= [xxxxxxxE]
+
+	• Foreground Block Data(?)		= [xxxxxxxC] (Door = [44])
+	• Unused						= [xxxxxxxD]
+	• Foreground Block Data(?)		= [xxxxxxxF] (Door = [00]:Left Face [04]:Right Face),(Liquid = [00]:Non-Source [08]:Source)
+
+- World Translations:
+	• Column Offset
+		• y - 1 = [Current Offset (xxxxxxx0) - 16]
+		• y + 1 = [Current Offset (xxxxxxx0) + 16]
+	• Row Offset
+		• x - 1 = [Current Offset (xxxxxxx0) - (16 * world height)]
+		• x + 1 = [Current Offset (xxxxxxx0) + (16 * world height)]
+
+
+
+## Clean up for release:
+## ^\s*#.+$\n
+## ^\n
+## \s+#.+

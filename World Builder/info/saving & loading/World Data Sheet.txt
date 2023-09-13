@@ -1,0 +1,288 @@
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+							World File Data
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+00000000 - 0000001F			: Junk Jack World File Header: Single
+	• [4A 4A 58 4D 01 00 13 00 00 00 00 00 01 00 00 00 F0 00 00 00 E0 00 00 00 04 00 00 00 D0 01 00 00]
+00000000 - 0000001F			: Junk Jack World File Header: Adventure
+	• [4A 4A 58 4D 02 00 02 00 00 00 00 00 01 00 00 00 24 00 00 00 E0 00 00 00 14 00 00 00 04 01 00 00]
+
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+							World Loader Properties
+World Sizes:
+	• Tiny	 =	[X = 0512 / Y = 128]
+	• Small	 =	[X = 0768 / Y = 256]
+	• Normal =	[X = 1024 / Y = 256]
+	• Large	 =	[X = 2048 / Y = 384]
+	• Huge	 =	[X = 4096 / Y = 512]
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+00000020					: Byte Null Separator
+00000021					: Byte Unknown Element
+00000022 - 00000023			: Byte Null Separator
+00000024 - 00000027			: Junk Jack World Loader Control
+	• [02 00 01 01]
+
+00000028 - 0000002B			: Junk Jack World Load Header Size
+	• TINY		: [D0 05 00 00]
+	• SMALL		: [D0 07 00 00]
+	• NORMAL	: [D0 09 00 00]
+	• LARGE		: [D0 11 00 00]
+	• HUGE		: [D0 21 00 00]
+
+0000002C - 0000002F			: Junk Jack World Compressed Size (Little Endian)
+00000030 - 00000033			: Junk Jack World Gamemode Loader Preset
+	• Null (Auto)	: [00 00 00 00]
+	• Adventure		: [03 00 00 01]
+	• Survival		: [03 00 00 01]
+	• Creative		: [12 00 00 00]
+	• Flat			: [12 00 00 00]
+
+00000034 - 00000037			: Junk Jack Previous Size + Header Size (Little Endian)
+	• TINY			:+ 1488
+	• SMALL			:+ 2000
+	• NORMAL		:+ 2512
+	• LARGE			:+ 4560
+	• HUGE			:+ 8656
+00000038 - 0000003B			: Junk Jack Next Byte Addition
+	• Adventure		: Compressed Survival Footer Size
+	• Survival		: Compressed Survival Footer Size
+0000003C - 0000003F			: Junk Jack File (X) Loader Preset
+
+00000040 - 00000043			: Junk Jack Previous Size + New Bytes (Little Endian)
+	• Adventure		:+ (Compressed Survival Footer Size)
+	• Survival		:+ (Compressed Survival Footer Size)
+00000044 - 00000047			: Junk Jack Next Byte Addition
+00000048 - 0000004B			: Junk Jack File (X) Loader Preset
+	• Creative		: [05 00 00 00]
+	• Flat			: [05 00 00 00]
+
+0000004C - 0000004F			: Junk Jack Previous Size + New Bytes (Little Endian)
+00000050 - 00000053			: Junk Jack Next Byte Addition
+	• Creative		: Chest Data Size
+	• Flat			: Chest Data Size
+00000054 - 00000057			: Junk Jack File (X) Loader Preset
+	• Adventure		: [05 00 00 00]
+	• Survival		: [05 00 00 00]
+
+00000058 - 0000005B			: Junk Jack Previous Size + New Bytes (Little Endian)
+	• Creative		: Previous World Size + Chest Size
+	• Flat			: Previous World Size + Chest Size
+0000005C - 0000005F			: Junk Jack Next Byte Addition
+	• Adventure		: Chest Data Size
+	• Survival		: Chest Data Size
+00000060 - 00000063			: Junk Jack File (X) Loader Preset
+
+00000064 - 00000067			: Junk Jack Previous Size + New Bytes (Little Endian)
+	• Adventure		: Previous World Size + Chest Size
+	• Survival		: Previous World Size + Chest Size
+00000068 - 0000006B			: Junk Jack Next Byte Addition
+0000006C - 0000006F			: Junk Jack File (X) Loader Preset
+
+00000070 - 00000073			: Junk Jack Previous Size + New Bytes (Little Endian)
+00000074 - 00000077			: Junk Jack Next Byte Addition
+00000078 - 0000007B			: Junk Jack File (X) Loader Preset
+
+0000007C - 0000007F			: Junk Jack Previous Size + New Bytes (Little Endian)
+00000080 - 00000083			: Junk Jack Next Byte Addition
+00000084 - 00000087			: Junk Jack File (X) Loader Preset
+
+00000088 - 0000008B			: Junk Jack Previous Size + New Bytes (Little Endian)
+0000008C - 0000008F			: Junk Jack Next Byte Addition
+00000090 - 00000093			: Junk Jack File (X) Loader Preset
+
+00000094 - 00000097			: Junk Jack Previous Size + New Bytes (Little Endian)
+00000098 - 0000009B			: Junk Jack Next Byte Addition
+0000009C - 0000009F			: Junk Jack File (X) Loader Preset
+
+000000A0 - 000000A3			: Junk Jack Previous Size + New Bytes (Little Endian)
+000000A4 - 000000A7			: Junk Jack Next Byte Addition
+000000A8 - 000000AB			: Junk Jack File (X) Loader Preset
+
+000000AC - 000000AF			: Junk Jack Previous Size + New Bytes (Little Endian)
+000000B0 - 000000B3			: Junk Jack Next Byte Addition
+000000B4 - 000000B7			: Junk Jack File (X) Loader Preset
+
+000000B8 - 000000BB			: Junk Jack Previous Size + New Bytes (Little Endian)
+000000BC - 000000BF			: Junk Jack Next Byte Addition
+000000C0 - 000000C3			: Junk Jack File (X) Loader Preset
+
+000000C4 - 000000C7			: Junk Jack Previous Size + New Bytes (Little Endian)
+000000C8 - 000000CB			: Junk Jack Next Byte Addition
+000000CC - 000000CF			: Junk Jack File (X) Loader Preset
+
+000000D0 - 000000D3			: Junk Jack Previous Size + New Bytes (Little Endian)
+000000D4 - 000000D7			: Junk Jack Next Byte Addition
+000000D8 - 000000DB			: Junk Jack File (X) Loader Preset
+	• Creative		: [13 00 00 00]
+	• Flat			: [13 00 00 00]
+
+000000DC - 000000DF			: Junk Jack Previous Size + New Bytes (Little Endian)
+	• Creative		: Final World Size Byte
+	• Flat			: Final World Size Byte
+000000E0 - 000000E3			: Junk Jack Next Byte Addition
+	• Creative		: Entity Data Size
+	• Flat			: Entity Data Size
+000000E4 - 000000E7			: Junk Jack File (X) Loader Preset
+	• Adventure		: [13 00 00 00]
+	• Survival		: [13 00 00 00]
+
+000000E8 - 000000EB			: Junk Jack Previous Size + New Bytes (Little Endian)
+	• Adventure		: Final World Size Byte
+	• Survival		: Final World Size Byte
+000000EC - 000000EF			: Junk Jack Next Byte Addition
+	• Adventure		: Entity Data Size
+	• Survival		: Entity Data Size
+
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+							World Properties Data
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+000000F0 - 000000FF			: Byte Unknown Element
+00000100 - 00000107			: Junk Jack Last Played Property
+00000108 - 00000126			: Junk Jack World Name
+00000127					: Byte Null Separator
+00000128 - 0000012D			: Junk Jack Author Tag
+0000012E - 00000138			: Byte Null Separator
+00000139 - 0000013B			: Byte Unknown Element
+0000013C - 0000013F			: Junk Jack Player Position
+00000140 - 00000143			: Junk Jack Spawn Position
+00000144 - 00000145			: Junk Jack Planet Element
+	• Terra  		: [01 00]
+	• Seth   		: [02 00]
+	• Alba   		: [04 00]
+	• Xeno   		: [08 00]
+	• Magmar 		: [10 00]
+	• Cryo   		: [20 00]
+	• Yuca   		: [40 00]
+	• Lilith 		: [80 00]
+	• Thetis 		: [00 01]
+	• Mykon  		: [00 02]
+	• Umbra  		: [00 04]
+
+00000146 - 00000148			: Byte Unknown Element
+00000149					: Junk Jack Gamemode
+	• Survival 		: [00]
+	• Creative 		: [01]
+	• Flat     		: [02]
+	• Adventure		: [03]
+
+0000014A					: Junk Jack World Size
+	• TINY			: [00]
+	• SMALL			: [01]
+	• NORMAL		: [02]
+	• LARGE			: [03]
+	• HUGE			: [04]
+
+0000014B					: Junk Jack Skybox Offset
+0000014C - 0000014F			: Byte Null Separator
+00000150 - 000001CF			: Byte Null Separator
+000001D0 ~ 000021CF			: Junk Jack Block Border
+	• TINY			: 000005CF
+	• SMALL			: 000007CF
+	• NORMAL		: 000009CF
+	• LARGE			: 000011CF
+	• HUGE			: 000021CF
+
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+							World Editing Data
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+- Block Properties:
+	• Foreground Block ID 			= [xxxxxxx0 - xxxxxxx1] ID + 0080
+	• Background Block ID 			= [xxxxxxx2 - xxxxxxx3]
+	• Block Modifier ID				= [xxxxxxx4 - xxxxxxx5] ID + 0000: Foreground | ID + 0080: Background
+	• Block Modifier ID				= [xxxxxxx6 - xxxxxxx7] ID + 0000: Foreground | ID + 0080: Background
+	• Block Modifier ID				= [xxxxxxx8 - xxxxxxx9] ID + 0000: Foreground | ID + 0080: Background
+	• Block Modifier ID				= [xxxxxxxA - xxxxxxxB] ID + 0000: Foreground | ID + 0080: Background
+	• Liquid Layer ID				= [xxxxxxxE]
+
+	• Foreground Block Data(?)		= [xxxxxxxC] (Door = [44])
+	• Unused						= [xxxxxxxD]
+	• Foreground Block Data(?)		= [xxxxxxxF] (Door = [00]:Left Face [04]:Right Face),(Liquid = [00]:Non-Source [08]:Source)
+
+- World Translations:
+	• Column Offset
+		• y - 1 = [Current Offset (xxxxxxx0) - 16]
+		• y + 1 = [Current Offset (xxxxxxx0) + 16]
+	• Row Offset
+		• x - 1 = [Current Offset (xxxxxxx0) - (16 * world height)]
+		• x + 1 = [Current Offset (xxxxxxx0) + (16 * world height)]
+
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+							World Loader Footer
+---------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+00000000 - 00000003			: Junk Jack World Time
+00000004					: Junk Jack World Skybox Time
+	• Off - Morning	: [00]
+	• Morning		: [01]
+	• Dawn			: [02]
+	• Dusk			: [03]
+	• Night			: [04]
+
+--------------------------------------
+Chest Bytestring: 4 + i(12 + 12*n) bytes
+	• 4 bytes = number of chests
+	• i = number of chests
+	• n = number of slots per individual chest
+--------------------------------------
+2 bytes = chest x co-ord
+2 bytes = null bytes
+2 bytes = chest y co-ord
+2 bytes = null bytes
+2 bytes = Slot Amount
+	• Pages = 12*page number
+2 bytes = null bytes
+8 * (Chest Page bytes * 12) = Items
+--------------------------------------
+Entity Bytestring: 4 + 7*n bytes
+	• 4 bytes = number of entities
+	• n = number of entities
+--------------------------------------
+4 bytes = entity location
+1 byte = null byte
+2 bytes = entity id
+--------------------------------------
+Items: 12 bytes
+--------------------------------------
+2 bytes = mob id/potion strength/encrusting : Modifier
+	• Mob ID:
+		- [xx yy] = Mob ID
+
+	• Potion Potency:
+		- [0x yy] = weak potency
+		- [1x yy] = normal potency
+		- [2x yy] = strong potency
+		- [3x yy] = very strong potency
+	• Potion Strength:
+		- [x0 yy] = minor potion
+		- [x1 yy] = normal potion
+		- [x2 yy] = major potion
+		- [x3 yy] = magnificent potion
+	• Potion ID:
+		- [xx 00] = Potion of Giants
+		- [xx A5] = Potion of Acid Resistance
+
+	• Encrusting:
+		- [01 00] = Topaz
+		- [02 00] = Sapphire
+		- [03 00] = Ruby
+		- [04 00] = Emerald
+		- [05 00] = Amethyst
+		- [06 00] = Diamond
+		- [07 00] = Citrine
+		- [08 00] = Tanzanite
+		- [09 00] = Tourmaline
+
+2 bytes = null bytes
+2 bytes = item id
+2 bytes = item count
+2 bytes = durability
+1 byte = render icon
+1 byte = null byte (?) / padding

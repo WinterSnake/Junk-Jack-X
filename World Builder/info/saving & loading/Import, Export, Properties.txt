@@ -1,0 +1,102 @@
+-------------------------------------------------
+World Properties
+-------------------------------------------------
+{
+	"world":
+	{
+		"name" : string,
+		"size" : string="Tiny / Small / Normal / Large / Huge",
+		"planet" : string="",
+		"gamemode" : string="Adventure / Survival / Creative / Flat"
+		"spawn_position" :
+		[
+			int=X,
+			int=Y
+		],
+		"player_position" :
+		[
+			int=X,
+			int=Y
+		],
+		"border_array" :
+		[
+			int=Height
+		],
+		"time_in_game": int,
+		"skybox_type" : int,
+		"skybox_offset" : int,
+	},
+	"chests" :
+	[{
+		Chest Object
+	}],
+	"entity" :
+	[{
+		Entity Object
+	}]
+}
+-------------------------------------------------
+Entity Object
+-------------------------------------------------
+{
+	"id" : string="Mob Name",
+	"position" :
+	[
+		int=X,
+		int=Y
+	]
+}
+-------------------------------------------------
+Chest Object v1
+-------------------------------------------------
+{
+	"pages" : int,		("slots"(?))
+	"position" :
+	[
+		int=X,
+		int=Y
+	],
+	"contents":
+	[{
+		Item Object v1,
+		"slot" : int
+	}]
+}
+-------------------------------------------------
+Chest Object v2
+-------------------------------------------------
+{
+	"slots" : int,
+	"position" :
+	[
+		int=X,
+		int=Y
+	],
+	"contents":
+	[{
+		Item Object v2,
+		"slot" : int
+	}]
+}
+-------------------------------------------------
+Item Object v1
+-------------------------------------------------
+{
+	"id" : string="Item Name",
+	"count" : int,
+	"durability" : int,
+	"modifier" : string="(modifier hex bit)"
+}
+-------------------------------------------------
+Item Object v2
+-------------------------------------------------
+{
+	"id" : string="Item Name",
+	"count" : int,
+	"durability" : int,
+	"modifiers" : 
+	{
+		
+	},
+	"render_icon":int
+}

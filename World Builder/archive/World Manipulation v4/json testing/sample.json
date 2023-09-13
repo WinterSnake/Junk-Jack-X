@@ -1,0 +1,65 @@
+{
+	"world":
+	{
+		"name" : "Test Flat World",
+		"size" : "Tiny",
+		"planet" : "Terra",
+		"skybox_offset" : 1,
+		"gamemode" : "Flat",
+		"spawn_position":
+		[
+		  256,
+		  112
+		],
+		"player_position":
+		[
+		  256,
+		  112
+		],
+		"border_array":
+		[
+		  12,
+		  12,
+		  12,
+		  12
+		]
+	},
+	"chests":
+	[{
+	  "position":[0, 1],
+	  "type":"wooden",
+	  "contents":
+	  [{
+	    "id":"Item Name",
+	    "count":255,
+	    "durability":0,
+	    "slot":0
+	  },
+	  {
+	    "id":"Item Name",
+	    "count":1,
+	    "durability":12,
+	    "slot":3
+	  }]
+	}],
+	"mobs":
+	[{
+	  "id":"Mob Name",
+	  "position":[0, 1]
+	},{
+	  "id":"Mob Name",
+	  "position":[0, 2]
+	},{
+	  "id":"Mob Name",
+	  "position":[12, 6]
+	},{
+	  "id":"Mob Name",
+	  "position":[13, 20]
+	},{
+	  "id":"Mob Name",
+	  "position":[30, 122]
+	},{
+	  "id":"Mob Name",
+	  "position":[50, 1]
+	}]
+}

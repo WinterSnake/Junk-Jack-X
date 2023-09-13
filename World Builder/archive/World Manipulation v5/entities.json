@@ -1,0 +1,4779 @@
+{
+    "entities": [
+        {
+            "name": "Annoying Spore Medium",
+            "num id": 0,
+            "hex id": "0000"
+        },
+        {
+            "name": "Annoying Spore Tiny",
+            "num id": 1,
+            "hex id": "0100"
+        },
+        {
+            "name": "Bear Brown",
+            "num id": 2,
+            "hex id": "0200"
+        },
+        {
+            "name": "Bear White",
+            "num id": 3,
+            "hex id": "0300"
+        },
+        {
+            "name": "Belly Bob",
+            "num id": 4,
+            "hex id": "0400"
+        },
+        {
+            "name": "Bird Blue Female",
+            "num id": 5,
+            "hex id": "0500"
+        },
+        {
+            "name": "Bird Blue Male",
+            "num id": 6,
+            "hex id": "0600"
+        },
+        {
+            "name": "Bird Green Female",
+            "num id": 7,
+            "hex id": "0700"
+        },
+        {
+            "name": "Bird Green Male",
+            "num id": 8,
+            "hex id": "0800"
+        },
+        {
+            "name": "Bird Magenta Female",
+            "num id": 9,
+            "hex id": "0900"
+        },
+        {
+            "name": "Bird Magenta Male",
+            "num id": 10,
+            "hex id": "0A00"
+        },
+        {
+            "name": "Bird Red Female",
+            "num id": 11,
+            "hex id": "0B00"
+        },
+        {
+            "name": "Bird Red Male",
+            "num id": 12,
+            "hex id": "0C00"
+        },
+        {
+            "name": "Bird Yellow Female",
+            "num id": 13,
+            "hex id": "0D00"
+        },
+        {
+            "name": "Bird Yellow Male",
+            "num id": 14,
+            "hex id": "0E00"
+        },
+        {
+            "name": "Bombroach Blue  ",
+            "num id": 15,
+            "hex id": "0F00"
+        },
+        {
+            "name": "Bombroach Purple",
+            "num id": 16,
+            "hex id": "1000"
+        },
+        {
+            "name": "Brown Boar",
+            "num id": 17,
+            "hex id": "1100"
+        },
+        {
+            "name": "Brown Boar Demon",
+            "num id": 18,
+            "hex id": "1200"
+        },
+        {
+            "name": "Brute Ogre Blue",
+            "num id": 19,
+            "hex id": "1300"
+        },
+        {
+            "name": "Brute Ogre Knight",
+            "num id": 20,
+            "hex id": "1400"
+        },
+        {
+            "name": "Brute Ogre Leather",
+            "num id": 21,
+            "hex id": "1500"
+        },
+        {
+            "name": "Bull",
+            "num id": 22,
+            "hex id": "1600"
+        },
+        {
+            "name": "Calf",
+            "num id": 23,
+            "hex id": "1700"
+        },
+        {
+            "name": "Camel Brown",
+            "num id": 24,
+            "hex id": "1800"
+        },
+        {
+            "name": "Camel Dark Brown",
+            "num id": 25,
+            "hex id": "1900"
+        },
+        {
+            "name": "Cat Black Female",
+            "num id": 26,
+            "hex id": "1A00"
+        },
+        {
+            "name": "Cat Black Kitten",
+            "num id": 27,
+            "hex id": "1B00"
+        },
+        {
+            "name": "Cat Black Male",
+            "num id": 28,
+            "hex id": "1C00"
+        },
+        {
+            "name": "Cat European Female",
+            "num id": 29,
+            "hex id": "1D00"
+        },
+        {
+            "name": "Cat European Kitten",
+            "num id": 30,
+            "hex id": "1E00"
+        },
+        {
+            "name": "Cat European Male",
+            "num id": 31,
+            "hex id": "1F00"
+        },
+        {
+            "name": "Cat Siamese Female",
+            "num id": 32,
+            "hex id": "2000"
+        },
+        {
+            "name": "Cat Siamese Kitten",
+            "num id": 33,
+            "hex id": "2100"
+        },
+        {
+            "name": "Cat Siamese Male",
+            "num id": 34,
+            "hex id": "2200"
+        },
+        {
+            "name": "Cat Spotted Female",
+            "num id": 35,
+            "hex id": "2300"
+        },
+        {
+            "name": "Cat Spotted Kitten",
+            "num id": 36,
+            "hex id": "2400"
+        },
+        {
+            "name": "Cat Spotted Male",
+            "num id": 37,
+            "hex id": "2500"
+        },
+        {
+            "name": "Cat White Female",
+            "num id": 38,
+            "hex id": "2600"
+        },
+        {
+            "name": "Cat White Kitten",
+            "num id": 39,
+            "hex id": "2700"
+        },
+        {
+            "name": "Cat White Male",
+            "num id": 40,
+            "hex id": "2800"
+        },
+        {
+            "name": "Caterpillar Blue",
+            "num id": 41,
+            "hex id": "2900"
+        },
+        {
+            "name": "Caterpillar Green",
+            "num id": 42,
+            "hex id": "2A00"
+        },
+        {
+            "name": "Caterpillar Tiny Green",
+            "num id": 43,
+            "hex id": "2B00"
+        },
+        {
+            "name": "Chick",
+            "num id": 44,
+            "hex id": "2C00"
+        },
+        {
+            "name": "Cobra Brown",
+            "num id": 45,
+            "hex id": "2D00"
+        },
+        {
+            "name": "Cobra Frost",
+            "num id": 46,
+            "hex id": "2E00"
+        },
+        {
+            "name": "Cobra Red Stinger",
+            "num id": 47,
+            "hex id": "2F00"
+        },
+        {
+            "name": "Coldtusk Boar Cyan",
+            "num id": 48,
+            "hex id": "3000"
+        },
+        {
+            "name": "Coldtusk Boar Purple",
+            "num id": 49,
+            "hex id": "3100"
+        },
+        {
+            "name": "Cow",
+            "num id": 50,
+            "hex id": "3200"
+        },
+        {
+            "name": "Critter Cockroach Frozen",
+            "num id": 51,
+            "hex id": "3300"
+        },
+        {
+            "name": "Critter Cockroach Gray",
+            "num id": 52,
+            "hex id": "3400"
+        },
+        {
+            "name": "Critter Cockroach Purple",
+            "num id": 53,
+            "hex id": "3500"
+        },
+        {
+            "name": "Critter Snake Green",
+            "num id": 54,
+            "hex id": "3600"
+        },
+        {
+            "name": "Critter Snake Magenta",
+            "num id": 55,
+            "hex id": "3700"
+        },
+        {
+            "name": "Critter Snake Orange",
+            "num id": 56,
+            "hex id": "3800"
+        },
+        {
+            "name": "Critter Snake Purple",
+            "num id": 57,
+            "hex id": "3900"
+        },
+        {
+            "name": "Crocodile Frost Cyan",
+            "num id": 58,
+            "hex id": "3A00"
+        },
+        {
+            "name": "Crocodile Frost Magenta",
+            "num id": 59,
+            "hex id": "3B00"
+        },
+        {
+            "name": "Crocodile Green",
+            "num id": 60,
+            "hex id": "3C00"
+        },
+        {
+            "name": "Crocodile Magenta",
+            "num id": 61,
+            "hex id": "3D00"
+        },
+        {
+            "name": "Crunchy Cyan",
+            "num id": 62,
+            "hex id": "3E00"
+        },
+        {
+            "name": "Crunchy Magenta",
+            "num id": 63,
+            "hex id": "3F00"
+        },
+        {
+            "name": "Deer Brown",
+            "num id": 64,
+            "hex id": "4000"
+        },
+        {
+            "name": "Demon Obsidian",
+            "num id": 65,
+            "hex id": "4100"
+        },
+        {
+            "name": "Dog Beige Female",
+            "num id": 66,
+            "hex id": "4200"
+        },
+        {
+            "name": "Dog Beige Male",
+            "num id": 67,
+            "hex id": "4300"
+        },
+        {
+            "name": "Dog Beige Puppy",
+            "num id": 68,
+            "hex id": "4400"
+        },
+        {
+            "name": "Dog Black Female",
+            "num id": 69,
+            "hex id": "4500"
+        },
+        {
+            "name": "Dog Black Male",
+            "num id": 70,
+            "hex id": "4600"
+        },
+        {
+            "name": "Dog Black Puppy",
+            "num id": 71,
+            "hex id": "4700"
+        },
+        {
+            "name": "Dog Brown Female",
+            "num id": 72,
+            "hex id": "4800"
+        },
+        {
+            "name": "Dog Brown Male",
+            "num id": 73,
+            "hex id": "4900"
+        },
+        {
+            "name": "Dog Brown Puppy",
+            "num id": 74,
+            "hex id": "4A00"
+        },
+        {
+            "name": "Dog Spotted Female",
+            "num id": 75,
+            "hex id": "4B00"
+        },
+        {
+            "name": "Dog Spotted Male",
+            "num id": 76,
+            "hex id": "4C00"
+        },
+        {
+            "name": "Dog Spotted Puppy",
+            "num id": 77,
+            "hex id": "4D00"
+        },
+        {
+            "name": "Dog White Female",
+            "num id": 78,
+            "hex id": "4E00"
+        },
+        {
+            "name": "Dog White Male",
+            "num id": 79,
+            "hex id": "4F00"
+        },
+        {
+            "name": "Dog White Puppy",
+            "num id": 80,
+            "hex id": "5000"
+        },
+        {
+            "name": "Duck",
+            "num id": 81,
+            "hex id": "5100"
+        },
+        {
+            "name": "Dynaslime",
+            "num id": 82,
+            "hex id": "5200"
+        },
+        {
+            "name": "Dynaslime Huge",
+            "num id": 83,
+            "hex id": "5300"
+        },
+        {
+            "name": "Falling Star",
+            "num id": 84,
+            "hex id": "5400"
+        },
+        {
+            "name": "Fledgling Blue",
+            "num id": 85,
+            "hex id": "5500"
+        },
+        {
+            "name": "Fledgling Green",
+            "num id": 86,
+            "hex id": "5600"
+        },
+        {
+            "name": "Fledgling Magenta",
+            "num id": 87,
+            "hex id": "5700"
+        },
+        {
+            "name": "Fledgling Red",
+            "num id": 88,
+            "hex id": "5800"
+        },
+        {
+            "name": "Fledgling Yellow",
+            "num id": 89,
+            "hex id": "5900"
+        },
+        {
+            "name": "Flying",
+            "num id": 90,
+            "hex id": "5A00"
+        },
+        {
+            "name": "Fox Arctic",
+            "num id": 91,
+            "hex id": "5B00"
+        },
+        {
+            "name": "Fox Brown",
+            "num id": 92,
+            "hex id": "5C00"
+        },
+        {
+            "name": "Frog Green",
+            "num id": 93,
+            "hex id": "5D00"
+        },
+        {
+            "name": "Frog Purple",
+            "num id": 94,
+            "hex id": "5E00"
+        },
+        {
+            "name": "Geloid Magenta",
+            "num id": 95,
+            "hex id": "5F00"
+        },
+        {
+            "name": "Geloid Red",
+            "num id": 96,
+            "hex id": "6000"
+        },
+        {
+            "name": "Ghostpaw Wolf",
+            "num id": 97,
+            "hex id": "6100"
+        },
+        {
+            "name": "Golem Ice",
+            "num id": 98,
+            "hex id": "6200"
+        },
+        {
+            "name": "Golem Sand",
+            "num id": 99,
+            "hex id": "6300"
+        },
+        {
+            "name": "Golem Stone",
+            "num id": 100,
+            "hex id": "6400"
+        },
+        {
+            "name": "Gorilla Ripper",
+            "num id": 101,
+            "hex id": "6500"
+        },
+        {
+            "name": "Ground Hog",
+            "num id": 102,
+            "hex id": "6600"
+        },
+        {
+            "name": "Grumpy Black Huge",
+            "num id": 103,
+            "hex id": "6700"
+        },
+        {
+            "name": "Grumpy Black Small",
+            "num id": 104,
+            "hex id": "6800"
+        },
+        {
+            "name": "Grumpy Red Huge",
+            "num id": 105,
+            "hex id": "6900"
+        },
+        {
+            "name": "Grumpy Red Small",
+            "num id": 106,
+            "hex id": "6A00"
+        },
+        {
+            "name": "Hen",
+            "num id": 107,
+            "hex id": "6B00"
+        },
+        {
+            "name": "Horned Belch Magenta",
+            "num id": 108,
+            "hex id": "6C00"
+        },
+        {
+            "name": "Horned Belch Purple",
+            "num id": 109,
+            "hex id": "6D00"
+        },
+        {
+            "name": "Hound Green",
+            "num id": 110,
+            "hex id": "6E00"
+        },
+        {
+            "name": "Ice Yeti",
+            "num id": 111,
+            "hex id": "6F00"
+        },
+        {
+            "name": "Iguana Brown",
+            "num id": 112,
+            "hex id": "7000"
+        },
+        {
+            "name": "Jaguar Blue",
+            "num id": 113,
+            "hex id": "7100"
+        },
+        {
+            "name": "Kaleb Blue",
+            "num id": 114,
+            "hex id": "7200"
+        },
+        {
+            "name": "Kaleb Priest Blue",
+            "num id": 115,
+            "hex id": "7300"
+        },
+        {
+            "name": "Kaleb Spear Blue",
+            "num id": 116,
+            "hex id": "7400"
+        },
+        {
+            "name": "Kit Beige",
+            "num id": 117,
+            "hex id": "7500"
+        },
+        {
+            "name": "Kit Brown",
+            "num id": 118,
+            "hex id": "7600"
+        },
+        {
+            "name": "Kit White",
+            "num id": 119,
+            "hex id": "7700"
+        },
+        {
+            "name": "Lamb Black",
+            "num id": 120,
+            "hex id": "7800"
+        },
+        {
+            "name": "Lamb Brown",
+            "num id": 121,
+            "hex id": "7900"
+        },
+        {
+            "name": "Lamb White",
+            "num id": 122,
+            "hex id": "7A00"
+        },
+        {
+            "name": "Landbeak Green",
+            "num id": 123,
+            "hex id": "7B00"
+        },
+        {
+            "name": "Landbeak Red",
+            "num id": 124,
+            "hex id": "7C00"
+        },
+        {
+            "name": "Locust Red",
+            "num id": 125,
+            "hex id": "7D00"
+        },
+        {
+            "name": "Mammoth Huge",
+            "num id": 126,
+            "hex id": "7E00"
+        },
+        {
+            "name": "Mammoth Tiny",
+            "num id": 127,
+            "hex id": "7F00"
+        },
+        {
+            "name": "Monkey Small",
+            "num id": 128,
+            "hex id": "8000"
+        },
+        {
+            "name": "Mummy",
+            "num id": 129,
+            "hex id": "8100"
+        },
+        {
+            "name": "Mummy Anubis",
+            "num id": 130,
+            "hex id": "8200"
+        },
+        {
+            "name": "Mummy Gold Spear",
+            "num id": 131,
+            "hex id": "8300"
+        },
+        {
+            "name": "Mummy Head",
+            "num id": 132,
+            "hex id": "8400"
+        },
+        {
+            "name": "Mummy Pharaoh",
+            "num id": 133,
+            "hex id": "8500"
+        },
+        {
+            "name": "Murk Green Spear",
+            "num id": 134,
+            "hex id": "8600"
+        },
+        {
+            "name": "Murk Purple",
+            "num id": 135,
+            "hex id": "8700"
+        },
+        {
+            "name": "Murk Red Mage",
+            "num id": 136,
+            "hex id": "8800"
+        },
+        {
+            "name": "Northern Gull Blue",
+            "num id": 137,
+            "hex id": "8900"
+        },
+        {
+            "name": "Northern Gull Red",
+            "num id": 138,
+            "hex id": "8A00"
+        },
+        {
+            "name": "Ocelot",
+            "num id": 139,
+            "hex id": "8B00"
+        },
+        {
+            "name": "Parrot Blue",
+            "num id": 140,
+            "hex id": "8C00"
+        },
+        {
+            "name": "Parrot Pink",
+            "num id": 141,
+            "hex id": "8D00"
+        },
+        {
+            "name": "Peacock Blue",
+            "num id": 142,
+            "hex id": "8E00"
+        },
+        {
+            "name": "Penguin Big",
+            "num id": 143,
+            "hex id": "8F00"
+        },
+        {
+            "name": "Penguin Small",
+            "num id": 144,
+            "hex id": "9000"
+        },
+        {
+            "name": "Pig",
+            "num id": 145,
+            "hex id": "9100"
+        },
+        {
+            "name": "Pig Sow",
+            "num id": 146,
+            "hex id": "9200"
+        },
+        {
+            "name": "Piglet",
+            "num id": 147,
+            "hex id": "9300"
+        },
+        {
+            "name": "Pocket Bombroach",
+            "num id": 148,
+            "hex id": "9400"
+        },
+        {
+            "name": "Pocket Camel",
+            "num id": 149,
+            "hex id": "9500"
+        },
+        {
+            "name": "Pocket Caterpillar",
+            "num id": 150,
+            "hex id": "9600"
+        },
+        {
+            "name": "Pocket Crocodile",
+            "num id": 151,
+            "hex id": "9700"
+        },
+        {
+            "name": "Pocket Fox",
+            "num id": 152,
+            "hex id": "9800"
+        },
+        {
+            "name": "Pocket Frog",
+            "num id": 153,
+            "hex id": "9900"
+        },
+        {
+            "name": "Pocket Grumpy",
+            "num id": 154,
+            "hex id": "9A00"
+        },
+        {
+            "name": "Pocket Llama",
+            "num id": 155,
+            "hex id": "9B00"
+        },
+        {
+            "name": "Pocket Monkey",
+            "num id": 156,
+            "hex id": "9C00"
+        },
+        {
+            "name": "Pocket Mummy",
+            "num id": 157,
+            "hex id": "9D00"
+        },
+        {
+            "name": "Pocket Pug",
+            "num id": 158,
+            "hex id": "9E00"
+        },
+        {
+            "name": "Pocket Shadow Lurker",
+            "num id": 159,
+            "hex id": "9F00"
+        },
+        {
+            "name": "Pocket Skeleton",
+            "num id": 160,
+            "hex id": "A000"
+        },
+        {
+            "name": "Pocket Snail",
+            "num id": 161,
+            "hex id": "A100"
+        },
+        {
+            "name": "Pocket Snake",
+            "num id": 162,
+            "hex id": "A200"
+        },
+        {
+            "name": "Pocket Squirrel",
+            "num id": 163,
+            "hex id": "A300"
+        },
+        {
+            "name": "Pocket Stone Golem",
+            "num id": 164,
+            "hex id": "A400"
+        },
+        {
+            "name": "Pocket Turtle",
+            "num id": 165,
+            "hex id": "A500"
+        },
+        {
+            "name": "Pocket Zombie",
+            "num id": 166,
+            "hex id": "A600"
+        },
+        {
+            "name": "Rabbit Buck Beige",
+            "num id": 167,
+            "hex id": "A700"
+        },
+        {
+            "name": "Rabbit Buck Brown",
+            "num id": 168,
+            "hex id": "A800"
+        },
+        {
+            "name": "Rabbit Buck White",
+            "num id": 169,
+            "hex id": "A900"
+        },
+        {
+            "name": "Rabbit Doe Beige",
+            "num id": 170,
+            "hex id": "AA00"
+        },
+        {
+            "name": "Rabbit Doe Brown",
+            "num id": 171,
+            "hex id": "AB00"
+        },
+        {
+            "name": "Rabbit Doe White",
+            "num id": 172,
+            "hex id": "AC00"
+        },
+        {
+            "name": "Ram Black",
+            "num id": 173,
+            "hex id": "AD00"
+        },
+        {
+            "name": "Ram Brown",
+            "num id": 174,
+            "hex id": "AE00"
+        },
+        {
+            "name": "Ram White",
+            "num id": 175,
+            "hex id": "AF00"
+        },
+        {
+            "name": "Rat Brown",
+            "num id": 176,
+            "hex id": "B000"
+        },
+        {
+            "name": "Rat Brown Huge",
+            "num id": 177,
+            "hex id": "B100"
+        },
+        {
+            "name": "Rat Grey",
+            "num id": 178,
+            "hex id": "B200"
+        },
+        {
+            "name": "Rat Grey Spiked",
+            "num id": 179,
+            "hex id": "B300"
+        },
+        {
+            "name": "Rooster",
+            "num id": 180,
+            "hex id": "B400"
+        },
+        {
+            "name": "Scarab Blue",
+            "num id": 181,
+            "hex id": "B500"
+        },
+        {
+            "name": "Scarab Cyan",
+            "num id": 182,
+            "hex id": "B600"
+        },
+        {
+            "name": "Scarab Long Frost",
+            "num id": 183,
+            "hex id": "B700"
+        },
+        {
+            "name": "Scarab Violet",
+            "num id": 184,
+            "hex id": "B800"
+        },
+        {
+            "name": "Scorpion Brown",
+            "num id": 185,
+            "hex id": "B900"
+        },
+        {
+            "name": "Scorpion Glacial",
+            "num id": 186,
+            "hex id": "BA00"
+        },
+        {
+            "name": "Scorpion Red Stinger",
+            "num id": 187,
+            "hex id": "BB00"
+        },
+        {
+            "name": "Scorpion Tiny",
+            "num id": 188,
+            "hex id": "BC00"
+        },
+        {
+            "name": "Scorpion Tiny Blue",
+            "num id": 189,
+            "hex id": "BD00"
+        },
+        {
+            "name": "Scorpion Tiny Frost",
+            "num id": 190,
+            "hex id": "BE00"
+        },
+        {
+            "name": "Scorpion Violet",
+            "num id": 191,
+            "hex id": "BF00"
+        },
+        {
+            "name": "Seal",
+            "num id": 192,
+            "hex id": "C000"
+        },
+        {
+            "name": "Shadow Lurker",
+            "num id": 193,
+            "hex id": "C100"
+        },
+        {
+            "name": "Shadow Lurker Cold",
+            "num id": 194,
+            "hex id": "C200"
+        },
+        {
+            "name": "Sheep Black",
+            "num id": 195,
+            "hex id": "C300"
+        },
+        {
+            "name": "Sheep Brown",
+            "num id": 196,
+            "hex id": "C400"
+        },
+        {
+            "name": "Sheep White",
+            "num id": 197,
+            "hex id": "C500"
+        },
+        {
+            "name": "Silent Jaguar Black",
+            "num id": 198,
+            "hex id": "C600"
+        },
+        {
+            "name": "Skeleton",
+            "num id": 199,
+            "hex id": "C700"
+        },
+        {
+            "name": "Skeleton Archer Iron",
+            "num id": 200,
+            "hex id": "C800"
+        },
+        {
+            "name": "Skeleton Blind",
+            "num id": 201,
+            "hex id": "C900"
+        },
+        {
+            "name": "Skeleton Bomber",
+            "num id": 202,
+            "hex id": "CA00"
+        },
+        {
+            "name": "Skeleton Frost",
+            "num id": 203,
+            "hex id": "CB00"
+        },
+        {
+            "name": "Skeleton Frost Mage",
+            "num id": 204,
+            "hex id": "CC00"
+        },
+        {
+            "name": "Skeleton Hell",
+            "num id": 205,
+            "hex id": "CD00"
+        },
+        {
+            "name": "Skeleton Knight Gold",
+            "num id": 206,
+            "hex id": "CE00"
+        },
+        {
+            "name": "Skeleton Knight Iron",
+            "num id": 207,
+            "hex id": "CF00"
+        },
+        {
+            "name": "Skeleton Mage",
+            "num id": 208,
+            "hex id": "D000"
+        },
+        {
+            "name": "Skeleton Meat Thrower",
+            "num id": 209,
+            "hex id": "D100"
+        },
+        {
+            "name": "Skull",
+            "num id": 210,
+            "hex id": "D200"
+        },
+        {
+            "name": "Skull Giant",
+            "num id": 211,
+            "hex id": "D300"
+        },
+        {
+            "name": "Slime Bulging Black",
+            "num id": 212,
+            "hex id": "D400"
+        },
+        {
+            "name": "Slime Bulging Blue",
+            "num id": 213,
+            "hex id": "D500"
+        },
+        {
+            "name": "Slime Evolved Lime",
+            "num id": 214,
+            "hex id": "D600"
+        },
+        {
+            "name": "Slime Evolved Long Green",
+            "num id": 215,
+            "hex id": "D700"
+        },
+        {
+            "name": "Slime Evolved Tall Green",
+            "num id": 216,
+            "hex id": "D800"
+        },
+        {
+            "name": "Slime Evolved Tall Purple",
+            "num id": 217,
+            "hex id": "D900"
+        },
+        {
+            "name": "Slime Frozen Big",
+            "num id": 218,
+            "hex id": "DA00"
+        },
+        {
+            "name": "Slime Frozen Huge",
+            "num id": 219,
+            "hex id": "DB00"
+        },
+        {
+            "name": "Slime Green Big",
+            "num id": 220,
+            "hex id": "DC00"
+        },
+        {
+            "name": "Slime Green Huge",
+            "num id": 221,
+            "hex id": "DD00"
+        },
+        {
+            "name": "Slime Green Small",
+            "num id": 222,
+            "hex id": "DE00"
+        },
+        {
+            "name": "Slime Purple Big",
+            "num id": 223,
+            "hex id": "DF00"
+        },
+        {
+            "name": "Slime Purple Huge",
+            "num id": 224,
+            "hex id": "E000"
+        },
+        {
+            "name": "Slime Purple Small",
+            "num id": 225,
+            "hex id": "E100"
+        },
+        {
+            "name": "Slime Lime Green Big",
+            "num id": 226,
+            "hex id": "E200"
+        },
+        {
+            "name": "Slime Lime Green Huge",
+            "num id": 227,
+            "hex id": "E300"
+        },
+        {
+            "name": "Slug Brain",
+            "num id": 228,
+            "hex id": "E400"
+        },
+        {
+            "name": "Snail",
+            "num id": 229,
+            "hex id": "E500"
+        },
+        {
+            "name": "Soul Ripper Brown",
+            "num id": 230,
+            "hex id": "E600"
+        },
+        {
+            "name": "Soul Ripper Grey",
+            "num id": 231,
+            "hex id": "E700"
+        },
+        {
+            "name": "Spider Huge",
+            "num id": 232,
+            "hex id": "E800"
+        },
+        {
+            "name": "Spider Huge Blue",
+            "num id": 233,
+            "hex id": "E900"
+        },
+        {
+            "name": "Spider Huge Ice",
+            "num id": 234,
+            "hex id": "EA00"
+        },
+        {
+            "name": "Spider Huge Red",
+            "num id": 235,
+            "hex id": "EB00"
+        },
+        {
+            "name": "Spider Huge Yellow",
+            "num id": 236,
+            "hex id": "EC00"
+        },
+        {
+            "name": "Spider Skull",
+            "num id": 237,
+            "hex id": "ED00"
+        },
+        {
+            "name": "Spider Small",
+            "num id": 238,
+            "hex id": "EE00"
+        },
+        {
+            "name": "Spider Tiny",
+            "num id": 239,
+            "hex id": "EF00"
+        },
+        {
+            "name": "Spider Tiny Purple",
+            "num id": 240,
+            "hex id": "F000"
+        },
+        {
+            "name": "Spider Tiny Red",
+            "num id": 241,
+            "hex id": "F100"
+        },
+        {
+            "name": "Squirrel",
+            "num id": 242,
+            "hex id": "F200"
+        },
+        {
+            "name": "Terror Crab",
+            "num id": 243,
+            "hex id": "F300"
+        },
+        {
+            "name": "Turkey",
+            "num id": 244,
+            "hex id": "F400"
+        },
+        {
+            "name": "Turtle Cyan",
+            "num id": 245,
+            "hex id": "F500"
+        },
+        {
+            "name": "Turtle Green",
+            "num id": 246,
+            "hex id": "F600"
+        },
+        {
+            "name": "Turtle Red",
+            "num id": 247,
+            "hex id": "F700"
+        },
+        {
+            "name": "Twistrazor King Violet",
+            "num id": 248,
+            "hex id": "F800"
+        },
+        {
+            "name": "Walrus",
+            "num id": 249,
+            "hex id": "F900"
+        },
+        {
+            "name": "Worm Blue",
+            "num id": 250,
+            "hex id": "FA00"
+        },
+        {
+            "name": "Worm Cyan",
+            "num id": 251,
+            "hex id": "FB00"
+        },
+        {
+            "name": "Worm Green",
+            "num id": 252,
+            "hex id": "FC00"
+        },
+        {
+            "name": "Worm Purple",
+            "num id": 253,
+            "hex id": "FD00"
+        },
+        {
+            "name": "Worm Red",
+            "num id": 254,
+            "hex id": "FE00"
+        },
+        {
+            "name": "Yeti Leather",
+            "num id": 255,
+            "hex id": "FF00"
+        },
+        {
+            "name": "Zombie",
+            "num id": 256,
+            "hex id": "0001"
+        },
+        {
+            "name": "Zombie Frost",
+            "num id": 257,
+            "hex id": "0101"
+        },
+        {
+            "name": "Zombie Ghost",
+            "num id": 258,
+            "hex id": "0201"
+        },
+        {
+            "name": "Zombie Meat Thrower",
+            "num id": 259,
+            "hex id": "0301"
+        },
+        {
+            "name": "Zombie Miner",
+            "num id": 260,
+            "hex id": "0401"
+        },
+        {
+            "name": "Zombie Prison",
+            "num id": 261,
+            "hex id": "0501"
+        },
+        {
+            "name": "Bombroach Green",
+            "num id": 262,
+            "hex id": "0601"
+        },
+        {
+            "name": "Cobra Green King",
+            "num id": 263,
+            "hex id": "0701"
+        },
+        {
+            "name": "Crocodile Jungle Green",
+            "num id": 264,
+            "hex id": "0801"
+        },
+        {
+            "name": "Demon Ripper",
+            "num id": 265,
+            "hex id": "0901"
+        },
+        {
+            "name": "Frog Lime",
+            "num id": 266,
+            "hex id": "0A01"
+        },
+        {
+            "name": "Golem Ruins",
+            "num id": 267,
+            "hex id": "0B01"
+        },
+        {
+            "name": "Locust Green",
+            "num id": 268,
+            "hex id": "0C01"
+        },
+        {
+            "name": "Longleg Pink",
+            "num id": 269,
+            "hex id": "0D01"
+        },
+        {
+            "name": "Scarab Green",
+            "num id": 270,
+            "hex id": "0E01"
+        },
+        {
+            "name": "Scarab Long Jungle",
+            "num id": 271,
+            "hex id": "0F01"
+        },
+        {
+            "name": "Scorpion Tiny Green",
+            "num id": 272,
+            "hex id": "1001"
+        },
+        {
+            "name": "Skeleton Ivory",
+            "num id": 273,
+            "hex id": "1101"
+        },
+        {
+            "name": "Skeleton Vase Thrower",
+            "num id": 274,
+            "hex id": "1201"
+        },
+        {
+            "name": "Skull Huge Swamp",
+            "num id": 275,
+            "hex id": "1301"
+        },
+        {
+            "name": "Slime Red Big",
+            "num id": 276,
+            "hex id": "1401"
+        },
+        {
+            "name": "Slime Red Huge",
+            "num id": 277,
+            "hex id": "1501"
+        },
+        {
+            "name": "Spider Jungle Huge",
+            "num id": 278,
+            "hex id": "1601"
+        },
+        {
+            "name": "Tribal Belly Armored",
+            "num id": 279,
+            "hex id": "1701"
+        },
+        {
+            "name": "Tribal Belly King",
+            "num id": 280,
+            "hex id": "1801"
+        },
+        {
+            "name": "Tribal Demon",
+            "num id": 281,
+            "hex id": "1901"
+        },
+        {
+            "name": "Tribal Ripper Brown",
+            "num id": 282,
+            "hex id": "1A01"
+        },
+        {
+            "name": "Tribal Ripper Spear",
+            "num id": 283,
+            "hex id": "1B01"
+        },
+        {
+            "name": "Tribal Ripper Violet",
+            "num id": 284,
+            "hex id": "1C01"
+        },
+        {
+            "name": "Turtle Purple",
+            "num id": 285,
+            "hex id": "1D01"
+        },
+        {
+            "name": "Zombie Jungle",
+            "num id": 286,
+            "hex id": "1E01"
+        },
+        {
+            "name": "Geloid Green",
+            "num id": 287,
+            "hex id": "1F01"
+        },
+        {
+            "name": "Crab",
+            "num id": 288,
+            "hex id": "2001"
+        },
+        {
+            "name": "Octopus",
+            "num id": 289,
+            "hex id": "2101"
+        },
+        {
+            "name": "Hermit Crab",
+            "num id": 290,
+            "hex id": "2201"
+        },
+        {
+            "name": "Pocket Crab",
+            "num id": 291,
+            "hex id": "2301"
+        },
+        {
+            "name": "Pocket Octopus",
+            "num id": 292,
+            "hex id": "2401"
+        },
+        {
+            "name": "Pocket Hermit Crab",
+            "num id": 293,
+            "hex id": "2501"
+        },
+        {
+            "name": "Pocket Fish Lord",
+            "num id": 294,
+            "hex id": "2601"
+        },
+        {
+            "name": "Hand",
+            "num id": 295,
+            "hex id": "2701"
+        },
+        {
+            "name": "Dark Star",
+            "num id": 296,
+            "hex id": "2801"
+        },
+        {
+            "name": "Witch Broom",
+            "num id": 297,
+            "hex id": "2901"
+        },
+        {
+            "name": "Crow Black",
+            "num id": 298,
+            "hex id": "2A01"
+        },
+        {
+            "name": "Black Witch Cat",
+            "num id": 299,
+            "hex id": "2B01"
+        },
+        {
+            "name": "Zombie Christmas",
+            "num id": 300,
+            "hex id": "2C01"
+        },
+        {
+            "name": "Slime Cyan Small",
+            "num id": 301,
+            "hex id": "2D01"
+        },
+        {
+            "name": "Slime Cyan Big",
+            "num id": 302,
+            "hex id": "2E01"
+        },
+        {
+            "name": "Pocket Black Witch Cat",
+            "num id": 303,
+            "hex id": "2F01"
+        },
+        {
+            "name": "Pocket Witch Broom",
+            "num id": 304,
+            "hex id": "3001"
+        },
+        {
+            "name": "Pocket Dark Star",
+            "num id": 305,
+            "hex id": "3101"
+        },
+        {
+            "name": "Pocket Hand",
+            "num id": 306,
+            "hex id": "3201"
+        },
+        {
+            "name": "Bat",
+            "num id": 307,
+            "hex id": "3301"
+        },
+        {
+            "name": "Pocket Turkey",
+            "num id": 308,
+            "hex id": "3401"
+        },
+        {
+            "name": "Pocket Night Owl",
+            "num id": 309,
+            "hex id": "3501"
+        },
+        {
+            "name": "Night Owl",
+            "num id": 310,
+            "hex id": "3601"
+        },
+        {
+            "name": "Slime Silicium Huge",
+            "num id": 311,
+            "hex id": "3701"
+        },
+        {
+            "name": "Slime Silicium Big",
+            "num id": 312,
+            "hex id": "3801"
+        },
+        {
+            "name": "Krake Larva",
+            "num id": 313,
+            "hex id": "3901"
+        },
+        {
+            "name": "Slime Bulging Spiked",
+            "num id": 314,
+            "hex id": "3A01"
+        },
+        {
+            "name": "Leecher Gray",
+            "num id": 315,
+            "hex id": "3B01"
+        },
+        {
+            "name": "Leecher Blue",
+            "num id": 316,
+            "hex id": "3C01"
+        },
+        {
+            "name": "Krake Worm",
+            "num id": 317,
+            "hex id": "3D01"
+        },
+        {
+            "name": "Scarab Gray",
+            "num id": 318,
+            "hex id": "3E01"
+        },
+        {
+            "name": "Locust Blue",
+            "num id": 319,
+            "hex id": "3F01"
+        },
+        {
+            "name": "Golem Silicium",
+            "num id": 320,
+            "hex id": "4001"
+        },
+        {
+            "name": "Scarab Long Blue",
+            "num id": 321,
+            "hex id": "4101"
+        },
+        {
+            "name": "Luma Scarab",
+            "num id": 322,
+            "hex id": "4201"
+        },
+        {
+            "name": "Spider Huge Emerald",
+            "num id": 323,
+            "hex id": "4301"
+        },
+        {
+            "name": "Skexoton",
+            "num id": 324,
+            "hex id": "4401"
+        },
+        {
+            "name": "Spore Gorgler",
+            "num id": 325,
+            "hex id": "4501"
+        },
+        {
+            "name": "Zombie Space",
+            "num id": 326,
+            "hex id": "4601"
+        },
+        {
+            "name": "Krake Gray",
+            "num id": 327,
+            "hex id": "4701"
+        },
+        {
+            "name": "Krake Red",
+            "num id": 328,
+            "hex id": "4801"
+        },
+        {
+            "name": "Krake Blue",
+            "num id": 329,
+            "hex id": "4901"
+        },
+        {
+            "name": "Pentalober Black",
+            "num id": 330,
+            "hex id": "4A01"
+        },
+        {
+            "name": "Pentalober Blue",
+            "num id": 331,
+            "hex id": "4B01"
+        },
+        {
+            "name": "Crawler Tall",
+            "num id": 332,
+            "hex id": "4C01"
+        },
+        {
+            "name": "Crawler Medium",
+            "num id": 333,
+            "hex id": "4D01"
+        },
+        {
+            "name": "Crawler Small",
+            "num id": 334,
+            "hex id": "4E01"
+        },
+        {
+            "name": "Jumping Spore Blue",
+            "num id": 335,
+            "hex id": "4F01"
+        },
+        {
+            "name": "Jumping Spore Cyan",
+            "num id": 336,
+            "hex id": "5001"
+        },
+        {
+            "name": "Jumping Spore Gray",
+            "num id": 337,
+            "hex id": "5101"
+        },
+        {
+            "name": "Jumping Spore Gray Tiny",
+            "num id": 338,
+            "hex id": "5201"
+        },
+        {
+            "name": "Jumping Spore Purple Tiny",
+            "num id": 339,
+            "hex id": "5301"
+        },
+        {
+            "name": "Jumping Spore Green Tiny",
+            "num id": 340,
+            "hex id": "5401"
+        },
+        {
+            "name": "Worm Silicium",
+            "num id": 341,
+            "hex id": "5501"
+        },
+        {
+            "name": "Scratcher Blue",
+            "num id": 342,
+            "hex id": "5601"
+        },
+        {
+            "name": "Scratcher Purple",
+            "num id": 343,
+            "hex id": "5701"
+        },
+        {
+            "name": "Krake Tiny",
+            "num id": 344,
+            "hex id": "5801"
+        },
+        {
+            "name": "Pocket Jumping Spore",
+            "num id": 345,
+            "hex id": "5901"
+        },
+        {
+            "name": "Pocket Tiny Spore",
+            "num id": 346,
+            "hex id": "5A01"
+        },
+        {
+            "name": "Pocket Krake",
+            "num id": 347,
+            "hex id": "5B01"
+        },
+        {
+            "name": "Pocket Crawler",
+            "num id": 348,
+            "hex id": "5C01"
+        },
+        {
+            "name": "Pocket Krake Larva",
+            "num id": 349,
+            "hex id": "5D01"
+        },
+        {
+            "name": "Pocket Frosty",
+            "num id": 350,
+            "hex id": "5E01"
+        },
+        {
+            "name": "Pocket Falling Star",
+            "num id": 351,
+            "hex id": "5F01"
+        },
+        {
+            "name": "Pocket Heart",
+            "num id": 352,
+            "hex id": "6001"
+        },
+        {
+            "name": "Pocket Valentine Rabbit",
+            "num id": 353,
+            "hex id": "6101"
+        },
+        {
+            "name": "Valentine Rabbit",
+            "num id": 354,
+            "hex id": "6201"
+        },
+        {
+            "name": "Lume Gator Gray",
+            "num id": 355,
+            "hex id": "6301"
+        },
+        {
+            "name": "Lume Gator Blue",
+            "num id": 356,
+            "hex id": "6401"
+        },
+        {
+            "name": "Slutch Green",
+            "num id": 357,
+            "hex id": "6501"
+        },
+        {
+            "name": "Slutch Purple Spear",
+            "num id": 358,
+            "hex id": "6601"
+        },
+        {
+            "name": "Slutch Red King",
+            "num id": 359,
+            "hex id": "6701"
+        },
+        {
+            "name": "Leaper Blue",
+            "num id": 360,
+            "hex id": "6801"
+        },
+        {
+            "name": "Leaper Red",
+            "num id": 361,
+            "hex id": "6901"
+        },
+        {
+            "name": "Shadow Lurker Green",
+            "num id": 362,
+            "hex id": "6A01"
+        },
+        {
+            "name": "Striker Blue",
+            "num id": 363,
+            "hex id": "6B01"
+        },
+        {
+            "name": "Scarab Long Fin",
+            "num id": 364,
+            "hex id": "6C01"
+        },
+        {
+            "name": "Skeleton Swamp",
+            "num id": 365,
+            "hex id": "6D01"
+        },
+        {
+            "name": "Slime Bulging Green",
+            "num id": 366,
+            "hex id": "6E01"
+        },
+        {
+            "name": "Hermit Crab Purple",
+            "num id": 367,
+            "hex id": "6F01"
+        },
+        {
+            "name": "Octopus Purple",
+            "num id": 368,
+            "hex id": "7001"
+        },
+        {
+            "name": "Tuula Blue",
+            "num id": 369,
+            "hex id": "7101"
+        },
+        {
+            "name": "Tuula Green",
+            "num id": 370,
+            "hex id": "7201"
+        },
+        {
+            "name": "Slime Yellow Huge",
+            "num id": 371,
+            "hex id": "7301"
+        },
+        {
+            "name": "Slime Yellow Big",
+            "num id": 372,
+            "hex id": "7401"
+        },
+        {
+            "name": "Annoying Spore Green Medium",
+            "num id": 373,
+            "hex id": "7501"
+        },
+        {
+            "name": "Annoying Spore Green Tiny",
+            "num id": 374,
+            "hex id": "7601"
+        },
+        {
+            "name": "Gnawler Blue",
+            "num id": 375,
+            "hex id": "7701"
+        },
+        {
+            "name": "Gnawler Purple Amulet",
+            "num id": 376,
+            "hex id": "7801"
+        },
+        {
+            "name": "Gnawler Red King",
+            "num id": 377,
+            "hex id": "7901"
+        },
+        {
+            "name": "Demon Gator",
+            "num id": 378,
+            "hex id": "7A01"
+        },
+        {
+            "name": "Demon Gator King",
+            "num id": 379,
+            "hex id": "7B01"
+        },
+        {
+            "name": "Fincrab Cyan",
+            "num id": 380,
+            "hex id": "7C01"
+        },
+        {
+            "name": "Fincrab Purple",
+            "num id": 381,
+            "hex id": "7D01"
+        },
+        {
+            "name": "Shroomy Purple",
+            "num id": 382,
+            "hex id": "7E01"
+        },
+        {
+            "name": "Pocket Green Annoying Spore",
+            "num id": 383,
+            "hex id": "7F01"
+        },
+        {
+            "name": "Pocket Long Fin Scarab",
+            "num id": 384,
+            "hex id": "8001"
+        },
+        {
+            "name": "Pocket Tuula Blue",
+            "num id": 385,
+            "hex id": "8101"
+        },
+        {
+            "name": "Pocket Tuula Green",
+            "num id": 386,
+            "hex id": "8201"
+        },
+        {
+            "name": "Pocket Shroomy",
+            "num id": 387,
+            "hex id": "8301"
+        },
+        {
+            "name": "Pocket Seahorse",
+            "num id": 388,
+            "hex id": "8401"
+        },
+        {
+            "name": "Anther Purple",
+            "num id": 389,
+            "hex id": "8501"
+        },
+        {
+            "name": "Anther Grey",
+            "num id": 390,
+            "hex id": "8601"
+        },
+        {
+            "name": "Crib Yellow",
+            "num id": 391,
+            "hex id": "8701"
+        },
+        {
+            "name": "Crib Green",
+            "num id": 392,
+            "hex id": "8801"
+        },
+        {
+            "name": "Crib Orange",
+            "num id": 393,
+            "hex id": "8901"
+        },
+        {
+            "name": "Crib Magenta",
+            "num id": 394,
+            "hex id": "8A01"
+        },
+        {
+            "name": "Bulbous Crab Pink",
+            "num id": 395,
+            "hex id": "8B01"
+        },
+        {
+            "name": "Bulbous Crab Purple",
+            "num id": 396,
+            "hex id": "8C01"
+        },
+        {
+            "name": "Twirk Green",
+            "num id": 397,
+            "hex id": "8D01"
+        },
+        {
+            "name": "Twirk Purple",
+            "num id": 398,
+            "hex id": "8E01"
+        },
+        {
+            "name": "Twirk Blue",
+            "num id": 399,
+            "hex id": "8F01"
+        },
+        {
+            "name": "Golem Slime",
+            "num id": 400,
+            "hex id": "9001"
+        },
+        {
+            "name": "Musher Mage Purple",
+            "num id": 401,
+            "hex id": "9101"
+        },
+        {
+            "name": "Spore Screamer Purple",
+            "num id": 402,
+            "hex id": "9201"
+        },
+        {
+            "name": "Spore Screamer Red",
+            "num id": 403,
+            "hex id": "9301"
+        },
+        {
+            "name": "Spore Screamer Grey",
+            "num id": 404,
+            "hex id": "9401"
+        },
+        {
+            "name": "Shroomy Red",
+            "num id": 405,
+            "hex id": "9501"
+        },
+        {
+            "name": "Shroomy Magenta",
+            "num id": 406,
+            "hex id": "9601"
+        },
+        {
+            "name": "Shroomy Green",
+            "num id": 407,
+            "hex id": "9701"
+        },
+        {
+            "name": "Shroomy Blue",
+            "num id": 408,
+            "hex id": "9801"
+        },
+        {
+            "name": "Worm Spore Red",
+            "num id": 409,
+            "hex id": "9901"
+        },
+        {
+            "name": "Worm Spore Purple",
+            "num id": 410,
+            "hex id": "9A01"
+        },
+        {
+            "name": "Exotis Knight Purple",
+            "num id": 411,
+            "hex id": "9B01"
+        },
+        {
+            "name": "Exotis Knight Green",
+            "num id": 412,
+            "hex id": "9C01"
+        },
+        {
+            "name": "Tiny Spore Screamer Purple",
+            "num id": 413,
+            "hex id": "9D01"
+        },
+        {
+            "name": "Tiny Spore Screamer Red",
+            "num id": 414,
+            "hex id": "9E01"
+        },
+        {
+            "name": "Tiny Spore Screamer Grey",
+            "num id": 415,
+            "hex id": "9F01"
+        },
+        {
+            "name": "Lume Spider Big",
+            "num id": 416,
+            "hex id": "A001"
+        },
+        {
+            "name": "Tubecrab Purple",
+            "num id": 417,
+            "hex id": "A101"
+        },
+        {
+            "name": "Tubecrab Green",
+            "num id": 418,
+            "hex id": "A201"
+        },
+        {
+            "name": "Tubecrab Blue",
+            "num id": 419,
+            "hex id": "A301"
+        },
+        {
+            "name": "Slime Green King",
+            "num id": 420,
+            "hex id": "A401"
+        },
+        {
+            "name": "Slime Purple King",
+            "num id": 421,
+            "hex id": "A501"
+        },
+        {
+            "name": "Slime Red King",
+            "num id": 422,
+            "hex id": "A601"
+        },
+        {
+            "name": "Slime Yellow King",
+            "num id": 423,
+            "hex id": "A701"
+        },
+        {
+            "name": "Zombie Spore Purple",
+            "num id": 424,
+            "hex id": "A801"
+        },
+        {
+            "name": "Zombie Spore Green",
+            "num id": 425,
+            "hex id": "A901"
+        },
+        {
+            "name": "Skeleton Spore",
+            "num id": 426,
+            "hex id": "AA01"
+        },
+        {
+            "name": "Lume Spider Small",
+            "num id": 427,
+            "hex id": "AB01"
+        },
+        {
+            "name": "Purry Big",
+            "num id": 428,
+            "hex id": "AC01"
+        },
+        {
+            "name": "Purry Small",
+            "num id": 429,
+            "hex id": "AD01"
+        },
+        {
+            "name": "Musher Mage Grey",
+            "num id": 430,
+            "hex id": "AE01"
+        },
+        {
+            "name": "Musher Mage Blue",
+            "num id": 431,
+            "hex id": "AF01"
+        },
+        {
+            "name": "Lumecrab Cyan",
+            "num id": 432,
+            "hex id": "B001"
+        },
+        {
+            "name": "Lumecrab Green",
+            "num id": 433,
+            "hex id": "B101"
+        },
+        {
+            "name": "Putrid King Purple",
+            "num id": 434,
+            "hex id": "B201"
+        },
+        {
+            "name": "Putrid King Red",
+            "num id": 435,
+            "hex id": "B301"
+        },
+        {
+            "name": "Exotis Slasher Green",
+            "num id": 436,
+            "hex id": "B401"
+        },
+        {
+            "name": "Exotis Slasher Purple",
+            "num id": 437,
+            "hex id": "B501"
+        },
+        {
+            "name": "Pocket Lumecrab",
+            "num id": 438,
+            "hex id": "B601"
+        },
+        {
+            "name": "Pocket Spore Screamer",
+            "num id": 439,
+            "hex id": "B701"
+        },
+        {
+            "name": "Pocket Crib",
+            "num id": 440,
+            "hex id": "B801"
+        },
+        {
+            "name": "Pocket Purry",
+            "num id": 441,
+            "hex id": "B901"
+        },
+        {
+            "name": "Pocket Lume Spider",
+            "num id": 442,
+            "hex id": "BA01"
+        },
+        {
+            "name": "Pocket King Slime",
+            "num id": 443,
+            "hex id": "BB01"
+        },
+        {
+            "name": "Demon Voodoo Black",
+            "num id": 444,
+            "hex id": "BC01"
+        },
+        {
+            "name": "Huge Bat",
+            "num id": 445,
+            "hex id": "BD01"
+        },
+        {
+            "name": "Demon Hollow Purple",
+            "num id": 446,
+            "hex id": "BE01"
+        },
+        {
+            "name": "Pig Rotting",
+            "num id": 447,
+            "hex id": "BF01"
+        },
+        {
+            "name": "Sheep Rotting",
+            "num id": 448,
+            "hex id": "C001"
+        },
+        {
+            "name": "Demon Voodoo Purple",
+            "num id": 449,
+            "hex id": "C101"
+        },
+        {
+            "name": "Demon Hollow Blue",
+            "num id": 450,
+            "hex id": "C201"
+        },
+        {
+            "name": "Skeleton Silent",
+            "num id": 451,
+            "hex id": "C301"
+        },
+        {
+            "name": "Skeleton Melting",
+            "num id": 452,
+            "hex id": "C401"
+        },
+        {
+            "name": "Zombie Belly",
+            "num id": 453,
+            "hex id": "C501"
+        },
+        {
+            "name": "Grumpy Green Huge",
+            "num id": 454,
+            "hex id": "C601"
+        },
+        {
+            "name": "Grumpy Green Small",
+            "num id": 455,
+            "hex id": "C701"
+        },
+        {
+            "name": "Zombie Eye Thrower",
+            "num id": 456,
+            "hex id": "C801"
+        },
+        {
+            "name": "Zombie Purple",
+            "num id": 457,
+            "hex id": "C901"
+        },
+        {
+            "name": "Slime Lime Green King",
+            "num id": 458,
+            "hex id": "CA01"
+        },
+        {
+            "name": "Rat King",
+            "num id": 459,
+            "hex id": "CB01"
+        },
+        {
+            "name": "Nightcrawler Brown Huge",
+            "num id": 460,
+            "hex id": "CC01"
+        },
+        {
+            "name": "Nightcrawler Red Huge",
+            "num id": 461,
+            "hex id": "CD01"
+        },
+        {
+            "name": "Golem Rusting",
+            "num id": 462,
+            "hex id": "CE01"
+        },
+        {
+            "name": "Skeleton King",
+            "num id": 463,
+            "hex id": "CF01"
+        },
+        {
+            "name": "Skeleton Royal",
+            "num id": 464,
+            "hex id": "D001"
+        },
+        {
+            "name": "Slimy Eye",
+            "num id": 465,
+            "hex id": "D101"
+        },
+        {
+            "name": "Larva",
+            "num id": 466,
+            "hex id": "D201"
+        },
+        {
+            "name": "Mojo Zombie",
+            "num id": 467,
+            "hex id": "D301"
+        },
+        {
+            "name": "Mojo Zombie Mage",
+            "num id": 468,
+            "hex id": "D401"
+        },
+        {
+            "name": "Pocket Rotting Pig",
+            "num id": 469,
+            "hex id": "D501"
+        },
+        {
+            "name": "Pocket Rotting Sheep",
+            "num id": 470,
+            "hex id": "D601"
+        },
+        {
+            "name": "Pocket Larva",
+            "num id": 471,
+            "hex id": "D701"
+        },
+        {
+            "name": "Pocket Eye",
+            "num id": 472,
+            "hex id": "D801"
+        },
+        {
+            "name": "Pocket Rat",
+            "num id": 473,
+            "hex id": "D901"
+        },
+        {
+            "name": "Slime Lime Green Small",
+            "num id": 474,
+            "hex id": "DA01"
+        },
+        {
+            "name": "Slime White Small",
+            "num id": 475,
+            "hex id": "DB01"
+        },
+        {
+            "name": "Slime White Big",
+            "num id": 476,
+            "hex id": "DC01"
+        },
+        {
+            "name": "Slime White Huge",
+            "num id": 477,
+            "hex id": "DD01"
+        },
+        {
+            "name": "Slime Cyan Huge",
+            "num id": 478,
+            "hex id": "DE01"
+        },
+        {
+            "name": "Slime Blue Huge",
+            "num id": 479,
+            "hex id": "DF01"
+        },
+        {
+            "name": "Slime Blue Big",
+            "num id": 480,
+            "hex id": "E001"
+        },
+        {
+            "name": "Slime Blue Small",
+            "num id": 481,
+            "hex id": "E101"
+        },
+        {
+            "name": "Slime Red Small",
+            "num id": 482,
+            "hex id": "E201"
+        },
+        {
+            "name": "Slime Yellow Small",
+            "num id": 483,
+            "hex id": "E301"
+        },
+        {
+            "name": "Bat Red",
+            "num id": 484,
+            "hex id": "E401"
+        },
+        {
+            "name": "Slime Orange Small",
+            "num id": 485,
+            "hex id": "E501"
+        },
+        {
+            "name": "Slime Orange Big",
+            "num id": 486,
+            "hex id": "E601"
+        },
+        {
+            "name": "Slime Orange Huge",
+            "num id": 487,
+            "hex id": "E701"
+        },
+        {
+            "name": "Slime Orange King",
+            "num id": 488,
+            "hex id": "E801"
+        },
+        {
+            "name": "Slime Blue King",
+            "num id": 489,
+            "hex id": "E901"
+        },
+        {
+            "name": "Slime White King",
+            "num id": 490,
+            "hex id": "EA01"
+        },
+        {
+            "name": "Slime Cyan King",
+            "num id": 491,
+            "hex id": "EB01"
+        },
+        {
+            "name": "Slime Grey King",
+            "num id": 492,
+            "hex id": "EC01"
+        },
+        {
+            "name": "Seth Slime Green Big",
+            "num id": 493,
+            "hex id": "ED01"
+        },
+        {
+            "name": "Seth Slime Green Huge",
+            "num id": 494,
+            "hex id": "EE01"
+        },
+        {
+            "name": "Seth Slime Green King",
+            "num id": 495,
+            "hex id": "EF01"
+        },
+        {
+            "name": "Seth Slime Purple Big",
+            "num id": 496,
+            "hex id": "F001"
+        },
+        {
+            "name": "Seth Slime Purple Huge",
+            "num id": 497,
+            "hex id": "F101"
+        },
+        {
+            "name": "Seth Slime Purple King",
+            "num id": 498,
+            "hex id": "F201"
+        },
+        {
+            "name": "Seth Slime Cyan Big",
+            "num id": 499,
+            "hex id": "F301"
+        },
+        {
+            "name": "Seth Slime Cyan Huge",
+            "num id": 500,
+            "hex id": "F401"
+        },
+        {
+            "name": "Seth Slime Cyan King",
+            "num id": 501,
+            "hex id": "F501"
+        },
+        {
+            "name": "Seth Slime Red Big",
+            "num id": 502,
+            "hex id": "F601"
+        },
+        {
+            "name": "Seth Slime Red Huge",
+            "num id": 503,
+            "hex id": "F701"
+        },
+        {
+            "name": "Seth Slime Red King",
+            "num id": 504,
+            "hex id": "F801"
+        },
+        {
+            "name": "Seth Slime Lime Green Big",
+            "num id": 505,
+            "hex id": "F901"
+        },
+        {
+            "name": "Seth Slime Lime Green Huge",
+            "num id": 506,
+            "hex id": "FA01"
+        },
+        {
+            "name": "Seth Slime Lime Green King",
+            "num id": 507,
+            "hex id": "FB01"
+        },
+        {
+            "name": "Seth Slime Yellow Big",
+            "num id": 508,
+            "hex id": "FC01"
+        },
+        {
+            "name": "Seth Slime Yellow Huge",
+            "num id": 509,
+            "hex id": "FD01"
+        },
+        {
+            "name": "Seth Slime Yellow King",
+            "num id": 510,
+            "hex id": "FE01"
+        },
+        {
+            "name": "Seth Slime Blue Big",
+            "num id": 511,
+            "hex id": "FF01"
+        },
+        {
+            "name": "Seth Slime Blue Huge",
+            "num id": 512,
+            "hex id": "0002"
+        },
+        {
+            "name": "Seth Slime Blue King",
+            "num id": 513,
+            "hex id": "0102"
+        },
+        {
+            "name": "Seth Slime White Big",
+            "num id": 514,
+            "hex id": "0202"
+        },
+        {
+            "name": "Seth Slime White Huge",
+            "num id": 515,
+            "hex id": "0302"
+        },
+        {
+            "name": "Seth Slime White King",
+            "num id": 516,
+            "hex id": "0402"
+        },
+        {
+            "name": "Seth Slime Orange Big",
+            "num id": 517,
+            "hex id": "0502"
+        },
+        {
+            "name": "Seth Slime Orange Huge",
+            "num id": 518,
+            "hex id": "0602"
+        },
+        {
+            "name": "Seth Slime Orange King",
+            "num id": 519,
+            "hex id": "0702"
+        },
+        {
+            "name": "Umbra Slime Green Big",
+            "num id": 520,
+            "hex id": "0802"
+        },
+        {
+            "name": "Umbra Slime Green Huge",
+            "num id": 521,
+            "hex id": "0902"
+        },
+        {
+            "name": "Umbra Slime Green King",
+            "num id": 522,
+            "hex id": "0A02"
+        },
+        {
+            "name": "Umbra Slime Purple Big",
+            "num id": 523,
+            "hex id": "0B02"
+        },
+        {
+            "name": "Umbra Slime Purple Huge",
+            "num id": 524,
+            "hex id": "0C02"
+        },
+        {
+            "name": "Umbra Slime Purple King",
+            "num id": 525,
+            "hex id": "0D02"
+        },
+        {
+            "name": "Umbra Slime Cyan Big",
+            "num id": 526,
+            "hex id": "0E02"
+        },
+        {
+            "name": "Umbra Slime Cyan Huge",
+            "num id": 527,
+            "hex id": "0F02"
+        },
+        {
+            "name": "Umbra Slime Cyan King",
+            "num id": 528,
+            "hex id": "1002"
+        },
+        {
+            "name": "Umbra Slime Red Big",
+            "num id": 529,
+            "hex id": "1102"
+        },
+        {
+            "name": "Umbra Slime Red Huge",
+            "num id": 530,
+            "hex id": "1202"
+        },
+        {
+            "name": "Umbra Slime Red King",
+            "num id": 531,
+            "hex id": "1302"
+        },
+        {
+            "name": "Umbra Slime Lime Green Big",
+            "num id": 532,
+            "hex id": "1402"
+        },
+        {
+            "name": "Umbra Slime Lime Green Huge",
+            "num id": 533,
+            "hex id": "1502"
+        },
+        {
+            "name": "Umbra Slime Lime Green King",
+            "num id": 534,
+            "hex id": "1602"
+        },
+        {
+            "name": "Umbra Slime Yellow Big",
+            "num id": 535,
+            "hex id": "1702"
+        },
+        {
+            "name": "Umbra Slime Yellow Huge",
+            "num id": 536,
+            "hex id": "1802"
+        },
+        {
+            "name": "Umbra Slime Yellow King",
+            "num id": 537,
+            "hex id": "1902"
+        },
+        {
+            "name": "Umbra Slime Blue Big",
+            "num id": 538,
+            "hex id": "1A02"
+        },
+        {
+            "name": "Umbra Slime Blue Huge",
+            "num id": 539,
+            "hex id": "1B02"
+        },
+        {
+            "name": "Umbra Slime Blue King",
+            "num id": 540,
+            "hex id": "1C02"
+        },
+        {
+            "name": "Umbra Slime White Big",
+            "num id": 541,
+            "hex id": "1D02"
+        },
+        {
+            "name": "Umbra Slime White Huge",
+            "num id": 542,
+            "hex id": "1E02"
+        },
+        {
+            "name": "Umbra Slime White King",
+            "num id": 543,
+            "hex id": "1F02"
+        },
+        {
+            "name": "Umbra Slime Orange Big",
+            "num id": 544,
+            "hex id": "2002"
+        },
+        {
+            "name": "Umbra Slime Orange Huge",
+            "num id": 545,
+            "hex id": "2102"
+        },
+        {
+            "name": "Umbra Slime Orange King",
+            "num id": 546,
+            "hex id": "2202"
+        },
+        {
+            "name": "Lilith Slime Green Big",
+            "num id": 547,
+            "hex id": "2302"
+        },
+        {
+            "name": "Lilith Slime Green Huge",
+            "num id": 548,
+            "hex id": "2402"
+        },
+        {
+            "name": "Lilith Slime Green King",
+            "num id": 549,
+            "hex id": "2502"
+        },
+        {
+            "name": "Lilith Slime Purple Big",
+            "num id": 550,
+            "hex id": "2602"
+        },
+        {
+            "name": "Lilith Slime Purple Huge",
+            "num id": 551,
+            "hex id": "2702"
+        },
+        {
+            "name": "Lilith Slime Purple King",
+            "num id": 552,
+            "hex id": "2802"
+        },
+        {
+            "name": "Lilith Slime Cyan Big",
+            "num id": 553,
+            "hex id": "2902"
+        },
+        {
+            "name": "Lilith Slime Cyan Huge",
+            "num id": 554,
+            "hex id": "2A02"
+        },
+        {
+            "name": "Lilith Slime Cyan King",
+            "num id": 555,
+            "hex id": "2B02"
+        },
+        {
+            "name": "Lilith Slime Red Big",
+            "num id": 556,
+            "hex id": "2C02"
+        },
+        {
+            "name": "Lilith Slime Red Huge",
+            "num id": 557,
+            "hex id": "2D02"
+        },
+        {
+            "name": "Lilith Slime Red King",
+            "num id": 558,
+            "hex id": "2E02"
+        },
+        {
+            "name": "Lilith Slime Lime Green Big",
+            "num id": 559,
+            "hex id": "2F02"
+        },
+        {
+            "name": "Lilith Slime Lime Green Huge",
+            "num id": 560,
+            "hex id": "3002"
+        },
+        {
+            "name": "Lilith Slime Lime Green King",
+            "num id": 561,
+            "hex id": "3102"
+        },
+        {
+            "name": "Lilith Slime Yellow Big",
+            "num id": 562,
+            "hex id": "3202"
+        },
+        {
+            "name": "Lilith Slime Yellow Huge",
+            "num id": 563,
+            "hex id": "3302"
+        },
+        {
+            "name": "Lilith Slime Yellow King",
+            "num id": 564,
+            "hex id": "3402"
+        },
+        {
+            "name": "Lilith Slime Blue Big",
+            "num id": 565,
+            "hex id": "3502"
+        },
+        {
+            "name": "Lilith Slime Blue Huge",
+            "num id": 566,
+            "hex id": "3602"
+        },
+        {
+            "name": "Lilith Slime Blue King",
+            "num id": 567,
+            "hex id": "3702"
+        },
+        {
+            "name": "Lilith Slime White Big",
+            "num id": 568,
+            "hex id": "3802"
+        },
+        {
+            "name": "Lilith Slime White Huge",
+            "num id": 569,
+            "hex id": "3902"
+        },
+        {
+            "name": "Lilith Slime White King",
+            "num id": 570,
+            "hex id": "3A02"
+        },
+        {
+            "name": "Lilith Slime Orange Big",
+            "num id": 571,
+            "hex id": "3B02"
+        },
+        {
+            "name": "Lilith Slime Orange Huge",
+            "num id": 572,
+            "hex id": "3C02"
+        },
+        {
+            "name": "Lilith Slime Orange King",
+            "num id": 573,
+            "hex id": "3D02"
+        },
+        {
+            "name": "Alba Slime Green Big",
+            "num id": 574,
+            "hex id": "3E02"
+        },
+        {
+            "name": "Alba Slime Green Huge",
+            "num id": 575,
+            "hex id": "3F02"
+        },
+        {
+            "name": "Alba Slime Green King",
+            "num id": 576,
+            "hex id": "4002"
+        },
+        {
+            "name": "Alba Slime Purple Big",
+            "num id": 577,
+            "hex id": "4102"
+        },
+        {
+            "name": "Alba Slime Purple Huge",
+            "num id": 578,
+            "hex id": "4202"
+        },
+        {
+            "name": "Alba Slime Purple King",
+            "num id": 579,
+            "hex id": "4302"
+        },
+        {
+            "name": "Alba Slime Cyan Big",
+            "num id": 580,
+            "hex id": "4402"
+        },
+        {
+            "name": "Alba Slime Cyan Huge",
+            "num id": 581,
+            "hex id": "4502"
+        },
+        {
+            "name": "Alba Slime Cyan King",
+            "num id": 582,
+            "hex id": "4602"
+        },
+        {
+            "name": "Alba Slime Red Big",
+            "num id": 583,
+            "hex id": "4702"
+        },
+        {
+            "name": "Alba Slime Red Huge",
+            "num id": 584,
+            "hex id": "4802"
+        },
+        {
+            "name": "Alba Slime Red King",
+            "num id": 585,
+            "hex id": "4902"
+        },
+        {
+            "name": "Alba Slime Lime Green Big",
+            "num id": 586,
+            "hex id": "4A02"
+        },
+        {
+            "name": "Alba Slime Lime Green Huge",
+            "num id": 587,
+            "hex id": "4B02"
+        },
+        {
+            "name": "Alba Slime Lime Green King",
+            "num id": 588,
+            "hex id": "4C02"
+        },
+        {
+            "name": "Alba Slime Yellow Big",
+            "num id": 589,
+            "hex id": "4D02"
+        },
+        {
+            "name": "Alba Slime Yellow Huge",
+            "num id": 590,
+            "hex id": "4E02"
+        },
+        {
+            "name": "Alba Slime Yellow King",
+            "num id": 591,
+            "hex id": "4F02"
+        },
+        {
+            "name": "Alba Slime Blue Big",
+            "num id": 592,
+            "hex id": "5002"
+        },
+        {
+            "name": "Alba Slime Blue Huge",
+            "num id": 593,
+            "hex id": "5102"
+        },
+        {
+            "name": "Alba Slime Blue King",
+            "num id": 594,
+            "hex id": "5202"
+        },
+        {
+            "name": "Alba Slime White Big",
+            "num id": 595,
+            "hex id": "5302"
+        },
+        {
+            "name": "Alba Slime White Huge",
+            "num id": 596,
+            "hex id": "5402"
+        },
+        {
+            "name": "Alba Slime White King",
+            "num id": 597,
+            "hex id": "5502"
+        },
+        {
+            "name": "Alba Slime Orange Big",
+            "num id": 598,
+            "hex id": "5602"
+        },
+        {
+            "name": "Alba Slime Orange Huge",
+            "num id": 599,
+            "hex id": "5702"
+        },
+        {
+            "name": "Alba Slime Orange King",
+            "num id": 600,
+            "hex id": "5802"
+        },
+        {
+            "name": "Cryo Slime Green Big",
+            "num id": 601,
+            "hex id": "5902"
+        },
+        {
+            "name": "Cryo Slime Green Huge",
+            "num id": 602,
+            "hex id": "5A02"
+        },
+        {
+            "name": "Cryo Slime Green King",
+            "num id": 603,
+            "hex id": "5B02"
+        },
+        {
+            "name": "Cryo Slime Purple Big",
+            "num id": 604,
+            "hex id": "5C02"
+        },
+        {
+            "name": "Cryo Slime Purple Huge",
+            "num id": 605,
+            "hex id": "5D02"
+        },
+        {
+            "name": "Cryo Slime Purple King",
+            "num id": 606,
+            "hex id": "5E02"
+        },
+        {
+            "name": "Cryo Slime Cyan Big",
+            "num id": 607,
+            "hex id": "5F02"
+        },
+        {
+            "name": "Cryo Slime Cyan Huge",
+            "num id": 608,
+            "hex id": "6002"
+        },
+        {
+            "name": "Cryo Slime Cyan King",
+            "num id": 609,
+            "hex id": "6102"
+        },
+        {
+            "name": "Cryo Slime Red Big",
+            "num id": 610,
+            "hex id": "6202"
+        },
+        {
+            "name": "Cryo Slime Red Huge",
+            "num id": 611,
+            "hex id": "6302"
+        },
+        {
+            "name": "Cryo Slime Red King",
+            "num id": 612,
+            "hex id": "6402"
+        },
+        {
+            "name": "Cryo Slime Lime Green Big",
+            "num id": 613,
+            "hex id": "6502"
+        },
+        {
+            "name": "Cryo Slime Lime Green Huge",
+            "num id": 614,
+            "hex id": "6602"
+        },
+        {
+            "name": "Cryo Slime Lime Green King",
+            "num id": 615,
+            "hex id": "6702"
+        },
+        {
+            "name": "Cryo Slime Yellow Big",
+            "num id": 616,
+            "hex id": "6802"
+        },
+        {
+            "name": "Cryo Slime Yellow Huge",
+            "num id": 617,
+            "hex id": "6902"
+        },
+        {
+            "name": "Cryo Slime Yellow King",
+            "num id": 618,
+            "hex id": "6A02"
+        },
+        {
+            "name": "Cryo Slime Blue Big",
+            "num id": 619,
+            "hex id": "6B02"
+        },
+        {
+            "name": "Cryo Slime Blue Huge",
+            "num id": 620,
+            "hex id": "6C02"
+        },
+        {
+            "name": "Cryo Slime Blue King",
+            "num id": 621,
+            "hex id": "6D02"
+        },
+        {
+            "name": "Cryo Slime White Big",
+            "num id": 622,
+            "hex id": "6E02"
+        },
+        {
+            "name": "Cryo Slime White Huge",
+            "num id": 623,
+            "hex id": "6F02"
+        },
+        {
+            "name": "Cryo Slime White King",
+            "num id": 624,
+            "hex id": "7002"
+        },
+        {
+            "name": "Cryo Slime Orange Big",
+            "num id": 625,
+            "hex id": "7102"
+        },
+        {
+            "name": "Cryo Slime Orange Huge",
+            "num id": 626,
+            "hex id": "7202"
+        },
+        {
+            "name": "Cryo Slime Orange King",
+            "num id": 627,
+            "hex id": "7302"
+        },
+        {
+            "name": "Magmar Slime Green Big",
+            "num id": 628,
+            "hex id": "7402"
+        },
+        {
+            "name": "Magmar Slime Green Huge",
+            "num id": 629,
+            "hex id": "7502"
+        },
+        {
+            "name": "Magmar Slime Green King",
+            "num id": 630,
+            "hex id": "7602"
+        },
+        {
+            "name": "Magmar Slime Purple Big",
+            "num id": 631,
+            "hex id": "7702"
+        },
+        {
+            "name": "Magmar Slime Purple Huge",
+            "num id": 632,
+            "hex id": "7802"
+        },
+        {
+            "name": "Magmar Slime Purple King",
+            "num id": 633,
+            "hex id": "7902"
+        },
+        {
+            "name": "Magmar Slime Cyan Big",
+            "num id": 634,
+            "hex id": "7A02"
+        },
+        {
+            "name": "Magmar Slime Cyan Huge",
+            "num id": 635,
+            "hex id": "7B02"
+        },
+        {
+            "name": "Magmar Slime Cyan King",
+            "num id": 636,
+            "hex id": "7C02"
+        },
+        {
+            "name": "Magmar Slime Red Big",
+            "num id": 637,
+            "hex id": "7D02"
+        },
+        {
+            "name": "Magmar Slime Red Huge",
+            "num id": 638,
+            "hex id": "7E02"
+        },
+        {
+            "name": "Magmar Slime Red King",
+            "num id": 639,
+            "hex id": "7F02"
+        },
+        {
+            "name": "Magmar Slime Lime Green Big",
+            "num id": 640,
+            "hex id": "8002"
+        },
+        {
+            "name": "Magmar Slime Lime Green Huge",
+            "num id": 641,
+            "hex id": "8102"
+        },
+        {
+            "name": "Magmar Slime Lime Green King",
+            "num id": 642,
+            "hex id": "8202"
+        },
+        {
+            "name": "Magmar Slime Yellow Big",
+            "num id": 643,
+            "hex id": "8302"
+        },
+        {
+            "name": "Magmar Slime Yellow Huge",
+            "num id": 644,
+            "hex id": "8402"
+        },
+        {
+            "name": "Magmar Slime Yellow King",
+            "num id": 645,
+            "hex id": "8502"
+        },
+        {
+            "name": "Magmar Slime Blue Big",
+            "num id": 646,
+            "hex id": "8602"
+        },
+        {
+            "name": "Magmar Slime Blue Huge",
+            "num id": 647,
+            "hex id": "8702"
+        },
+        {
+            "name": "Magmar Slime Blue King",
+            "num id": 648,
+            "hex id": "8802"
+        },
+        {
+            "name": "Magmar Slime White Big",
+            "num id": 649,
+            "hex id": "8902"
+        },
+        {
+            "name": "Magmar Slime White Huge",
+            "num id": 650,
+            "hex id": "8A02"
+        },
+        {
+            "name": "Magmar Slime White King",
+            "num id": 651,
+            "hex id": "8B02"
+        },
+        {
+            "name": "Magmar Slime Orange Big",
+            "num id": 652,
+            "hex id": "8C02"
+        },
+        {
+            "name": "Magmar Slime Orange Huge",
+            "num id": 653,
+            "hex id": "8D02"
+        },
+        {
+            "name": "Magmar Slime Orange King",
+            "num id": 654,
+            "hex id": "8E02"
+        },
+        {
+            "name": "Mykon Slime Green Big",
+            "num id": 655,
+            "hex id": "8F02"
+        },
+        {
+            "name": "Mykon Slime Green Huge",
+            "num id": 656,
+            "hex id": "9002"
+        },
+        {
+            "name": "Mykon Slime Green King",
+            "num id": 657,
+            "hex id": "9102"
+        },
+        {
+            "name": "Mykon Slime Purple Big",
+            "num id": 658,
+            "hex id": "9202"
+        },
+        {
+            "name": "Mykon Slime Purple Huge",
+            "num id": 659,
+            "hex id": "9302"
+        },
+        {
+            "name": "Mykon Slime Purple King",
+            "num id": 660,
+            "hex id": "9402"
+        },
+        {
+            "name": "Mykon Slime Cyan Big",
+            "num id": 661,
+            "hex id": "9502"
+        },
+        {
+            "name": "Mykon Slime Cyan Huge",
+            "num id": 662,
+            "hex id": "9602"
+        },
+        {
+            "name": "Mykon Slime Cyan King",
+            "num id": 663,
+            "hex id": "9702"
+        },
+        {
+            "name": "Mykon Slime Red Big",
+            "num id": 664,
+            "hex id": "9802"
+        },
+        {
+            "name": "Mykon Slime Red Huge",
+            "num id": 665,
+            "hex id": "9902"
+        },
+        {
+            "name": "Mykon Slime Red King",
+            "num id": 666,
+            "hex id": "9A02"
+        },
+        {
+            "name": "Mykon Slime Lime Green Big",
+            "num id": 667,
+            "hex id": "9B02"
+        },
+        {
+            "name": "Mykon Slime Lime Green Huge",
+            "num id": 668,
+            "hex id": "9C02"
+        },
+        {
+            "name": "Mykon Slime Lime Green King",
+            "num id": 669,
+            "hex id": "9D02"
+        },
+        {
+            "name": "Mykon Slime Yellow Big",
+            "num id": 670,
+            "hex id": "9E02"
+        },
+        {
+            "name": "Mykon Slime Yellow Huge",
+            "num id": 671,
+            "hex id": "9F02"
+        },
+        {
+            "name": "Mykon Slime Yellow King",
+            "num id": 672,
+            "hex id": "A002"
+        },
+        {
+            "name": "Mykon Slime Blue Big",
+            "num id": 673,
+            "hex id": "A102"
+        },
+        {
+            "name": "Mykon Slime Blue Huge",
+            "num id": 674,
+            "hex id": "A202"
+        },
+        {
+            "name": "Mykon Slime Blue King",
+            "num id": 675,
+            "hex id": "A302"
+        },
+        {
+            "name": "Mykon Slime White Big",
+            "num id": 676,
+            "hex id": "A402"
+        },
+        {
+            "name": "Mykon Slime White Huge",
+            "num id": 677,
+            "hex id": "A502"
+        },
+        {
+            "name": "Mykon Slime White King",
+            "num id": 678,
+            "hex id": "A602"
+        },
+        {
+            "name": "Mykon Slime Orange Big",
+            "num id": 679,
+            "hex id": "A702"
+        },
+        {
+            "name": "Mykon Slime Orange Huge",
+            "num id": 680,
+            "hex id": "A802"
+        },
+        {
+            "name": "Mykon Slime Orange King",
+            "num id": 681,
+            "hex id": "A902"
+        },
+        {
+            "name": "Xeno Slime Green Big",
+            "num id": 682,
+            "hex id": "AA02"
+        },
+        {
+            "name": "Xeno Slime Green Huge",
+            "num id": 683,
+            "hex id": "AB02"
+        },
+        {
+            "name": "Xeno Slime Green King",
+            "num id": 684,
+            "hex id": "AC02"
+        },
+        {
+            "name": "Xeno Slime Purple Big",
+            "num id": 685,
+            "hex id": "AD02"
+        },
+        {
+            "name": "Xeno Slime Purple Huge",
+            "num id": 686,
+            "hex id": "AE02"
+        },
+        {
+            "name": "Xeno Slime Purple King",
+            "num id": 687,
+            "hex id": "AF02"
+        },
+        {
+            "name": "Xeno Slime Cyan Big",
+            "num id": 688,
+            "hex id": "B002"
+        },
+        {
+            "name": "Xeno Slime Cyan Huge",
+            "num id": 689,
+            "hex id": "B102"
+        },
+        {
+            "name": "Xeno Slime Cyan King",
+            "num id": 690,
+            "hex id": "B202"
+        },
+        {
+            "name": "Xeno Slime Red Big",
+            "num id": 691,
+            "hex id": "B302"
+        },
+        {
+            "name": "Xeno Slime Red Huge",
+            "num id": 692,
+            "hex id": "B402"
+        },
+        {
+            "name": "Xeno Slime Red King",
+            "num id": 693,
+            "hex id": "B502"
+        },
+        {
+            "name": "Xeno Slime Lime Green Big",
+            "num id": 694,
+            "hex id": "B602"
+        },
+        {
+            "name": "Xeno Slime Lime Green Huge",
+            "num id": 695,
+            "hex id": "B702"
+        },
+        {
+            "name": "Xeno Slime Lime Green King",
+            "num id": 696,
+            "hex id": "B802"
+        },
+        {
+            "name": "Xeno Slime Yellow Big",
+            "num id": 697,
+            "hex id": "B902"
+        },
+        {
+            "name": "Xeno Slime Yellow Huge",
+            "num id": 698,
+            "hex id": "BA02"
+        },
+        {
+            "name": "Xeno Slime Yellow King",
+            "num id": 699,
+            "hex id": "BB02"
+        },
+        {
+            "name": "Xeno Slime Blue Big",
+            "num id": 700,
+            "hex id": "BC02"
+        },
+        {
+            "name": "Xeno Slime Blue Huge",
+            "num id": 701,
+            "hex id": "BD02"
+        },
+        {
+            "name": "Xeno Slime Blue King",
+            "num id": 702,
+            "hex id": "BE02"
+        },
+        {
+            "name": "Xeno Slime White Big",
+            "num id": 703,
+            "hex id": "BF02"
+        },
+        {
+            "name": "Xeno Slime White Huge",
+            "num id": 704,
+            "hex id": "C002"
+        },
+        {
+            "name": "Xeno Slime White King",
+            "num id": 705,
+            "hex id": "C102"
+        },
+        {
+            "name": "Xeno Slime Orange Big",
+            "num id": 706,
+            "hex id": "C202"
+        },
+        {
+            "name": "Xeno Slime Orange Huge",
+            "num id": 707,
+            "hex id": "C302"
+        },
+        {
+            "name": "Xeno Slime Orange King",
+            "num id": 708,
+            "hex id": "C402"
+        },
+        {
+            "name": "Thetis Slime Green Big",
+            "num id": 709,
+            "hex id": "C502"
+        },
+        {
+            "name": "Thetis Slime Green Huge",
+            "num id": 710,
+            "hex id": "C602"
+        },
+        {
+            "name": "Thetis Slime Green King",
+            "num id": 711,
+            "hex id": "C702"
+        },
+        {
+            "name": "Thetis Slime Purple Big",
+            "num id": 712,
+            "hex id": "C802"
+        },
+        {
+            "name": "Thetis Slime Purple Huge",
+            "num id": 713,
+            "hex id": "C902"
+        },
+        {
+            "name": "Thetis Slime Purple King",
+            "num id": 714,
+            "hex id": "CA02"
+        },
+        {
+            "name": "Thetis Slime Cyan Big",
+            "num id": 715,
+            "hex id": "CB02"
+        },
+        {
+            "name": "Thetis Slime Cyan Huge",
+            "num id": 716,
+            "hex id": "CC02"
+        },
+        {
+            "name": "Thetis Slime Cyan King",
+            "num id": 717,
+            "hex id": "CD02"
+        },
+        {
+            "name": "Thetis Slime Red Big",
+            "num id": 718,
+            "hex id": "CE02"
+        },
+        {
+            "name": "Thetis Slime Red Huge",
+            "num id": 719,
+            "hex id": "CF02"
+        },
+        {
+            "name": "Thetis Slime Red King",
+            "num id": 720,
+            "hex id": "D002"
+        },
+        {
+            "name": "Thetis Slime Lime Green Big",
+            "num id": 721,
+            "hex id": "D102"
+        },
+        {
+            "name": "Thetis Slime Lime Green Huge",
+            "num id": 722,
+            "hex id": "D202"
+        },
+        {
+            "name": "Thetis Slime Lime Green King",
+            "num id": 723,
+            "hex id": "D302"
+        },
+        {
+            "name": "Thetis Slime Yellow Big",
+            "num id": 724,
+            "hex id": "D402"
+        },
+        {
+            "name": "Thetis Slime Yellow Huge",
+            "num id": 725,
+            "hex id": "D502"
+        },
+        {
+            "name": "Thetis Slime Yellow King",
+            "num id": 726,
+            "hex id": "D602"
+        },
+        {
+            "name": "Thetis Slime Blue Big",
+            "num id": 727,
+            "hex id": "D702"
+        },
+        {
+            "name": "Thetis Slime Blue Huge",
+            "num id": 728,
+            "hex id": "D802"
+        },
+        {
+            "name": "Thetis Slime Blue King",
+            "num id": 729,
+            "hex id": "D902"
+        },
+        {
+            "name": "Thetis Slime White Big",
+            "num id": 730,
+            "hex id": "DA02"
+        },
+        {
+            "name": "Thetis Slime White Huge",
+            "num id": 731,
+            "hex id": "DB02"
+        },
+        {
+            "name": "Thetis Slime White King",
+            "num id": 732,
+            "hex id": "DC02"
+        },
+        {
+            "name": "Thetis Slime Orange Big",
+            "num id": 733,
+            "hex id": "DD02"
+        },
+        {
+            "name": "Thetis Slime Orange Huge",
+            "num id": 734,
+            "hex id": "DE02"
+        },
+        {
+            "name": "Thetis Slime Orange King",
+            "num id": 735,
+            "hex id": "DF02"
+        },
+        {
+            "name": "Yuca Slime Green Big",
+            "num id": 736,
+            "hex id": "E002"
+        },
+        {
+            "name": "Yuca Slime Green Huge",
+            "num id": 737,
+            "hex id": "E102"
+        },
+        {
+            "name": "Yuca Slime Green King",
+            "num id": 738,
+            "hex id": "E202"
+        },
+        {
+            "name": "Yuca Slime Purple Big",
+            "num id": 739,
+            "hex id": "E302"
+        },
+        {
+            "name": "Yuca Slime Purple Huge",
+            "num id": 740,
+            "hex id": "E402"
+        },
+        {
+            "name": "Yuca Slime Purple King",
+            "num id": 741,
+            "hex id": "E502"
+        },
+        {
+            "name": "Yuca Slime Cyan Big",
+            "num id": 742,
+            "hex id": "E602"
+        },
+        {
+            "name": "Yuca Slime Cyan Huge",
+            "num id": 743,
+            "hex id": "E702"
+        },
+        {
+            "name": "Yuca Slime Cyan King",
+            "num id": 744,
+            "hex id": "E802"
+        },
+        {
+            "name": "Yuca Slime Red Big",
+            "num id": 745,
+            "hex id": "E902"
+        },
+        {
+            "name": "Yuca Slime Red Huge",
+            "num id": 746,
+            "hex id": "EA02"
+        },
+        {
+            "name": "Yuca Slime Red King",
+            "num id": 747,
+            "hex id": "EB02"
+        },
+        {
+            "name": "Yuca Slime Lime Green Big",
+            "num id": 748,
+            "hex id": "EC02"
+        },
+        {
+            "name": "Yuca Slime Lime Green Huge",
+            "num id": 749,
+            "hex id": "ED02"
+        },
+        {
+            "name": "Yuca Slime Lime Green King",
+            "num id": 750,
+            "hex id": "EE02"
+        },
+        {
+            "name": "Yuca Slime Yellow Big",
+            "num id": 751,
+            "hex id": "EF02"
+        },
+        {
+            "name": "Yuca Slime Yellow Huge",
+            "num id": 752,
+            "hex id": "F002"
+        },
+        {
+            "name": "Yuca Slime Yellow King",
+            "num id": 753,
+            "hex id": "F102"
+        },
+        {
+            "name": "Yuca Slime Blue Big",
+            "num id": 754,
+            "hex id": "F202"
+        },
+        {
+            "name": "Yuca Slime Blue Huge",
+            "num id": 755,
+            "hex id": "F302"
+        },
+        {
+            "name": "Yuca Slime Blue King",
+            "num id": 756,
+            "hex id": "F402"
+        },
+        {
+            "name": "Yuca Slime White Big",
+            "num id": 757,
+            "hex id": "F502"
+        },
+        {
+            "name": "Yuca Slime White Huge",
+            "num id": 758,
+            "hex id": "F602"
+        },
+        {
+            "name": "Yuca Slime White King",
+            "num id": 759,
+            "hex id": "F702"
+        },
+        {
+            "name": "Yuca Slime Orange Big",
+            "num id": 760,
+            "hex id": "F802"
+        },
+        {
+            "name": "Yuca Slime Orange Huge",
+            "num id": 761,
+            "hex id": "F902"
+        },
+        {
+            "name": "Yuca Slime Orange King",
+            "num id": 762,
+            "hex id": "FA02"
+        },
+        {
+            "name": "Spider Huge Blight",
+            "num id": 763,
+            "hex id": "FB02"
+        },
+        {
+            "name": "Demon Wailer Purple",
+            "num id": 764,
+            "hex id": "FC02"
+        },
+        {
+            "name": "Demon Wailer Green",
+            "num id": 765,
+            "hex id": "FD02"
+        },
+        {
+            "name": "Demon Wailer Blue",
+            "num id": 766,
+            "hex id": "FE02"
+        },
+        {
+            "name": "Demon Wailer Blight",
+            "num id": 767,
+            "hex id": "FF02"
+        },
+        {
+            "name": "Shadow Lurker Molten",
+            "num id": 768,
+            "hex id": "0003"
+        },
+        {
+            "name": "Golem Rusty",
+            "num id": 769,
+            "hex id": "0103"
+        },
+        {
+            "name": "Skeleton Wailer Mage",
+            "num id": 770,
+            "hex id": "0203"
+        },
+        {
+            "name": "Cruncher Brown",
+            "num id": 771,
+            "hex id": "0303"
+        },
+        {
+            "name": "Cruncher Purple",
+            "num id": 772,
+            "hex id": "0403"
+        },
+        {
+            "name": "Gomphoth Huge",
+            "num id": 773,
+            "hex id": "0503"
+        },
+        {
+            "name": "Gomphoth Tiny",
+            "num id": 774,
+            "hex id": "0603"
+        },
+        {
+            "name": "Twistrazor King Red",
+            "num id": 775,
+            "hex id": "0703"
+        },
+        {
+            "name": "Jaguar Red",
+            "num id": 776,
+            "hex id": "0803"
+        },
+        {
+            "name": "Zombie Skinned",
+            "num id": 777,
+            "hex id": "0903"
+        },
+        {
+            "name": "Skeleton Enraged",
+            "num id": 778,
+            "hex id": "0A03"
+        },
+        {
+            "name": "Skeleton Enraged Horn",
+            "num id": 779,
+            "hex id": "0B03"
+        },
+        {
+            "name": "Skeleton Enraged Knight",
+            "num id": 780,
+            "hex id": "0C03"
+        },
+        {
+            "name": "Skeleton Enraged Blight",
+            "num id": 781,
+            "hex id": "0D03"
+        },
+        {
+            "name": "Zombie Blight",
+            "num id": 782,
+            "hex id": "0E03"
+        },
+        {
+            "name": "Zombie Blight Mage",
+            "num id": 783,
+            "hex id": "0F03"
+        },
+        {
+            "name": "Soul Ripper Blight",
+            "num id": 784,
+            "hex id": "1003"
+        },
+        {
+            "name": "Rat Lantern",
+            "num id": 785,
+            "hex id": "1103"
+        },
+        {
+            "name": "Carnivorous Oozer",
+            "num id": 786,
+            "hex id": "1203"
+        },
+        {
+            "name": "Tor Slime Green Big",
+            "num id": 787,
+            "hex id": "1303"
+        },
+        {
+            "name": "Tor Slime Green Huge",
+            "num id": 788,
+            "hex id": "1403"
+        },
+        {
+            "name": "Tor Slime Green King",
+            "num id": 789,
+            "hex id": "1503"
+        },
+        {
+            "name": "Tor Slime Purple Big",
+            "num id": 790,
+            "hex id": "1603"
+        },
+        {
+            "name": "Tor Slime Purple Huge",
+            "num id": 791,
+            "hex id": "1703"
+        },
+        {
+            "name": "Tor Slime Purple King",
+            "num id": 792,
+            "hex id": "1803"
+        },
+        {
+            "name": "Tor Slime Cyan Big",
+            "num id": 793,
+            "hex id": "1903"
+        },
+        {
+            "name": "Tor Slime Cyan Huge",
+            "num id": 794,
+            "hex id": "1A03"
+        },
+        {
+            "name": "Tor Slime Cyan King",
+            "num id": 795,
+            "hex id": "1B03"
+        },
+        {
+            "name": "Tor Slime Red Big",
+            "num id": 796,
+            "hex id": "1C03"
+        },
+        {
+            "name": "Tor Slime Red Huge",
+            "num id": 797,
+            "hex id": "1D03"
+        },
+        {
+            "name": "Tor Slime Red King",
+            "num id": 798,
+            "hex id": "1E03"
+        },
+        {
+            "name": "Tor Slime Lime Green Big",
+            "num id": 799,
+            "hex id": "1F03"
+        },
+        {
+            "name": "Tor Slime Lime Green Huge",
+            "num id": 800,
+            "hex id": "2003"
+        },
+        {
+            "name": "Tor Slime Lime Green King",
+            "num id": 801,
+            "hex id": "2103"
+        },
+        {
+            "name": "Tor Slime Yellow Big",
+            "num id": 802,
+            "hex id": "2203"
+        },
+        {
+            "name": "Tor Slime Yellow Huge",
+            "num id": 803,
+            "hex id": "2303"
+        },
+        {
+            "name": "Tor Slime Yellow King",
+            "num id": 804,
+            "hex id": "2403"
+        },
+        {
+            "name": "Tor Slime Blue Big",
+            "num id": 805,
+            "hex id": "2503"
+        },
+        {
+            "name": "Tor Slime Blue Huge",
+            "num id": 806,
+            "hex id": "2603"
+        },
+        {
+            "name": "Tor Slime Blue King",
+            "num id": 807,
+            "hex id": "2703"
+        },
+        {
+            "name": "Tor Slime White Big",
+            "num id": 808,
+            "hex id": "2803"
+        },
+        {
+            "name": "Tor Slime White Huge",
+            "num id": 809,
+            "hex id": "2903"
+        },
+        {
+            "name": "Tor Slime White King",
+            "num id": 810,
+            "hex id": "2A03"
+        },
+        {
+            "name": "Tor Slime Orange Big",
+            "num id": 811,
+            "hex id": "2B03"
+        },
+        {
+            "name": "Tor Slime Orange Huge",
+            "num id": 812,
+            "hex id": "2C03"
+        },
+        {
+            "name": "Tor Slime Orange King",
+            "num id": 813,
+            "hex id": "2D03"
+        },
+        {
+            "name": "Pocket Gomphoth",
+            "num id": 814,
+            "hex id": "2E03"
+        },
+        {
+            "name": "Pocket Cruncher",
+            "num id": 815,
+            "hex id": "2F03"
+        },
+        {
+            "name": "Red Butterfly",
+            "num id": 816,
+            "hex id": "3003"
+        },
+        {
+            "name": "Spider Giant Purple",
+            "num id": 817,
+            "hex id": "3103"
+        },
+        {
+            "name": "Zombiestein",
+            "num id": 818,
+            "hex id": "3203"
+        },
+        {
+            "name": "Grim Reaper",
+            "num id": 819,
+            "hex id": "3303"
+        },
+        {
+            "name": "Killer Pumpkin",
+            "num id": 820,
+            "hex id": "3403"
+        },
+        {
+            "name": "Trap Statue",
+            "num id": 821,
+            "hex id": "3503"
+        },
+        {
+            "name": "Trap Chest",
+            "num id": 822,
+            "hex id": "3603"
+        },
+        {
+            "name": "Zombie Pumpkin",
+            "num id": 823,
+            "hex id": "3703"
+        },
+        {
+            "name": "Zombie Witch",
+            "num id": 824,
+            "hex id": "3803"
+        },
+        {
+            "name": "Zombie Jason",
+            "num id": 825,
+            "hex id": "3903"
+        },
+        {
+            "name": "Pocket Pumpkin",
+            "num id": 826,
+            "hex id": "3A03"
+        },
+        {
+            "name": "Skeleton Christmas",
+            "num id": 827,
+            "hex id": "3B03"
+        },
+        {
+            "name": "Slime Pudding Purple",
+            "num id": 828,
+            "hex id": "3C03"
+        },
+        {
+            "name": "Slime Pudding Orange",
+            "num id": 829,
+            "hex id": "3D03"
+        },
+        {
+            "name": "Pocket Pudding Slime",
+            "num id": 830,
+            "hex id": "3E03"
+        },
+        {
+            "name": "Pocket Shroom",
+            "num id": 831,
+            "hex id": "3F03"
+        },
+        {
+            "name": "Pocket Mr Sheepy",
+            "num id": 832,
+            "hex id": "4003"
+        },
+        {
+            "name": "Pocket Cute Dino",
+            "num id": 833,
+            "hex id": "4103"
+        },
+        {
+            "name": "Pocket Butterfly",
+            "num id": 834,
+            "hex id": "4203"
+        },
+        {
+            "name": "Pocket Huge Snail",
+            "num id": 835,
+            "hex id": "4303"
+        },
+        {
+            "name": "Pocket Red Ladybug",
+            "num id": 836,
+            "hex id": "4403"
+        },
+        {
+            "name": "Pocket Purple Ladybug",
+            "num id": 837,
+            "hex id": "4503"
+        },
+        {
+            "name": "Pocket Yellow Ladybug",
+            "num id": 838,
+            "hex id": "4603"
+        },
+        {
+            "name": "Pocket Armadillo",
+            "num id": 839,
+            "hex id": "4703"
+        },
+        {
+            "name": "Pocket Tiny Snake",
+            "num id": 840,
+            "hex id": "4803"
+        },
+        {
+            "name": "Pocket Extraterrestrial",
+            "num id": 841,
+            "hex id": "4903"
+        },
+        {
+            "name": "Pocket Dug Guy",
+            "num id": 842,
+            "hex id": "4A03"
+        },
+        {
+            "name": "Pocket Red Trax",
+            "num id": 843,
+            "hex id": "4B03"
+        },
+        {
+            "name": "Pocket Unicorn",
+            "num id": 844,
+            "hex id": "4C03"
+        },
+        {
+            "name": "Pocket Zealand Guy",
+            "num id": 845,
+            "hex id": "4D03"
+        },
+        {
+            "name": "Pocket Pink Guy",
+            "num id": 846,
+            "hex id": "4E03"
+        },
+        {
+            "name": "Pocket Dig Guy",
+            "num id": 847,
+            "hex id": "4F03"
+        },
+        {
+            "name": "Pocket Ghost Guy",
+            "num id": 848,
+            "hex id": "5003"
+        },
+        {
+            "name": "Pocket Red Plumber",
+            "num id": 849,
+            "hex id": "5103"
+        },
+        {
+            "name": "Pocket Green Plumber",
+            "num id": 850,
+            "hex id": "5203"
+        },
+        {
+            "name": "Pocket Dig Monster",
+            "num id": 851,
+            "hex id": "5303"
+        },
+        {
+            "name": "Pocket Emerald Panther",
+            "num id": 852,
+            "hex id": "5403"
+        },
+        {
+            "name": "Pocket Slimer",
+            "num id": 853,
+            "hex id": "5503"
+        },
+        {
+            "name": "Pocket Wonder Guy",
+            "num id": 854,
+            "hex id": "5603"
+        },
+        {
+            "name": "Pocket Walking Bomb",
+            "num id": 855,
+            "hex id": "5703"
+        },
+        {
+            "name": "Pocket Spiked Roach",
+            "num id": 856,
+            "hex id": "5803"
+        },
+        {
+            "name": "Pocket Huge Rabbit",
+            "num id": 857,
+            "hex id": "5903"
+        },
+        {
+            "name": "Pocket Pink Ghost",
+            "num id": 858,
+            "hex id": "5A03"
+        },
+        {
+            "name": "Pocket Cyan Ghost",
+            "num id": 859,
+            "hex id": "5B03"
+        },
+        {
+            "name": "Pocket Green Ghost",
+            "num id": 860,
+            "hex id": "5C03"
+        },
+        {
+            "name": "Pocket Scared Ghost",
+            "num id": 861,
+            "hex id": "5D03"
+        },
+        {
+            "name": "Kelsior Ghost",
+            "num id": 862,
+            "hex id": "5E03"
+        },
+        {
+            "name": "Kelsior",
+            "num id": 863,
+            "hex id": "5F03"
+        },
+        {
+            "name": "Kelsior Soul",
+            "num id": 864,
+            "hex id": "6003"
+        },
+        {
+            "name": "Kelsior Add",
+            "num id": 865,
+            "hex id": "6103"
+        },
+        {
+            "name": "Horus",
+            "num id": 866,
+            "hex id": "6203"
+        },
+        {
+            "name": "Horus Soul",
+            "num id": 867,
+            "hex id": "6303"
+        },
+        {
+            "name": "Horus Add",
+            "num id": 868,
+            "hex id": "6403"
+        },
+        {
+            "name": "Kroptor",
+            "num id": 869,
+            "hex id": "6503"
+        },
+        {
+            "name": "Kroptor Soul",
+            "num id": 870,
+            "hex id": "6603"
+        },
+        {
+            "name": "Kroptor Add",
+            "num id": 871,
+            "hex id": "6703"
+        },
+        {
+            "name": "Infernus",
+            "num id": 872,
+            "hex id": "6803"
+        },
+        {
+            "name": "Infernus Soul",
+            "num id": 873,
+            "hex id": "6903"
+        },
+        {
+            "name": "Infernus Add",
+            "num id": 874,
+            "hex id": "6A03"
+        },
+        {
+            "name": "Coldshadow",
+            "num id": 875,
+            "hex id": "6B03"
+        },
+        {
+            "name": "Coldshadow Soul",
+            "num id": 876,
+            "hex id": "6C03"
+        },
+        {
+            "name": "Coldshadow Add",
+            "num id": 877,
+            "hex id": "6D03"
+        },
+        {
+            "name": "Kratios",
+            "num id": 878,
+            "hex id": "6E03"
+        },
+        {
+            "name": "Kratios Soul",
+            "num id": 879,
+            "hex id": "6F03"
+        },
+        {
+            "name": "Kratios Add",
+            "num id": 880,
+            "hex id": "7003"
+        },
+        {
+            "name": "Squirch",
+            "num id": 881,
+            "hex id": "7103"
+        },
+        {
+            "name": "Squirch Soul",
+            "num id": 882,
+            "hex id": "7203"
+        },
+        {
+            "name": "Squirch Add",
+            "num id": 883,
+            "hex id": "7303"
+        },
+        {
+            "name": "Gutstriker",
+            "num id": 884,
+            "hex id": "7403"
+        },
+        {
+            "name": "Gutstriker Soul",
+            "num id": 885,
+            "hex id": "7503"
+        },
+        {
+            "name": "Gutstriker Add",
+            "num id": 886,
+            "hex id": "7603"
+        },
+        {
+            "name": "Gutstriker Half",
+            "num id": 887,
+            "hex id": "7703"
+        },
+        {
+            "name": "Rusttalon",
+            "num id": 888,
+            "hex id": "7803"
+        },
+        {
+            "name": "Rusttalon Soul",
+            "num id": 889,
+            "hex id": "7903"
+        },
+        {
+            "name": "Rusttalon Add",
+            "num id": 890,
+            "hex id": "7A03"
+        },
+        {
+            "name": "Griever",
+            "num id": 891,
+            "hex id": "7B03"
+        },
+        {
+            "name": "Griever Soul",
+            "num id": 892,
+            "hex id": "7C03"
+        },
+        {
+            "name": "Griever Add",
+            "num id": 893,
+            "hex id": "7D03"
+        },
+        {
+            "name": "Germstriker",
+            "num id": 894,
+            "hex id": "7E03"
+        },
+        {
+            "name": "Germstriker Soul",
+            "num id": 895,
+            "hex id": "7F03"
+        },
+        {
+            "name": "Germstriker Add",
+            "num id": 896,
+            "hex id": "8003"
+        },
+        {
+            "name": "Webclaw",
+            "num id": 897,
+            "hex id": "8103"
+        },
+        {
+            "name": "Webclaw Soul",
+            "num id": 898,
+            "hex id": "8203"
+        },
+        {
+            "name": "Webclaw Add",
+            "num id": 899,
+            "hex id": "8303"
+        },
+        {
+            "name": "Golem Stone Head",
+            "num id": 900,
+            "hex id": "8403"
+        },
+        {
+            "name": "Golem Acid",
+            "num id": 901,
+            "hex id": "8503"
+        },
+        {
+            "name": "Golem Ethereal",
+            "num id": 902,
+            "hex id": "8603"
+        },
+        {
+            "name": "Golem Evil",
+            "num id": 903,
+            "hex id": "8703"
+        },
+        {
+            "name": "Golem Arcane",
+            "num id": 904,
+            "hex id": "8803"
+        },
+        {
+            "name": "Golem Water",
+            "num id": 905,
+            "hex id": "8903"
+        },
+        {
+            "name": "Golem Air",
+            "num id": 906,
+            "hex id": "8A03"
+        },
+        {
+            "name": "Pocket Acid Golem",
+            "num id": 907,
+            "hex id": "8B03"
+        },
+        {
+            "name": "Pocket Rusty Golem",
+            "num id": 908,
+            "hex id": "8C03"
+        },
+        {
+            "name": "Pocket Ice Golem",
+            "num id": 909,
+            "hex id": "8D03"
+        },
+        {
+            "name": "Pocket Ruins Golem",
+            "num id": 910,
+            "hex id": "8E03"
+        },
+        {
+            "name": "Pocket Evil Golem",
+            "num id": 911,
+            "hex id": "8F03"
+        },
+        {
+            "name": "Pocket Ethereal Golem",
+            "num id": 912,
+            "hex id": "9003"
+        },
+        {
+            "name": "Pocket Air Golem",
+            "num id": 913,
+            "hex id": "9103"
+        },
+        {
+            "name": "Pocket Silicium Golem",
+            "num id": 914,
+            "hex id": "9203"
+        },
+        {
+            "name": "Pocket Arcane Golem",
+            "num id": 915,
+            "hex id": "9303"
+        },
+        {
+            "name": "Pocket Slime Golem",
+            "num id": 916,
+            "hex id": "9403"
+        },
+        {
+            "name": "Pocket Water Golem",
+            "num id": 917,
+            "hex id": "9503"
+        },
+        {
+            "name": "Pocket Sand Golem",
+            "num id": 918,
+            "hex id": "9603"
+        },
+        {
+            "name": "Golem Acid Head",
+            "num id": 919,
+            "hex id": "9703"
+        },
+        {
+            "name": "Golem Ruins Head",
+            "num id": 920,
+            "hex id": "9803"
+        },
+        {
+            "name": "Golem Ethereal Head",
+            "num id": 921,
+            "hex id": "9903"
+        },
+        {
+            "name": "Golem Silicium Head",
+            "num id": 922,
+            "hex id": "9A03"
+        },
+        {
+            "name": "Golem Slime Head",
+            "num id": 923,
+            "hex id": "9B03"
+        },
+        {
+            "name": "Golem Sand Head",
+            "num id": 924,
+            "hex id": "9C03"
+        },
+        {
+            "name": "Golem Ice Head",
+            "num id": 925,
+            "hex id": "9D03"
+        },
+        {
+            "name": "Golem Evil Head",
+            "num id": 926,
+            "hex id": "9E03"
+        },
+        {
+            "name": "Golem Air Head",
+            "num id": 927,
+            "hex id": "9F03"
+        },
+        {
+            "name": "Golem Arcane Head",
+            "num id": 928,
+            "hex id": "A003"
+        },
+        {
+            "name": "Golem Water Head",
+            "num id": 929,
+            "hex id": "A103"
+        },
+        {
+            "name": "Golem Rusty Head",
+            "num id": 930,
+            "hex id": "A203"
+        },
+        {
+            "name": "Pocket Android",
+            "num id": 931,
+            "hex id": "A303"
+        },
+        {
+            "name": "Reindeer Male",
+            "num id": 932,
+            "hex id": "A403"
+        },
+        {
+            "name": "Reindeer Female",
+            "num id": 933,
+            "hex id": "A503"
+        },
+        {
+            "name": "Reindeer Calf",
+            "num id": 934,
+            "hex id": "A603"
+        },
+        {
+            "name": "Pocket Santa",
+            "num id": 935,
+            "hex id": "A703"
+        },
+        {
+            "name": "Hamster Male",
+            "num id": 936,
+            "hex id": "A803"
+        },
+        {
+            "name": "Hamster Female",
+            "num id": 937,
+            "hex id": "A903"
+        },
+        {
+            "name": "Hamster Baby",
+            "num id": 938,
+            "hex id": "AA03"
+        },
+        {
+            "name": "Chihuahua Male",
+            "num id": 939,
+            "hex id": "AB03"
+        },
+        {
+            "name": "Chihuahua Female",
+            "num id": 940,
+            "hex id": "AC03"
+        },
+        {
+            "name": "Chihuahua Puppy",
+            "num id": 941,
+            "hex id": "AD03"
+        },
+        {
+            "name": "Pocket Crosshair",
+            "num id": 942,
+            "hex id": "AE03"
+        },
+        {
+            "name": "Pocket Kratios",
+            "num id": 943,
+            "hex id": "AF03"
+        },
+        {
+            "name": "Pocket Horus",
+            "num id": 944,
+            "hex id": "B003"
+        },
+        {
+            "name": "Pocket Kroptor",
+            "num id": 945,
+            "hex id": "B103"
+        },
+        {
+            "name": "Pocket Infernus",
+            "num id": 946,
+            "hex id": "B203"
+        },
+        {
+            "name": "Pocket Coldshadow",
+            "num id": 947,
+            "hex id": "B303"
+        },
+        {
+            "name": "Pocket Kelsior",
+            "num id": 948,
+            "hex id": "B403"
+        },
+        {
+            "name": "Pocket Squirch",
+            "num id": 949,
+            "hex id": "B503"
+        },
+        {
+            "name": "Pocket Gutstriker",
+            "num id": 950,
+            "hex id": "B603"
+        },
+        {
+            "name": "Pocket Rusttalon",
+            "num id": 951,
+            "hex id": "B703"
+        },
+        {
+            "name": "Pocket Griever",
+            "num id": 952,
+            "hex id": "B803"
+        },
+        {
+            "name": "Pocket Germstriker",
+            "num id": 953,
+            "hex id": "B903"
+        },
+        {
+            "name": "Pocket Webclaw",
+            "num id": 954,
+            "hex id": "BA03"
+        }
+    ]
+}
