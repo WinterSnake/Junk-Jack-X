@@ -117,6 +117,7 @@ public sealed class World
 		this.Entities.AddRange(entities);
 	}
 	/* Instance Methods */
+	public ulong GetBlockFlatPosition(ushort x, ushort y) => (ulong)((y + x * this.Size.Height) * Block.SIZE);
 	public async Task Save(string path)
 	{
 		using var stream = await ArchiverStream.Writer(path, ArchiverType.Map);
