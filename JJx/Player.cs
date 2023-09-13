@@ -227,7 +227,7 @@ public sealed class Player
 	// Achievements
 	// Status
 	public float Health = 50.0f;
-	public Effect[] Effects = new Effect[COUNT_EFFECTS];
+	public readonly Effect[] Effects = new Effect[COUNT_EFFECTS];
 	/* Class Properties */
 	private const byte BUFFER_SIZE           = 16;
 	private const byte SIZEOF_UUID           = 16;

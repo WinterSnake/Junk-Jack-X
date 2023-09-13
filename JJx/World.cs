@@ -81,13 +81,13 @@ public sealed class World
 		this.Borders = new ushort[this.Size.Width];
 		for (var i = 0; i < this.Borders.Length; ++i)
 			this.Borders[i] = (ushort)(this.Size.Height / 2);
-		this.Blocks = new Block[this.Size.Width * this.Size.Height];
+		this.Blocks = new Block[this.Size.Width, this.Size.Height];
 	}
 	private World(
 		Guid id, DateTime lastPlayed, Version version, string name, string author,
 		(ushort, ushort) size, (ushort, ushort) player, (ushort, ushort) spawn, Planet planet,
 		Season season, Gamemode gamemode, InitSize worldInitSize, InitSize skyInitSize, ushort[] borders,
-		Block[] blocks, Chest[] chests, Forge[] forges, Sign[] signs, Stable[] stables, Lab[] labs,
+		Block[,] blocks, Chest[] chests, Forge[] forges, Sign[] signs, Stable[] stables, Lab[] labs,
 		Shelf[] shelves, Plant[] plants, Lock[] locks, Entity[] entities
 	)
 	{
@@ -178,8 +178,9 @@ public sealed class World
 		using (var chunk = stream.NewChunk(ChunkType.WorldBlocks, 1, compressed: true))
 		{
 			using var blocksDecompressedStream = new MemoryStream(this.Blocks.Length * Block.SIZE);
-			foreach (var block in this.Blocks)
-				await block.ToStream(blocksDecompressedStream);
+			for (var x = 0; x < this.Size.Width; ++x)
+				for (var y = 0; y < this.Size.Height; ++y)
+					await this.Blocks[x, y].ToStream(blocksDecompressedStream);
 			blocksDecompressedStream.Position = 0;
 			using (var blocksCompressionStream = new GZipStream(chunk, CompressionLevel.Optimal, true))
 				await blocksDecompressedStream.CopyToAsync(blocksCompressionStream);
@@ -311,9 +312,9 @@ public sealed class World
 		using var stream = File.Open(path, FileMode.Open, FileAccess.Read);
 		if (!compressed)
 		{
-			this.Blocks = new Block[stream.Length / Block.SIZE];
-			for (var i = 0; i < this.Blocks.Length; ++i)
-				this.Blocks[i] = await Block.FromStream(stream);
+			for (var x = 0; x < this.Size.Width; ++x)
+				for (var y = 0; y < this.Size.Height; ++y)
+					this.Blocks[x, y] = await Block.FromStream(stream);
 			return;
 		}
 	}
@@ -322,8 +323,9 @@ public sealed class World
 		using var stream = File.Open(path, FileMode.Create, FileAccess.Write);
 		if (!compressed)
 		{
-			foreach (var block in this.Blocks)
-				await block.ToStream(stream);
+			for (var x = 0; x < this.Size.Width; ++x)
+				for (var y = 0; y < this.Size.Height; ++y)
+					await this.Blocks[x, y].ToStream(stream);
 			return;
 		}
 	}
@@ -416,7 +418,7 @@ public sealed class World
 		}
 		/// Blocks
 		bytesRead = 0;
-		var blocks = new Block[worldSize.width * worldSize.height];
+		var blocks = new Block[worldSize.width, worldSize.height];
 		var blocksCompressedSize = stream.GetChunkSize(ChunkType.WorldBlocks);
 		using (var blocksCompressedStream = new MemoryStream((int)blocksCompressedSize))
 		{
@@ -427,8 +429,9 @@ public sealed class World
 			// Decompress stream
 			using (var blocksDecompressionStream = new GZipStream(blocksCompressedStream, CompressionMode.Decompress))
 			{
-				for (var i = 0; i < blocks.Length; ++i)
-					blocks[i] = await Block.FromStream(blocksDecompressionStream);
+				for (var x = 0; x < worldSize.width; ++x)
+					for (var y = 0; y < worldSize.height; ++y)
+						blocks[x, y] = await Block.FromStream(blocksDecompressionStream);
 			}
 		}
 		/// =UNKNOWN=
@@ -570,7 +573,7 @@ public sealed class World
 	// Border
 	public ushort[] Borders { get; private set; }
 	// Blocks
-	public Block[] Blocks { get; private set; }
+	public Block[,] Blocks { get; private set; }
 	/*
 		TODO: Memory Mapped File Implementation
 		https://learn.microsoft.com/en-us/dotnet/api/system.io.memorymappedfiles.memorymappedfile?view=net-7.0
