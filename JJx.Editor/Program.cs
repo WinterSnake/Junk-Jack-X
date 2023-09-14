@@ -19,12 +19,16 @@ internal static class Program
 		var world = await JJx.World.Load(args[0]);
 		Raylib.SetConfigFlags(ConfigFlags.FLAG_WINDOW_RESIZABLE);
 		Raylib.InitWindow(1920, 1080, "Junk Jack X Editor");
-		Raylib.SetTargetFPS(60);
+		Raylib.SetTargetFPS(144);
 		// Load textures
 		for (var i = 0; i < Gfx.Length; ++i)
 			Gfx[i].Texture = Raylib.LoadTexture(Gfx[i].Path);
 		// Main loop
-		var camera = new Camera2D(offset: new Vector2(0, 0), target: new Vector2(0, 0), rotation: 0.0f, zoom: 1.0f);
+		var camera = new Camera2D(
+			new Vector2(Raylib.GetScreenWidth() / 2, Raylib.GetScreenHeight() / 2),  // Offset
+			WorldRenderer.GetPlayerVector(world),  // Target
+			0.0f, 1.0f  // Rotation, Zoom
+		);
 		while (!Raylib.WindowShouldClose())
 		{
 			float deltaTime = Raylib.GetFrameTime();
@@ -43,6 +47,7 @@ internal static class Program
 					WorldRenderer.Render(world);
 					// Gui
 				Raylib.EndMode2D();
+				Raylib.DrawText($"FPS: {Raylib.GetFPS()}", 20, 20, 10, Color.WHITE);
 			Raylib.EndDrawing();
 		}
 		Raylib.CloseWindow();

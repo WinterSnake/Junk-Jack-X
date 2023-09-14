@@ -89,8 +89,8 @@ public sealed class Tile
 	/* Properties */
 	private ushort _ForegroundId;
 	public ushort ForegroundId {
-		get { return (ushort)(this._ForegroundId ^ 0x8000); }
-		set { this._ForegroundId = (ushort)(value ^ 0x8000); }
+		get { return (ushort)(this._ForegroundId & 0x7FFF); }
+		set { this._ForegroundId = (ushort)(value | 0x8000); }
 	}
 	public ushort BackgroundId;
 	public readonly ushort[] DecorationIds = new ushort[COUNT_DECORATIONS];
