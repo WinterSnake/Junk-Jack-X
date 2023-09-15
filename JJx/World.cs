@@ -70,10 +70,12 @@ public sealed class World
 			case InitSize.Huge:
 				this.Size = (4096, 512); break;
 			case InitSize.Custom:
+			default:
+				// Minimum working size: 128 x 64
 				this.Size = customSize.Value; break;
 		}
-		this.Player = (0, 1);
-		this.Spawn  = (0, 1);
+		this.Player = (0x0, 1);
+		this.Spawn  = (0x0, 1);
 		this.Season = season;
 		this.Gamemode = gamemode;
 		this.WorldInitSize = worldSize;
@@ -82,6 +84,16 @@ public sealed class World
 		for (var i = 0; i < this.Borders.Length; ++i)
 			this.Borders[i] = (ushort)(this.Size.Height / 2);
 		this.Blocks = new Tile[this.Size.Width, this.Size.Height];
+		for (var x = 0; x < this.Size.Width; ++x)
+		{
+			for (var y = 0; y < this.Size.Height; ++y)
+			{
+				if (y == 0)
+					this.Blocks[x, y] = new Tile(0x0054, 0x0054);
+				else
+					this.Blocks[x, y] = new Tile(0x0000, 0x0000);
+			}
+		}
 	}
 	private World(
 		Guid id, DateTime lastPlayed, Version version, string name, string author,

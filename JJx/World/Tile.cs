@@ -28,6 +28,8 @@ public sealed class Tile
 	{
 		this.ForegroundId = (ushort)(foregroundId ^ 0x8000);
 		this.BackgroundId = backgroundId;
+		for (var i = 0; i < this.DecorationIds.Length; ++i)
+			this.DecorationIds[i] = 0x0000;
 	}
 	private Tile(ushort foregroundId, ushort backgroundId, ushort[] decorationIds, byte[] buffer)
 	{

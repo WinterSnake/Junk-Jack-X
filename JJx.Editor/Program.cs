@@ -16,46 +16,30 @@ internal static class Program
 	private static async Task Main(string[] args)
 	{
 		// Debug for now
-		var world = await JJx.World.Load(args[0]);
+		var player = await JJx.Player.Load(args[0]);
+		//var world = await JJx.World.Load(args[0]);
 		Raylib.SetConfigFlags(ConfigFlags.FLAG_WINDOW_RESIZABLE);
 		Raylib.InitWindow(1920, 1080, "Junk Jack X Editor");
 		Raylib.SetTargetFPS(144);
 		// Load textures
-		for (var i = 0; i < Gfx.Length; ++i)
-			Gfx[i].Texture = Raylib.LoadTexture(Gfx[i].Path);
+		InterfaceRenderer.InitTexture(_TexturePaths[0]);
 		// Main loop
-		var camera = new Camera2D(
-			new Vector2(Raylib.GetScreenWidth() / 2, Raylib.GetScreenHeight() / 2),  // Offset
-			WorldRenderer.GetPlayerVector(world),  // Target
-			0.0f, 1.0f  // Rotation, Zoom
-		);
+		var editor = new PlayerEditor();
 		while (!Raylib.WindowShouldClose())
 		{
-			float deltaTime = Raylib.GetFrameTime();
-			if (Raylib.IsKeyDown(KeyboardKey.KEY_W))
-				camera.target.Y -= _Speed;
-			else if (Raylib.IsKeyDown(KeyboardKey.KEY_S))
-				camera.target.Y += _Speed;
-			if (Raylib.IsKeyDown(KeyboardKey.KEY_A))
-				camera.target.X -= _Speed;
-			else if (Raylib.IsKeyDown(KeyboardKey.KEY_D))
-				camera.target.X += _Speed;
 			Raylib.ClearBackground(Color.BLACK);
+			editor.Update(0.0f);
 			Raylib.BeginDrawing();
-				Raylib.BeginMode2D(camera);
-					// World
-					WorldRenderer.Render(world);
-					// Gui
-				Raylib.EndMode2D();
-				Raylib.DrawText($"FPS: {Raylib.GetFPS()}", 20, 20, 10, Color.WHITE);
+				editor.Draw();
+				Raylib.DrawText($"Mouse Position: {Raylib.GetMousePosition()}", 0, 0, 12, Color.WHITE);
 			Raylib.EndDrawing();
 		}
+		InterfaceRenderer.UnloadTexture();
 		Raylib.CloseWindow();
 	}
 	/* Class Properties */
-	public static Texture2D BlockTexture { get { return Gfx[0].Texture.Value; }}
-	private static (string Path, Texture2D? Texture)[] Gfx = {
-		("data/gfx/rocks.png", null),
+	private static string[] _TexturePaths = {
+		"data/gfx/interface.png",
 	};
 	private const byte _Speed = 30;
 }
