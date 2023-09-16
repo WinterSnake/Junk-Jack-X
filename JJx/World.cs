@@ -100,7 +100,7 @@ public sealed class World
 		(ushort, ushort) size, (ushort, ushort) player, (ushort, ushort) spawn, Planet planet,
 		Season season, Gamemode gamemode, InitSize worldInitSize, InitSize skyInitSize, ushort[] borders,
 		Tile[,] blocks, Chest[] chests, Forge[] forges, Sign[] signs, Stable[] stables, Lab[] labs,
-		Shelf[] shelves, Plant[] plants, Lock[] locks, Entity[] entities
+		Shelf[] shelves, /*Plant[] plants,*/ Lock[] locks, Entity[] entities
 	)
 	{
 		this.Id = id;
@@ -124,7 +124,7 @@ public sealed class World
 		this.Stables.AddRange(stables);
 		this.Labs.AddRange(labs);
 		this.Shelves.AddRange(shelves);
-		this.Plants.AddRange(plants);
+		//this.Plants.AddRange(plants);
 		this.Locks.AddRange(locks);
 		this.Entities.AddRange(entities);
 	}
@@ -270,10 +270,12 @@ public sealed class World
 		/// Plants
 		using (var chunk = stream.NewChunk(ChunkType.WorldPlants))
 		{
-			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)this.Plants.Count, 0);
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)0, 0);
 			await chunk.WriteAsync(workingData, 0, 4);
-			foreach (var plant in this.Plants)
-				await plant.ToStream(chunk);
+			//Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)this.Plants.Count, 0);
+			//await chunk.WriteAsync(workingData, 0, 4);
+			//foreach (var plant in this.Plants)
+			//	await plant.ToStream(chunk);
 		}
 		/// =UNKNOWN=
 		using (var chunk = stream.NewChunk(ChunkType.WorldUnknown01))
@@ -522,9 +524,9 @@ public sealed class World
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
 		var plantCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
 		Console.WriteLine($"Plant Count: {plantCount}");
-		var plants = new Plant[plantCount];
-		for (var i = 0; i < plants.Length; ++i)
-			plants[i] = await Plant.FromStream(stream);
+		//var plants = new Plant[plantCount];
+		//for (var i = 0; i < plants.Length; ++i)
+		//	plants[i] = await Plant.FromStream(stream);
 		stream.Seek(stream.GetChunkSize(ChunkType.WorldPlants).Value - SIZEOF_TILECOUNT, SeekOrigin.Current);
 		/// =UNKNOWN=
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = UNKOWN Location: {stream.IsAtChunk(ChunkType.WorldUnknown01)} | Size: {stream.GetChunkSize(ChunkType.WorldUnknown01):X4}");
@@ -570,7 +572,7 @@ public sealed class World
 		return new World(
 			id, lastPlayed, version, name, author, worldSize, playerPos, spawnPos,
 			planet, season, gamemode, worldInitSize, skyInitSize, borders, blocks,
-			chests, forges, signs, stables, labs, shelves, plants, locks, entities
+			chests, forges, signs, stables, labs, shelves, /*plants,*/ locks, entities
 		);
 	}
 	/* Properties */
@@ -626,7 +628,7 @@ public sealed class World
 	public readonly List<Stable> Stables  = new List<Stable>();
 	public readonly List<Lab>    Labs     = new List<Lab>();
 	public readonly List<Shelf>  Shelves  = new List<Shelf>();
-	public readonly List<Plant>  Plants   = new List<Plant>();
+	//public readonly List<Plant>  Plants   = new List<Plant>();
 	public readonly List<Lock>   Locks    = new List<Lock>();
 	public readonly List<Entity> Entities = new List<Entity>();
 	/* Class Properties */
