@@ -41,4 +41,19 @@ public static class InterfaceRenderer
 		left = 1, top = 1, right = 1, bottom = 1,
 		layout = NPatchLayout.NPATCH_NINE_PATCH
 	};
+	public static readonly NPatchInfo BackgroundItems = new NPatchInfo {
+		source = new Rectangle(721, 250, 74, 123),
+		left = 2, top = 4, right = 2, bottom = 7,
+		layout = NPatchLayout.NPATCH_NINE_PATCH
+	};
+	public static readonly NPatchInfo IconArrowLeft = new NPatchInfo {
+		source = new Rectangle(298, 439, 20, 14),
+		left = 1, top = 1, right = 1, bottom = 1,
+		layout = NPatchLayout.NPATCH_NINE_PATCH
+	};
+	public static readonly NPatchInfo IconArrowRight = new NPatchInfo {
+		source = new Rectangle(319, 439, 20, 14),
+		left = 1, top = 1, right = 1, bottom = 1,
+		layout = NPatchLayout.NPATCH_NINE_PATCH
+	};
 }

@@ -14,9 +14,6 @@ internal sealed class PlayerEditor
 	/* Constructors */
 	public PlayerEditor()
 	{
-		this._ShowItemsButton = new NPatchButton(
-			_ChestClosedLocation, InterfaceRenderer.Texture, InterfaceRenderer.IconClosedChest
-		);
 		this._ShowItemsButton.OnClick(_ToggleItems);
 	}
 	/* Instance Methods */
@@ -26,6 +23,9 @@ internal sealed class PlayerEditor
 		/// Editor GUI
 		// Items
 		this._ShowItemsButton.Draw();
+		this._ShowItemsButton.Position = _ShowItems ? _ChestOpenedPosition : _ChestClosedPosition;
+		if (_ShowItems)
+			this._Items.Draw();
 	}
 	public void Update(float delta)
 	{
@@ -33,18 +33,24 @@ internal sealed class PlayerEditor
 		/// Editor Gui
 		// Items
 		this._ShowItemsButton.Update(delta);
+		if (_ShowItems)
+			this._Items.Update(delta);
 	}
 	private void _ToggleItems()
 	{
 		this._ShowItems = !_ShowItems;
-		this._ShowItemsButton.Position = _ShowItems ? _ChestOpenLocation : _ChestClosedLocation;
 		this._ShowItemsButton.NPatchSprite = _ShowItems ? InterfaceRenderer.IconOpenedChest : InterfaceRenderer.IconClosedChest;
 	}
 	/* Properties */
 	private bool _ShowItems = false;
+	private readonly NPatchButton _ShowItemsButton = new NPatchButton(_ChestClosedPosition, InterfaceRenderer.Texture, InterfaceRenderer.IconClosedChest);
+	private readonly ItemMenu _Items = new ItemMenu();
 	/* Class Properties */
-	private NPatchButton _ShowItemsButton;
 	// Editor GUI
-	private static readonly Rectangle _ChestOpenLocation = new Rectangle(Raylib.GetScreenWidth() - 32, 0, 64, 64);
-	private static readonly Rectangle _ChestClosedLocation = new Rectangle(Raylib.GetScreenWidth() - 32, 0, 64, 64);
+	private static Rectangle _ChestClosedPosition {
+		get { return new Rectangle(Raylib.GetScreenWidth() - 64, 0, 64, 64); }
+	}
+	private static Rectangle _ChestOpenedPosition {
+		get { return new Rectangle(Raylib.GetScreenWidth() - 64 - ItemMenu.Width, 0, 64, 64); }
+	}
 }

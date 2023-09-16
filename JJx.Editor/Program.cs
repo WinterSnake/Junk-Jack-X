@@ -19,10 +19,11 @@ internal static class Program
 		var player = await JJx.Player.Load(args[0]);
 		//var world = await JJx.World.Load(args[0]);
 		Raylib.SetConfigFlags(ConfigFlags.FLAG_WINDOW_RESIZABLE);
-		Raylib.InitWindow(1920, 1080, "Junk Jack X Editor");
+		Raylib.InitWindow(0, 0, "Junk Jack X Editor");
 		Raylib.SetTargetFPS(144);
 		// Load textures
 		InterfaceRenderer.InitTexture(_TexturePaths[0]);
+		ItemRenderer.InitTexture(_TexturePaths[1]);
 		// Main loop
 		var editor = new PlayerEditor();
 		while (!Raylib.WindowShouldClose())
@@ -35,11 +36,13 @@ internal static class Program
 			Raylib.EndDrawing();
 		}
 		InterfaceRenderer.UnloadTexture();
+		ItemRenderer.UnloadTexture();
 		Raylib.CloseWindow();
 	}
 	/* Class Properties */
 	private static string[] _TexturePaths = {
 		"data/gfx/interface.png",
+		"data/gfx/treasures.png",
 	};
 	private const byte _Speed = 30;
 }

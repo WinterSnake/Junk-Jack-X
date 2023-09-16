@@ -1,0 +1,34 @@
+/*
+    Junk Jack X Editor: Renderers
+    - Item
+
+    Written By: Ryan Smith
+*/
+using System;
+using Raylib_cs;
+using JJx;
+
+public static class ItemRenderer
+{
+    /* Static Methods */
+    public static void InitTexture(string path)
+    {
+        if (_Loaded)
+            return;
+        _Texture = Raylib.LoadTexture(path);
+        _Loaded = true;
+    }
+	public static void UnloadTexture()
+	{
+		if (!_Loaded)
+			return;
+        Raylib.UnloadTexture(Texture);
+        _Loaded = false;
+		_Texture = null;
+	}
+    /* Class Properties */
+    public static bool _Loaded { get; private set; } = false;
+    public static Texture2D Texture { get { return _Texture.Value; }}
+    private static Texture2D? _Texture = null;
+	// Mapping
+}
