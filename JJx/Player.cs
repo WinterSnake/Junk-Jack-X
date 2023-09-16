@@ -136,7 +136,7 @@ public sealed class Player
 	{
 		using var stream = await ArchiverStream.Reader(path);
 		if (stream.Type != ArchiverType.Player)
-			throw new ArgumentException($"Expected player stream, found {stream.Type}");
+			throw new ArgumentException($"Expected player stream, found {stream.Type} stream");
 		// DEBUG
 		#if (PRINT_CHUNKS)
 			Console.WriteLine(String.Join("\n", stream.GetChunkStrings()));

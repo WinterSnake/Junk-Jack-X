@@ -43,13 +43,15 @@ public sealed class Adventure
 	{
 		using var stream = await ArchiverStream.Writer(path, ArchiverType.Map);
 		var workingData = new byte[BUFFER_SIZE];
+		/// Info
+		/// Portals
 	}
 	/* Static Methods */
 	public static async Task<Adventure> Load(string path)
 	{
 		using var stream = await ArchiverStream.Reader(path);
 		if (stream.Type != ArchiverType.Adventure)
-			throw new ArgumentException($"Expected adventure stream, found {stream.Type}");
+			throw new ArgumentException($"Expected adventure stream, found {stream.Type} stream");
 		// DEBUG
 		#if (PRINT_CHUNKS)
 			Console.WriteLine(String.Join("\n", stream.GetChunkStrings()));
@@ -81,7 +83,7 @@ public sealed class Adventure
 		while (bytesRead < SIZEOF_AUTHOR)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_AUTHOR - bytesRead);
 		var author = Utilities.ByteConverter.GetString(new Span<byte>(workingData));
-
+		/// Portals
 		return new Adventure(id, lastPlayed, version, name, author);
 	}
 	/* Properties */
