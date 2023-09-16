@@ -203,7 +203,7 @@ public sealed class World
 		{
 			using (var chunk = stream.NewChunk(ChunkType.WorldFog, compressed: true))
 			{
-
+				// TODO: Implement
 			}
 		}
 		/// Time
@@ -284,7 +284,7 @@ public sealed class World
 			await chunk.WriteAsync(workingData, 0, 4);
 		}
 		/// =UNKNOWN=
-		using (var chunk = stream.NewChunk(ChunkType.WorldUnknown02))
+		using (var chunk = stream.NewChunk(ChunkType.WorldPlantLeafDecay))
 		{
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)0, 0);
 			await chunk.WriteAsync(workingData, 0, 4);
@@ -495,11 +495,9 @@ public sealed class World
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
 		var stableCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
-		Console.WriteLine($"Stable Count: {stableCount}");
 		var stables = new Stable[stableCount];
 		for (var i = 0; i < stables.Length; ++i)
 			stables[i] = await Stable.FromStream(stream);
-		stream.Seek(stream.GetChunkSize(ChunkType.WorldStables).Value - SIZEOF_TILECOUNT, SeekOrigin.Current);
 		/// Labs
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Labs Location: {stream.IsAtChunk(ChunkType.WorldLabs)} | Size: {stream.GetChunkSize(ChunkType.WorldLabs):X4}");
 		bytesRead = 0;
@@ -537,13 +535,13 @@ public sealed class World
 		Console.WriteLine($"Unknown 01 Count: {unknown01Count}");
 		stream.Seek(stream.GetChunkSize(ChunkType.WorldUnknown01).Value - SIZEOF_TILECOUNT, SeekOrigin.Current);
 		/// =UNKNOWN=
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = UNKOWN Location: {stream.IsAtChunk(ChunkType.WorldUnknown02)} | Size: {stream.GetChunkSize(ChunkType.WorldUnknown02):X4}");
+		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Leaf Decay Location: {stream.IsAtChunk(ChunkType.WorldPlantLeafDecay)} | Size: {stream.GetChunkSize(ChunkType.WorldPlantLeafDecay):X4}");
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
-		var unknown02Count = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
-		Console.WriteLine($"Unknown 02 Count: {unknown02Count}");
-		stream.Seek(stream.GetChunkSize(ChunkType.WorldUnknown02).Value - SIZEOF_TILECOUNT, SeekOrigin.Current);
+		var leafDecayCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
+		Console.WriteLine($"Leaf Decay Count: {leafDecayCount}");
+		stream.Seek(stream.GetChunkSize(ChunkType.WorldPlantLeafDecay).Value - SIZEOF_TILECOUNT, SeekOrigin.Current);
 		/// Locks
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Locks Location: {stream.IsAtChunk(ChunkType.WorldLocks)} | Size: {stream.GetChunkSize(ChunkType.WorldLocks):X4}");
 		bytesRead = 0;

@@ -24,35 +24,35 @@ namespace JJx;
 
 internal enum ChunkType : ushort
 {
-	Padding            = 0x0000,  // Used in Creative/Flat maps to fill 19th chunk
+	Padding             = 0x0000,  // Used in Creative/Flat maps to fill 19th chunk
 	// World
-	WorldInfo          = 0x0001,
-	WorldBlocks        = 0x0002,
-	WorldFog           = 0x0003,  // WorldManager.cpp line: 487
-	WorldBorders       = 0x0004,
-	WorldChests        = 0x0005,
-	WorldForges        = 0x0006,
-	WorldStables       = 0x0007,
-	WorldLabs          = 0x0008,
-	WorldSigns         = 0x0009,
-	WorldShelves       = 0x000A,
-	WorldPlants        = 0x000B,
-	WorldUnknown01     = 0x000C,  // Leave Decay (?)
-	WorldUnknown02     = 0x000D,
-	WorldLocks         = 0x000E,
-	WorldFluid         = 0x000F,
-	WorldCircuitry     = 0x0010,
-	WorldWeather       = 0x0011,
-	WorldTime          = 0x0012,
-	WorldEntities      = 0x0013,
+	WorldInfo           = 0x0001,
+	WorldBlocks         = 0x0002,
+	WorldFog            = 0x0003,  // WorldManager.cpp line: 487
+	WorldBorders        = 0x0004,
+	WorldChests         = 0x0005,
+	WorldForges         = 0x0006,
+	WorldStables        = 0x0007,
+	WorldLabs           = 0x0008,
+	WorldSigns          = 0x0009,
+	WorldShelves        = 0x000A,
+	WorldPlants         = 0x000B,
+	WorldUnknown01      = 0x000C,
+	WorldPlantLeafDecay = 0x000D,
+	WorldLocks          = 0x000E,
+	WorldFluid          = 0x000F,
+	WorldCircuitry      = 0x0010,
+	WorldWeather        = 0x0011,
+	WorldTime           = 0x0012,
+	WorldEntities       = 0x0013,
 	// Adventure
-	AdventurePortals   = 0x0014,
+	AdventurePortals    = 0x0014,
 	// Player
-	PlayerInfo         = 0x8000,
-	PlayerInventory    = 0x8001,
-	PlayerCraftbook    = 0x8002,
-	PlayerAchievements = 0x8003,
-	PlayerStatus       = 0x8004,
+	PlayerInfo          = 0x8000,
+	PlayerInventory     = 0x8001,
+	PlayerCraftbook     = 0x8002,
+	PlayerAchievements  = 0x8003,
+	PlayerStatus        = 0x8004,
 }
 
 internal sealed class Chunk
