@@ -24,35 +24,22 @@ namespace JJx;
 public sealed class Tile
 {
 	/* Constructors */
-	public Tile(ushort foregroundId = 0x00, ushort backgroundId = 0x00)
+	public Tile(ushort foregroundId = 0x0000, ushort backgroundId = 0x0000)
 	{
-		this.ForegroundId = (ushort)(foregroundId ^ 0x8000);
+		this.ForegroundId = foregroundId;
 		this.BackgroundId = backgroundId;
 		for (var i = 0; i < this.DecorationIds.Length; ++i)
 			this.DecorationIds[i] = 0x0000;
 	}
-	private Tile(ushort foregroundId, ushort backgroundId, ushort[] decorationIds, byte[] buffer)
+	private Tile(ushort foregroundId, ushort backgroundId, ushort[] decorationIds, ushort unknownId0, ushort unknownId1)
 	{
 		this._ForegroundId = foregroundId;
 		this.BackgroundId = backgroundId;
 		this.DecorationIds = decorationIds;
-		this._Block = buffer;
+		this.UnknownTilePart0 = unknownId0;
+		this.UnknownTilePart1 = unknownId1;
 	}
 	/* Instance Methods */
-	public override string ToString()
-	{
-		//return $""
-		var tile = $"Foreground: {this._ForegroundId:X4} | Background: {this.BackgroundId:X4} | Decorations: [";
-		for (var i = 0; i < this.DecorationIds.Length; ++ i)
-		{
-			tile += $"{this.DecorationIds[i]:X4}";
-			if (i < this.DecorationIds.Length - 1)
-				tile += ", ";
-			else
-				tile += "]";
-		}
-		return tile;
-	}
 	public (ushort id, bool background) GetDecoration(byte index)
 	{
 		var id = this.DecorationIds[index];
@@ -72,6 +59,8 @@ public sealed class Tile
 		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.BackgroundId,  2);
 		for (var i = 0; i < this.DecorationIds.Length; ++i)
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), this.DecorationIds[i],  4 + i * 2);
+		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.UnknownTilePart0, 12);
+		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.UnknownTilePart1, 14);
 		await stream.WriteAsync(workingData, 0, workingData.Length);
 	}
 	/* Static Methods */
@@ -86,7 +75,9 @@ public sealed class Tile
 		var decorationIds = new ushort[COUNT_DECORATIONS];
 		for (var i = 0; i < decorationIds.Length; ++i)
 			decorationIds[i] = Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 4 + i * 2);
-		return new Tile(foregroundId, backgroundId, decorationIds, workingData);
+		var unknownId0 = Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 12);
+		var unknownId1 = Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 14);
+		return new Tile(foregroundId, backgroundId, decorationIds, unknownId0, unknownId1);
 	}
 	/* Properties */
 	private ushort _ForegroundId;
@@ -96,7 +87,8 @@ public sealed class Tile
 	}
 	public ushort BackgroundId;
 	public readonly ushort[] DecorationIds = new ushort[COUNT_DECORATIONS];
-	public byte[] _Block;
+	public ushort UnknownTilePart0 = 0x0000;
+	public ushort UnknownTilePart1 = 0x0000;
 	/* Class Properties */
 	internal const byte SIZE = 16;
 	private const byte COUNT_DECORATIONS = 4;
