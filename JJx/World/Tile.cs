@@ -3,13 +3,13 @@
 	- Tile
 
 	Segment Breakdown:
-	-----------------------------------------------------------------------------
+	--------------------------------------------------------------------
 	Segment[0x0 : 0x1] = Foreground  | Length: 2 (0x2) | Type: uint16
 	Segment[0x2 : 0x3] = Background  | Length: 2 (0x2) | Type: uint16
 	Segment[0x4 : 0xB] = Decorations | Length: 8 (0x8) | Type: uint16[4]
 	Segment[0xC : 0xD] = UNKNOWN     | Length: 2 (0x2) | Type: uint16
 	Segment[0xE : 0xF] = UNKNOWN     | Length: 2 (0x2) | Type: uint16
-	-----------------------------------------------------------------------------
+	--------------------------------------------------------------------
 	Size: 16 (0x10)
 
 	Written By: Ryan Smith
