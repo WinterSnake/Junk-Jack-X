@@ -26,13 +26,13 @@ public sealed class Portal
 	/* Constructors */
 	public Portal(
 		Planet originPlanet, Planet destinationPlanet, (ushort, ushort)originPosition,
-		(ushort, ushort) destinationPlanet = (0xFFFF, 0xFFFF)
+		(ushort, ushort)? destinationPosition = null
 	)
 	{
 		this.OriginPlanet = originPlanet;
 		this.DestinationPlanet = destinationPlanet;
 		this.OriginPosition = originPosition;
-		this.DestinationPosition = (0xFFFF, 0xFFFF);
+		this.DestinationPosition = destinationPosition.HasValue ? destinationPosition.Value : ((ushort)0xFFFF, (ushort)0xFFFF);
 	}
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
@@ -58,9 +58,9 @@ public sealed class Portal
 		while (bytesRead < SIZE)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZE - bytesRead);
 		// Origin Planet
-		var originplanet      = (Planet)Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData), 0);
+		var originPlanet      = (Planet)Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData), 0);
 		// Destination Planet
-		var destinationplanet = (Planet)Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData), 4);
+		var destinationPlanet = (Planet)Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData), 4);
 		// Origin Position
 		var originPosition = (
 			Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData),  8),
@@ -71,7 +71,7 @@ public sealed class Portal
 			Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 12),
 			Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 14)
 		);
-		return new Portal();
+		return new Portal(originPlanet, destinationPlanet, originPosition, destinationPosition);
 	}
 	/* Properties */
 	public Planet OriginPlanet;
