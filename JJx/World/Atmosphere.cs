@@ -46,20 +46,19 @@ public enum Weather : byte
 
 public enum TimePhase : byte
 {
-	None      = 0x0,
-	Day       = 0x1,
-	Dusk      = 0x2,
-	Night     = 0x4,
-	Dawn      = 0x8,
-	PermNight = 0xF,
+	None  = 0x0,
+	Day   = 0x1,
+	Dusk  = 0x2,
+	Night = 0x4,
+	Dawn  = 0x8,
 }
 
 public enum InitSize : byte
 {
-	Tiny = 0x0,  // Size:  512 * 128
-	Small,       // Size:  768 * 256
-	Normal,      // Size: 1024 * 256
-	Large,       // Size: 2048 * 384
-	Huge,        // Size: 4096 * 512
-	Custom,
+	Tiny   = 0x0,  // Size:  512 * 128
+	Small  = 0x1,  // Size:  768 * 256
+	Normal = 0x2,  // Size: 1024 * 256
+	Large  = 0x3,  // Size: 2048 * 384
+	Huge   = 0x4,  // Size: 4096 * 512
+	Custom = 0x5,
 }
