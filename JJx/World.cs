@@ -99,8 +99,9 @@ public sealed class World
 		Guid id, DateTime lastPlayed, Version version, string name, string author,
 		(ushort, ushort) size, (ushort, ushort) player, (ushort, ushort) spawn, Planet planet,
 		Season season, Gamemode gamemode, InitSize worldInitSize, InitSize skyInitSize, string language,
-		ushort[] borders, Tile[,] blocks, Chest[] chests, Forge[] forges, Sign[] signs, Stable[] stables,
-		Lab[] labs, Shelf[] shelves, Fruit[] fruits, Lock[] locks, Entity[] entities
+		ushort[] borders, Tile[,] blocks, uint ticks, TimePhase time, float poissonSum, Weather weather,
+		byte poissonSkipped, Chest[] chests, Forge[] forges, Sign[] signs, Stable[] stables, Lab[] labs,
+		Shelf[] shelves, Fruit[] fruits, Lock[] locks, Entity[] entities
 	)
 	{
 		this.Id = id;
@@ -119,6 +120,11 @@ public sealed class World
 		this.Language = language;
 		this.Borders = borders;
 		this.Blocks = blocks;
+		this.Ticks = ticks;
+		this.Time = time;
+		this.PoissonSum = poissonSum;
+		this.Weather = weather;
+		this.PoissonSkipped = poissonSkipped;
 		this.Chests.AddRange(chests);
 		this.Forges.AddRange(forges);
 		this.Signs.AddRange(signs);
@@ -205,20 +211,28 @@ public sealed class World
 		{
 			using (var chunk = stream.NewChunk(ChunkType.WorldFog, compressed: true))
 			{
-				// TODO: Implement
 			}
 		}
 		/// Time
 		workingData = new byte[BUFFER_SIZE];
 		using (var chunk = stream.NewChunk(ChunkType.WorldTime))
 		{
-			Utilities.ByteConverter.Write(new Span<byte>(workingData), (ulong)0, 0);
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Ticks,      0);
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), (byte)this.Time, 4);
+			// =UNKNOWN=
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), (byte)0x7F,      5);
+			// Padding
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), (ushort)0x0,     6);
 			await chunk.WriteAsync(workingData, 0, SIZEOF_TIME);
 		}
 		/// Weather
 		using (var chunk = stream.NewChunk(ChunkType.WorldWeather))
 		{
-			Utilities.ByteConverter.Write(new Span<byte>(workingData), (ulong)0, 0);
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), this.PoissonSum,     0);
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), (byte)this.Weather,  4);
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), this.PoissonSkipped, 5);
+			// Padding
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)0,             6);
 			await chunk.WriteAsync(workingData, 0, SIZEOF_WEATHER);
 		}
 		/// Chests
@@ -467,11 +481,16 @@ public sealed class World
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TIME)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TIME - bytesRead);
+		var ticks = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData), 0);
+		var phase = (TimePhase)Utilities.ByteConverter.GetUInt8(new Span<byte>(workingData), 4);
 		/// Weather
 		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Weather Location: {stream.IsAtChunk(ChunkType.WorldWeather)} | Size: {stream.GetChunkSize(ChunkType.WorldWeather):X4}");
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_WEATHER)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_WEATHER - bytesRead);
+		var poissonSum     = Utilities.ByteConverter.GetFloat32(new Span<byte>(workingData),        0);
+		var weather        = (Weather)Utilities.ByteConverter.GetUInt8(new Span<byte>(workingData), 4);
+		var poissonSkipped = Utilities.ByteConverter.GetUInt8(new Span<byte>(workingData),          5);
 		/// Chests
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TILECOUNT)
@@ -573,7 +592,8 @@ public sealed class World
 		return new World(
 			id, lastPlayed, version, name, author, worldSize, playerPos, spawnPos,
 			planet, season, gamemode, worldInitSize, skyInitSize, language, borders, blocks,
-			chests, forges, signs, stables, labs, shelves, fruits, locks, entities
+			ticks, phase, poissonSum, weather, poissonSkipped, chests, forges, signs, stables,
+			labs, shelves, fruits, locks, entities
 		);
 	}
 	/* Properties */
@@ -622,7 +642,12 @@ public sealed class World
 		https://stackoverflow.com/questions/6111049/2d-array-property
 	*/
 	// Time
+	public uint Ticks = 0;
+	public TimePhase Time = TimePhase.Day;
 	// Weather
+	public float PoissonSum = 0.0f;
+	public Weather Weather = Weather.None;
+	public byte PoissonSkipped = 0;
 	// Containers
 	public readonly List<Chest>  Chests   = new List<Chest>();
 	public readonly List<Forge>  Forges   = new List<Forge>();

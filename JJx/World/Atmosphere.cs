@@ -23,7 +23,7 @@ public enum Planet : uint
 	Mykon  = 0x00000200,
 	Umbra  = 0x00000400,
 	Tor    = 0x00000800,
-	All    = Terra | Seth | Alba | Xeno | Magmar | Cryo | Yuca | Lilith | Thetis | Mykon | Umbra | Tor
+	All    = Terra | Seth | Alba | Xeno | Magmar | Cryo | Yuca | Lilith | Thetis | Mykon | Umbra | Tor,
 }
 
 [Flags]
@@ -33,7 +33,25 @@ public enum Season : byte
 	Summer = 0x2,
 	Autumn = 0x4,
 	Winter = 0x8,
-	None   = 0xF
+	None   = 0xF,
+}
+
+public enum Weather : byte
+{
+	None     = 0x0,
+	Rain     = 0x1,
+	Snow     = 0x2,
+	AcidRain = 0x3,
+}
+
+public enum TimePhase : byte
+{
+	None      = 0x0,
+	Day       = 0x1,
+	Dusk      = 0x2,
+	Night     = 0x4,
+	Dawn      = 0x8,
+	PermNight = 0xF,
 }
 
 public enum InitSize : byte
@@ -43,5 +61,5 @@ public enum InitSize : byte
 	Normal,      // Size: 1024 * 256
 	Large,       // Size: 2048 * 384
 	Huge,        // Size: 4096 * 512
-	Custom
+	Custom,
 }

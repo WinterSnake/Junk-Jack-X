@@ -55,6 +55,17 @@ internal static class ByteConverter
 			(bytes[offset + 0] <<  0)
 		);
 	}
+	public static float GetFloat32(ReadOnlySpan<byte> bytes, int offset = 0)
+	{
+		if (bytes.Length < offset + 4) throw new IndexOutOfRangeException();
+		int flt = (int)(
+			(bytes[offset + 3] << 24) |
+			(bytes[offset + 2] << 16) |
+			(bytes[offset + 1] <<  8) |
+			(bytes[offset + 0] <<  0)
+		);
+		unsafe { return *(float*)&flt; }
+	}
 	public static string GetString(ReadOnlySpan<byte> bytes, int offset = 0, int length = 0)
 	{
 		// Length Specific
@@ -115,6 +126,16 @@ internal static class ByteConverter
 		bytes[offset + 2] = (byte)((@value & 0x0000000000FF0000) >> 16);
 		bytes[offset + 1] = (byte)((@value & 0x000000000000FF00) >>  8);
 		bytes[offset + 0] = (byte)((@value & 0x00000000000000FF) >>  0);
+	}
+	public static void Write(Span<byte> bytes, float @value, int offset = 0)
+	{
+		if (bytes.Length < offset + 4) throw new IndexOutOfRangeException();
+		int _int;
+		unsafe { _int = *(int*)&@value; }
+		bytes[offset + 3] = (byte)((_int & 0xFF000000) >> 24);
+		bytes[offset + 2] = (byte)((_int & 0x00FF0000) >> 16);
+		bytes[offset + 1] = (byte)((_int & 0x0000FF00) >>  8);
+		bytes[offset + 0] = (byte)((_int & 0x000000FF) >>  0);
 	}
 	public static void Write(Span<byte> bytes, string @value, int offset = 0, int length = 0)
 	{
