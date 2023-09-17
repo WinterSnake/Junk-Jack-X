@@ -4,26 +4,25 @@
 	Segment Breakdown:
 	-----------------------------------------------------------------------------------------------------------------------
 	:<Info>
-	Segment[0xF0  :  0xFF] = UUID                   | Length: 16  (0x10) | Type: uuid
-	Segment[0x100 : 0x103] = Last Played Timestamp  | Length: 4   (0x4)  | Type: DateTime[uint32]
-	Segment[0x104 : 0x107] = Game Version           | Length: 4   (0x4)  | Type: uint32             | Parent: JJx.Version
-	Segment[0x108 : 0x127] = Name                   | Length: 32  (0x20) | Type: char*
-	Segment[0x128 : 0x137] = Author                 | Length: 16  (0x10) | Type: char*
-	Segment[0x138 : 0x139] = World.Width            | Length: 2   (0x2)  | Type: uint16             | Parent: Blocks.Width
-	Segment[0x13A : 0x13B] = World.Height           | Length: 2   (0x2)  | Type: uint16             | Parent: Blocks.Height
-	Segment[0x13C : 0x13D] = Player.X               | Length: 2   (0x2)  | Type: uint16             | Parent: Player.X
-	Segment[0x13E : 0x13F] = Player.Y               | Length: 2   (0x2)  | Type: uint16             | Parent: Player.Y
-	Segment[0x140 : 0x141] = Spawn.X                | Length: 2   (0x2)  | Type: uint16             | Parent: Spawn.X
-	Segment[0x142 : 0x143] = Spawn.Y                | Length: 2   (0x2)  | Type: uint16             | Parent: Spawn.Y
-	Segment[0x144 : 0x147] = Planet                 | Length: 4   (0x4)  | Type: enum flag[uint32]
-	Segment[0x148]         = Season                 | Length: 1   (0x1)  | Type: enum[uint8]        | Parent: Season
-	Segment[0x149]         = Gamemode               | Length: 1   (0x1)  | Type: enum[uint8]        | Parent: Gamemode
-	Segment[0x14A]         = World Size             | Length: 1   (0x1)  | Type: enum[uint8]        | Parent: InitSize
-	Segment[0x14B]         = Sky Size               | Length: 1   (0x1)  | Type: enum[uint8]        | Parent: InitSize
-	Segment[0x14C : 0x14F] = Language(?)            | Length: 4   (0x4)  | Type: char[4] (?)
-	Segment[0x150 : 0x1CF] = Padding                | Length: 128 (0x80) | Type: uint32[32] = {0}
+	Segment[0xF0  :  0xFF] = UUID                  | Length: 16  (0x10) | Type: uuid
+	Segment[0x100 : 0x103] = Last Played Timestamp | Length: 4   (0x4)  | Type: DateTime[uint32]
+	Segment[0x104 : 0x107] = Game Version          | Length: 4   (0x4)  | Type: uint32             | Parent: JJx.Version
+	Segment[0x108 : 0x127] = Name                  | Length: 32  (0x20) | Type: char*
+	Segment[0x128 : 0x137] = Author                | Length: 16  (0x10) | Type: char*
+	Segment[0x138 : 0x139] = World.Width           | Length: 2   (0x2)  | Type: uint16             | Parent: Blocks.Width
+	Segment[0x13A : 0x13B] = World.Height          | Length: 2   (0x2)  | Type: uint16             | Parent: Blocks.Height
+	Segment[0x13C : 0x13D] = Player.X              | Length: 2   (0x2)  | Type: uint16             | Parent: Player.X
+	Segment[0x13E : 0x13F] = Player.Y              | Length: 2   (0x2)  | Type: uint16             | Parent: Player.Y
+	Segment[0x140 : 0x141] = Spawn.X               | Length: 2   (0x2)  | Type: uint16             | Parent: Spawn.X
+	Segment[0x142 : 0x143] = Spawn.Y               | Length: 2   (0x2)  | Type: uint16             | Parent: Spawn.Y
+	Segment[0x144 : 0x147] = Planet                | Length: 4   (0x4)  | Type: enum flag[uint32]
+	Segment[0x148]         = Season                | Length: 1   (0x1)  | Type: enum[uint8]        | Parent: Season
+	Segment[0x149]         = Gamemode              | Length: 1   (0x1)  | Type: enum[uint8]        | Parent: Gamemode
+	Segment[0x14A]         = World Size            | Length: 1   (0x1)  | Type: enum[uint8]        | Parent: InitSize
+	Segment[0x14B]         = Sky Size              | Length: 1   (0x1)  | Type: enum[uint8]        | Parent: InitSize
+	Segment[0x14C : 0x14F] = Language              | Length: 4   (0x4)  | Type: char[4]
+	Segment[0x150 : 0x1CF] = Padding               | Length: 128 (0x80) | Type: uint32[32] = {0}
 	:<Border>
-
 	-----------------------------------------------------------------------------------------------------------------------
 
 	Written By: Ryan Smith
@@ -40,7 +39,8 @@ public enum Gamemode : byte
 {
 	Survival = 0x0,
 	Creative,
-	Flat
+	Flat,
+	Adventure
 }
 
 public sealed class World
@@ -98,9 +98,9 @@ public sealed class World
 	private World(
 		Guid id, DateTime lastPlayed, Version version, string name, string author,
 		(ushort, ushort) size, (ushort, ushort) player, (ushort, ushort) spawn, Planet planet,
-		Season season, Gamemode gamemode, InitSize worldInitSize, InitSize skyInitSize, ushort[] borders,
-		Tile[,] blocks, Chest[] chests, Forge[] forges, Sign[] signs, Stable[] stables, Lab[] labs,
-		Shelf[] shelves, /*Plant[] plants,*/ Fruit[] fruits, Lock[] locks, Entity[] entities
+		Season season, Gamemode gamemode, InitSize worldInitSize, InitSize skyInitSize, string language,
+		ushort[] borders, Tile[,] blocks, Chest[] chests, Forge[] forges, Sign[] signs, Stable[] stables,
+		Lab[] labs, Shelf[] shelves, Fruit[] fruits, Lock[] locks, Entity[] entities
 	)
 	{
 		this.Id = id;
@@ -116,6 +116,7 @@ public sealed class World
 		this.Gamemode = gamemode;
 		this.WorldInitSize = worldInitSize;
 		this.SkyInitSize = skyInitSize;
+		this.Language = language;
 		this.Borders = borders;
 		this.Blocks = blocks;
 		this.Chests.AddRange(chests);
@@ -173,8 +174,8 @@ public sealed class World
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (byte)this.WorldInitSize, 18);
 			// Sky Init Size
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (byte)this.SkyInitSize, 19);
-			// =UNKNOWN=
-			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)0, 20);
+			// Language
+			Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Language, offset: 20, length: SIZEOF_LANGUAGE);
 			await chunk.WriteAsync(workingData, 0, 24);
 			// Padding
 			workingData = new byte[SIZEOF_PADDING];
@@ -212,19 +213,19 @@ public sealed class World
 		using (var chunk = stream.NewChunk(ChunkType.WorldTime))
 		{
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (ulong)0, 0);
-			await chunk.WriteAsync(workingData, 0, 8);
+			await chunk.WriteAsync(workingData, 0, SIZEOF_TIME);
 		}
 		/// Weather
 		using (var chunk = stream.NewChunk(ChunkType.WorldWeather))
 		{
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (ulong)0, 0);
-			await chunk.WriteAsync(workingData, 0, 8);
+			await chunk.WriteAsync(workingData, 0, SIZEOF_WEATHER);
 		}
 		/// Chests
 		using (var chunk = stream.NewChunk(ChunkType.WorldChests))
 		{
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)this.Chests.Count, 0);
-			await chunk.WriteAsync(workingData, 0, 4);
+			await chunk.WriteAsync(workingData, 0, SIZEOF_TILECOUNT);
 			foreach (var chest in this.Chests)
 				await chest.ToStream(chunk);
 		}
@@ -232,7 +233,7 @@ public sealed class World
 		using (var chunk = stream.NewChunk(ChunkType.WorldForges))
 		{
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)this.Forges.Count, 0);
-			await chunk.WriteAsync(workingData, 0, 4);
+			await chunk.WriteAsync(workingData, 0, SIZEOF_TILECOUNT);
 			foreach (var forge in this.Forges)
 				await forge.ToStream(chunk);
 		}
@@ -240,7 +241,7 @@ public sealed class World
 		using (var chunk = stream.NewChunk(ChunkType.WorldSigns))
 		{
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)this.Signs.Count, 0);
-			await chunk.WriteAsync(workingData, 0, 4);
+			await chunk.WriteAsync(workingData, 0, SIZEOF_TILECOUNT);
 			foreach (var sign in this.Signs)
 				await sign.ToStream(chunk);
 		}
@@ -248,7 +249,7 @@ public sealed class World
 		using (var chunk = stream.NewChunk(ChunkType.WorldStables))
 		{
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)this.Stables.Count, 0);
-			await chunk.WriteAsync(workingData, 0, 4);
+			await chunk.WriteAsync(workingData, 0, SIZEOF_TILECOUNT);
 			foreach (var stable in this.Stables)
 				await stable.ToStream(chunk);
 		}
@@ -256,7 +257,7 @@ public sealed class World
 		using (var chunk = stream.NewChunk(ChunkType.WorldLabs))
 		{
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)this.Labs.Count, 0);
-			await chunk.WriteAsync(workingData, 0, 4);
+			await chunk.WriteAsync(workingData, 0, SIZEOF_TILECOUNT);
 			foreach (var lab in this.Labs)
 				await lab.ToStream(chunk);
 		}
@@ -264,7 +265,7 @@ public sealed class World
 		using (var chunk = stream.NewChunk(ChunkType.WorldShelves))
 		{
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)this.Shelves.Count, 0);
-			await chunk.WriteAsync(workingData, 0, 4);
+			await chunk.WriteAsync(workingData, 0, SIZEOF_TILECOUNT);
 			foreach (var shelf in this.Shelves)
 				await shelf.ToStream(chunk);
 		}
@@ -272,7 +273,7 @@ public sealed class World
 		using (var chunk = stream.NewChunk(ChunkType.WorldPlants))
 		{
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)0, 0);
-			await chunk.WriteAsync(workingData, 0, 4);
+			await chunk.WriteAsync(workingData, 0, SIZEOF_TILECOUNT);
 			//Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)this.Plants.Count, 0);
 			//await chunk.WriteAsync(workingData, 0, 4);
 			//foreach (var plant in this.Plants)
@@ -282,7 +283,7 @@ public sealed class World
 		using (var chunk = stream.NewChunk(ChunkType.WorldPlantFruits))
 		{
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)0, 0);
-			await chunk.WriteAsync(workingData, 0, 4);
+			await chunk.WriteAsync(workingData, 0, SIZEOF_TILECOUNT);
 			foreach (var fruit in this.Fruits)
 				await fruit.ToStream(chunk);
 		}
@@ -290,7 +291,7 @@ public sealed class World
 		using (var chunk = stream.NewChunk(ChunkType.WorldPlantDecay))
 		{
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)0, 0);
-			await chunk.WriteAsync(workingData, 0, 4);
+			await chunk.WriteAsync(workingData, 0, SIZEOF_TILECOUNT);
 		}
 		/// Locks
 		using (var chunk = stream.NewChunk(ChunkType.WorldLocks))
@@ -304,20 +305,20 @@ public sealed class World
 		using (var chunk = stream.NewChunk(ChunkType.WorldFluid))
 		{
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (ulong)0, 0);
-			await chunk.WriteAsync(workingData, 0, 8);
+			await chunk.WriteAsync(workingData, 0, SIZEOF_FLUID);
 		}
 		/// Circuitry
 		using (var chunk = stream.NewChunk(ChunkType.WorldCircuitry))
 		{
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (ulong)0, 0);
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (ulong)0, 0);
-			await chunk.WriteAsync(workingData, 0, 16);
+			await chunk.WriteAsync(workingData, 0, SIZEOF_CIRCUITRY);
 		}
 		/// Entities
 		using (var chunk = stream.NewChunk(ChunkType.WorldEntities))
 		{
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)this.Entities.Count, 0);
-			await chunk.WriteAsync(workingData, 0, 4);
+			await chunk.WriteAsync(workingData, 0, SIZEOF_TILECOUNT);
 			foreach (var entity in this.Entities)
 				await entity.ToStream(chunk);
 		}
@@ -416,8 +417,11 @@ public sealed class World
 		var worldInitSize = (InitSize)((byte)stream.ReadByte());
 		// Sky Init Size
 		var skyInitSize = (InitSize)((byte)stream.ReadByte());
-		// =UNKNOWN=
-		stream.Seek(4, SeekOrigin.Current);
+		// Language
+		bytesRead = 0;
+		while (bytesRead < SIZEOF_LANGUAGE)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_LANGUAGE - bytesRead);
+		var language = Utilities.ByteConverter.GetString(new Span<byte>(workingData));
 		// Padding
 		stream.Seek(SIZEOF_PADDING, SeekOrigin.Current);
 		/// Border
@@ -493,7 +497,6 @@ public sealed class World
 		for (var i = 0; i < signs.Length; ++i)
 			signs[i] = await Sign.FromStream(stream);
 		/// Stables
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Stables Location: {stream.IsAtChunk(ChunkType.WorldStables)} | Size: {stream.GetChunkSize(ChunkType.WorldStables):X4}");
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
@@ -502,7 +505,6 @@ public sealed class World
 		for (var i = 0; i < stables.Length; ++i)
 			stables[i] = await Stable.FromStream(stream);
 		/// Labs
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Labs Location: {stream.IsAtChunk(ChunkType.WorldLabs)} | Size: {stream.GetChunkSize(ChunkType.WorldLabs):X4}");
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
@@ -532,7 +534,6 @@ public sealed class World
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
 		var fruitCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
-		Console.WriteLine($"Fruit Count: {fruitCount}");
 		var fruits = new Fruit[fruitCount];
 		for (var i = 0; i < fruits.Length; ++i)
 			fruits[i] = await Fruit.FromStream(stream);
@@ -571,8 +572,8 @@ public sealed class World
 
 		return new World(
 			id, lastPlayed, version, name, author, worldSize, playerPos, spawnPos,
-			planet, season, gamemode, worldInitSize, skyInitSize, borders, blocks,
-			chests, forges, signs, stables, labs, shelves, /*plants,*/fruits, locks, entities
+			planet, season, gamemode, worldInitSize, skyInitSize, language, borders, blocks,
+			chests, forges, signs, stables, labs, shelves, fruits, locks, entities
 		);
 	}
 	/* Properties */
@@ -606,6 +607,7 @@ public sealed class World
 	public Gamemode Gamemode;
 	public InitSize WorldInitSize;
 	public InitSize SkyInitSize;
+	public readonly string Language = "en";
 	// Border
 	public ushort[] Borders { get; private set; }
 	// Blocks
@@ -641,8 +643,11 @@ public sealed class World
 	private const byte SIZEOF_AUTHOR         =  16;
 	private const byte SIZEOF_POSITIONS      = 2 * 6;  // World.Width, World.Height, Player.X, Player.Y, Spawn.X, Spawn.Y
 	private const byte SIZEOF_PLANET         =   4;
+	private const byte SIZEOF_LANGUAGE       =   4;
 	private const byte SIZEOF_PADDING        = 128;
 	private const byte SIZEOF_TIME           =   8;
 	private const byte SIZEOF_WEATHER        =   8;
 	private const byte SIZEOF_TILECOUNT      =   4;
+	private const byte SIZEOF_FLUID          =   8;
+	private const byte SIZEOF_CIRCUITRY      =  16;
 }
