@@ -4,11 +4,11 @@
 	Segment Breakdown:
 	------------------------------------------------------------------------------------------------------------------------
 	:<Item>
-	Segment[0x0 : 0x3] = Modifier    | Length: 4  (0x04) | Type: uint32
-	Segment[0x4 : 0x5] = Id          | Length: 2  (0x02) | Type: uint16
-	Segment[0x6 : 0x7] = Count       | Length: 2  (0x02) | Type: uint16
-	Segment[0x8 : 0x9] = Durabiltiy  | Length: 2  (0x02) | Type: uint16
-	Segment[0xA : 0xB] = Render Icon | Length: 2  (0x02) | Type: uint16
+	Segment[0x0 : 0x3] = Modifier    | Length: 4 (0x4) | Type: uint32
+	Segment[0x4 : 0x5] = Id          | Length: 2 (0x2) | Type: uint16
+	Segment[0x6 : 0x7] = Count       | Length: 2 (0x2) | Type: uint16
+	Segment[0x8 : 0x9] = Durabiltiy  | Length: 2 (0x2) | Type: uint16
+	Segment[0xA : 0xB] = Render Icon | Length: 2 (0x2) | Type: uint16
 	------------------------------------------------------------------------------------------------------------------------
 	Length: 12 (0xC)
 

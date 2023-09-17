@@ -8,7 +8,7 @@
 	Segment[0x0 : 0x3] = Magic       | Length: 2 (0x2) | Type: char[4]
 	Segment[0x4 : 0x5] = File Type   | Length: 2 (0x2) | Type: enum[uint16]
 	Segment[0x6 : 0x7] = Chunk Count | Length: 2 (0x2) | Type: uint16
-	Segment[0x8 : 0xC] = UNKNOWN     | Length: 4 (0x4) | Type: ???
+	Segment[0x8 : 0xC] = Padding     | Length: 4 (0x4) | Type: uint32
 	------------------------------------------------------------------------------------------------------------------------
 	Size: 12 (0xC)
 
@@ -46,7 +46,7 @@ internal sealed class ArchiverStream : FileStream
 			// Write Chunk Count
 			var chunkCount = (ushort)this._WriteChunks!.Count;
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), chunkCount, 0);
-			// Add UNKNOWN | Padding
+			// Padding
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)0, 2);
 			this.Write(workingData, 0, workingData.Length);
 			// Calculate Origin
@@ -135,7 +135,7 @@ internal sealed class ArchiverStream : FileStream
 			else if (headerId == 2)
 				reader.Type = ArchiverType.Adventure;
 		}
-		// =UNKNOWN=
+		// Padding
 		reader.Seek(4, SeekOrigin.Current);
 		// Chunk
 		var chunks = new Chunk[chunkCount];

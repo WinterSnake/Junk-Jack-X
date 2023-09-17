@@ -3,8 +3,18 @@
 	- Stable
 
 	Segment Breakdown:
-	--------------------------------
-	--------------------------------
+	-----------------------------------------------------------------------------------
+	:<Stable>
+	Segment[0x0  :  0x1] = X Position | Length: 2 (0x2) | Type: uint16
+	Segment[0x2  :  0x3] = Y Position | Length: 2 (0x2) | Type: uint16
+	Segment[0x16 : 0x17] = Padding    | Length: 2 (0x2) | Type: uint16 | 4 + 3 * Animal
+
+	:<Animal>
+	Segment[0x0 : 0x1] = Id           | Length: 2 (0x2) | Type: uint16
+	Segment[0x2 : 0x3] = Data         | Length: 2 (0x2) | Type: uint16
+	Segment[0x5 : 0x6] = Feed         | Length: 2 (0x2) | Type: uint16
+	-----------------------------------------------------------------------------------
+	Size: 6
 
 	Written By: Ryan Smith
 */

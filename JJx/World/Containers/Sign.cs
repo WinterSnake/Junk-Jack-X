@@ -7,7 +7,7 @@
 	Segment[0x0 :    0x1] = X Position      | Length: 2  (0x02) | Type: uint16
 	Segment[0x2 :    0x3] = Y Position      | Length: 2  (0x02) | Type: uint16
 	Segment[0x4 :    0x5] = Text Size       | Length: 2  (0x02) | Type: uint16
-	Segment[0x6 : {size}] = Text            | Length: {size}    | Type: char*
+	Segment[0x6 : {size}] = Text            | Length:    {size} | Type: char*
 	--------------------------------------------------------------------------
 	Size: 6 + {size}
 

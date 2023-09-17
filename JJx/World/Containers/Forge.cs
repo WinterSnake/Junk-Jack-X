@@ -4,8 +4,8 @@
 
 	Segment Breakdown:
 	------------------------------------------------------------------------
-	Segment[0x0 : 0x1] = X Position | Length: 2  (0x2) | Type: uint16
-	Segment[0x2 : 0x3] = Y Position | Length: 2  (0x2) | Type: uint16
+	Segment[0x0 : 0x1] = X Position | Length:  2 (0x2) | Type: uint16
+	Segment[0x2 : 0x3] = Y Position | Length:  2 (0x2) | Type: uint16
 	Segment[0x4 : 0xF] = UNKNOWN    | Length: 12 (0xC) | Type: Forge::Status
 	------------------------------------------------------------------------
 	Size: 16 (0xF)

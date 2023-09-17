@@ -3,12 +3,12 @@
 	- Entity
 
 	Segment Breakdown:
-	-----------------------------------------------------------------------
-	Segment[0x0 : 0x1] = X Position | Length: 2  (0x02) | Type: uint16
-	Segment[0x2 : 0x3] = Y Position | Length: 2  (0x02) | Type: uint16
-	Segment[0x4]       = Type       | Length: 1  (0x01) | Type: enum[uint8]
-	Segment[0x5 : 0x6] = Id         | Length: 2  (0x02) | Type: uint16
-	-----------------------------------------------------------------------
+	---------------------------------------------------------------------
+	Segment[0x0 : 0x1] = X Position | Length: 2 (0x2) | Type: uint16
+	Segment[0x2 : 0x3] = Y Position | Length: 2 (0x2) | Type: uint16
+	Segment[0x4]       = Type       | Length: 1 (0x1) | Type: enum[uint8]
+	Segment[0x5 : 0x6] = Id         | Length: 2 (0x2) | Type: uint16
+	---------------------------------------------------------------------
 	Size: 7 (0x7)
 
 	Written By: Ryan Smith
