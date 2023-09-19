@@ -42,6 +42,7 @@ internal sealed class PlayerEditor
 		this._ShowItemsButton.NPatchSprite = _ShowItems ? InterfaceRenderer.IconOpenedChest : InterfaceRenderer.IconClosedChest;
 	}
 	/* Properties */
+	public JJx.Player ActivePlayer;
 	private bool _ShowItems = false;
 	private readonly NPatchButton _ShowItemsButton = new NPatchButton(_ChestClosedPosition, InterfaceRenderer.Texture, InterfaceRenderer.IconClosedChest);
 	private readonly ItemMenu _Items = new ItemMenu();
