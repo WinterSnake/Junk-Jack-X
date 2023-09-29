@@ -28,12 +28,8 @@ public class NPatchButton
 	{
 		var mouseVector = Raylib.GetMousePosition();
 		if (
-				Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT) && (
-					mouseVector.X >= this.Position.x &&
-					mouseVector.Y >= this.Position.y &&
-					mouseVector.X <= this.Position.x + this.Position.width &&
-					mouseVector.Y <= this.Position.y + this.Position.height
-				)
+			Raylib.CheckCollisionPointRec(mouseVector, this.Position) &&
+			Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT)
 		)
 			this._Action();
 	}
