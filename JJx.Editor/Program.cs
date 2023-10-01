@@ -29,23 +29,26 @@ internal static class Program
 		// Load textures
 		InterfaceRenderer.InitTexture(_TexturePaths[0]);
 		ItemRenderer.InitTexture(_TexturePaths[1]);
+		Program._PlayerEditor = new PlayerEditor();
+		Program._WorldEditor = new WorldEditor();
 		// Main loop
 		while (!Raylib.WindowShouldClose())
 		{
+			var delta = Raylib.GetFrameTime();
 			// Update
 			switch (_CurrentScreen)
 			{
-				case Screen.Main:
-				{
-
-				} break;
 				case Screen.Player:
 				{
-					_PlayerEditor.Update(0.0f);
+					_PlayerEditor.Update(delta);
 				} break;
 				case Screen.World:
 				{
-					_WorldEditor.Update(0.0f);
+					_WorldEditor.Update(delta);
+				} break;
+				default:
+				{
+
 				} break;
 			}
 			// Drawing
@@ -53,10 +56,6 @@ internal static class Program
 			Raylib.BeginDrawing();
 				switch (_CurrentScreen)
 				{
-					case Screen.Main:
-					{
-
-					} break;
 					case Screen.Player:
 					{
 						_PlayerEditor.Draw();
@@ -64,6 +63,10 @@ internal static class Program
 					case Screen.World:
 					{
 						_WorldEditor.Draw();
+					} break;
+					default:
+					{
+
 					} break;
 				}
 			Raylib.EndDrawing();
@@ -73,9 +76,9 @@ internal static class Program
 		Raylib.CloseWindow();
 	}
 	/* Class Properties */
-	private static Screen _CurrentScreen = Screen.Main;
-	private static PlayerEditor _PlayerEditor = null;
-	private static WorldEditor _WorldEditor = null;
+	private static Screen _CurrentScreen = Screen.Player;
+	private static PlayerEditor _PlayerEditor;
+	private static WorldEditor _WorldEditor;
 	private static string[] _TexturePaths = {
 		"data/gfx/interface.png",
 		"data/gfx/treasures.png",
