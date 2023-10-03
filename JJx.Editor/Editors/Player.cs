@@ -46,7 +46,8 @@ internal sealed class PlayerEditor
 	);
 	//private readonly ItemMenu _Items = new ItemMenu();
 	/* Class Properties */
-	// Editor GUI
+	public JJx.Player ActivePlayer = null;
+	/// GUI
 	private static Rectangle _ChestClosedPosition {
 		get { return new Rectangle(Raylib.GetScreenWidth() - 64, 0, 64, 64); }
 	}
