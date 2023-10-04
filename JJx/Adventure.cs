@@ -147,7 +147,11 @@ public sealed class Adventure
 	public static async Task<Adventure> Load(string path)
 	{
 		using var stream = await ArchiverStream.Reader(path);
-		if (stream.Type != ArchiverType.Adventure)
+		return await Adventure.Load(stream);
+	}
+	public static async Task<Adventure> Load(ArchiverStream stream)
+	{
+		if (stream.Type != ArchiverType.Adventure && stream.CanRead)
 			throw new ArgumentException($"Expected adventure stream, found {stream.Type} stream");
 		// DEBUG
 		#if (PRINT_CHUNKS)

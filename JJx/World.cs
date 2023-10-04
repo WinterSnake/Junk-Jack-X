@@ -369,7 +369,11 @@ public sealed class World
 	public static async Task<World> Load(string path)
 	{
 		using var stream = await ArchiverStream.Reader(path);
-		if (stream.Type != ArchiverType.Map)
+		return await World.Load(stream);
+	}
+	public static async Task<World> Load(ArchiverStream stream)
+	{
+		if (stream.Type != ArchiverType.Map && stream.CanRead)
 			throw new ArgumentException($"Expected world stream, found {stream.Type} stream");
 		// DEBUG
 		#if (PRINT_CHUNKS)
@@ -476,18 +480,24 @@ public sealed class World
 		/// Fog
 		if (stream.IsAtChunk(ChunkType.WorldFog))
 		{
-			Console.WriteLine($"Position: {stream.Position:X8} | Postion = Fog Location: {stream.IsAtChunk(ChunkType.WorldFog)} | Size: {stream.GetChunkSize(ChunkType.WorldFog):X4}");
+			#if (PRINT_CHUNKS)
+				Console.WriteLine($"Position: {stream.Position:X8} | Postion = Fog Location: {stream.IsAtChunk(ChunkType.WorldFog)} | Size: {stream.GetChunkSize(ChunkType.WorldFog):X4}");
+			#endif
 			stream.Seek(stream.GetChunkSize(ChunkType.WorldFog).Value, SeekOrigin.Current);
 		}
 		/// Time
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Time Location: {stream.IsAtChunk(ChunkType.WorldTime)} | Size: {stream.GetChunkSize(ChunkType.WorldTime):X4}");
+		#if (PRINT_CHUNKS)
+			Console.WriteLine($"Position: {stream.Position:X8} | Postion = Time Location: {stream.IsAtChunk(ChunkType.WorldTime)} | Size: {stream.GetChunkSize(ChunkType.WorldTime):X4}");
+		#endif
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TIME)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TIME - bytesRead);
 		var ticks = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData), 0);
 		var phase = (TimePhase)Utilities.ByteConverter.GetUInt8(new Span<byte>(workingData), 4);
 		/// Weather
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Weather Location: {stream.IsAtChunk(ChunkType.WorldWeather)} | Size: {stream.GetChunkSize(ChunkType.WorldWeather):X4}");
+		#if (PRINT_CHUNKS)
+			Console.WriteLine($"Position: {stream.Position:X8} | Postion = Weather Location: {stream.IsAtChunk(ChunkType.WorldWeather)} | Size: {stream.GetChunkSize(ChunkType.WorldWeather):X4}");
+		#endif
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_WEATHER)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_WEATHER - bytesRead);
@@ -543,15 +553,21 @@ public sealed class World
 		for (var i = 0; i < shelves.Length; ++i)
 			shelves[i] = await Shelf.FromStream(stream);
 		/// Plants
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Plants Location: {stream.IsAtChunk(ChunkType.WorldPlants)} | Size: {stream.GetChunkSize(ChunkType.WorldPlants):X4}");
+		#if (PRINT_CHUNKS)
+			Console.WriteLine($"Position: {stream.Position:X8} | Postion = Plants Location: {stream.IsAtChunk(ChunkType.WorldPlants)} | Size: {stream.GetChunkSize(ChunkType.WorldPlants):X4}");
+		#endif
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
 		var plantCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
-		Console.WriteLine($"Plant Count: {plantCount}");
+		#if (PRINT_CHUNKS)
+			Console.WriteLine($"Plant Count: {plantCount}");
+		#endif
 		stream.Seek(stream.GetChunkSize(ChunkType.WorldPlants).Value - SIZEOF_TILECOUNT, SeekOrigin.Current);
 		/// Plant: Fruits
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Fruit Location: {stream.IsAtChunk(ChunkType.WorldPlantFruits)} | Size: {stream.GetChunkSize(ChunkType.WorldPlantFruits):X4}");
+		#if (PRINT_CHUNKS)
+			Console.WriteLine($"Position: {stream.Position:X8} | Postion = Fruit Location: {stream.IsAtChunk(ChunkType.WorldPlantFruits)} | Size: {stream.GetChunkSize(ChunkType.WorldPlantFruits):X4}");
+		#endif
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
@@ -560,15 +576,18 @@ public sealed class World
 		for (var i = 0; i < fruits.Length; ++i)
 			fruits[i] = await Fruit.FromStream(stream);
 		/// Plant: Decay
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Plant Decay Location: {stream.IsAtChunk(ChunkType.WorldPlantDecay)} | Size: {stream.GetChunkSize(ChunkType.WorldPlantDecay):X4}");
+		#if (PRINT_CHUNKS)
+			Console.WriteLine($"Position: {stream.Position:X8} | Postion = Plant Decay Location: {stream.IsAtChunk(ChunkType.WorldPlantDecay)} | Size: {stream.GetChunkSize(ChunkType.WorldPlantDecay):X4}");
+		#endif
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
 		var leafDecayCount = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData));
-		Console.WriteLine($"Plant Decay Count: {leafDecayCount}");
 		stream.Seek(stream.GetChunkSize(ChunkType.WorldPlantDecay).Value - SIZEOF_TILECOUNT, SeekOrigin.Current);
 		/// Locks
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Locks Location: {stream.IsAtChunk(ChunkType.WorldLocks)} | Size: {stream.GetChunkSize(ChunkType.WorldLocks):X4}");
+		#if (PRINT_CHUNKS)
+			Console.WriteLine($"Position: {stream.Position:X8} | Postion = Locks Location: {stream.IsAtChunk(ChunkType.WorldLocks)} | Size: {stream.GetChunkSize(ChunkType.WorldLocks):X4}");
+		#endif
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
@@ -577,13 +596,19 @@ public sealed class World
 		for (var i = 0; i < locks.Length; ++i)
 			locks[i] = await Lock.FromStream(stream);
 		/// Fluid
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Fluid Location: {stream.IsAtChunk(ChunkType.WorldFluid)} | Size: {stream.GetChunkSize(ChunkType.WorldFluid):X4}");
+		#if (PRINT_CHUNKS)
+			Console.WriteLine($"Position: {stream.Position:X8} | Postion = Fluid Location: {stream.IsAtChunk(ChunkType.WorldFluid)} | Size: {stream.GetChunkSize(ChunkType.WorldFluid):X4}");
+		#endif
 		stream.Seek(stream.GetChunkSize(ChunkType.WorldFluid).Value, SeekOrigin.Current);
 		/// Circuitry
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Circuitry Location: {stream.IsAtChunk(ChunkType.WorldCircuitry)} | Size: {stream.GetChunkSize(ChunkType.WorldCircuitry):X4}");
+		#if (PRINT_CHUNKS)
+			Console.WriteLine($"Position: {stream.Position:X8} | Postion = Circuitry Location: {stream.IsAtChunk(ChunkType.WorldCircuitry)} | Size: {stream.GetChunkSize(ChunkType.WorldCircuitry):X4}");
+		#endif
 		stream.Seek(stream.GetChunkSize(ChunkType.WorldCircuitry).Value, SeekOrigin.Current);
 		/// Entities
-		Console.WriteLine($"Position: {stream.Position:X8} | Postion = Entities Location: {stream.IsAtChunk(ChunkType.WorldEntities)} | Size: {stream.GetChunkSize(ChunkType.WorldEntities):X4}");
+		#if (PRINT_CHUNKS)
+			Console.WriteLine($"Position: {stream.Position:X8} | Postion = Entities Location: {stream.IsAtChunk(ChunkType.WorldEntities)} | Size: {stream.GetChunkSize(ChunkType.WorldEntities):X4}");
+		#endif
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);

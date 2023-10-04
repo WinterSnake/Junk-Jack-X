@@ -135,7 +135,11 @@ public sealed class Player
 	public static async Task<Player> Load(string path)
 	{
 		using var stream = await ArchiverStream.Reader(path);
-		if (stream.Type != ArchiverType.Player)
+		return await Player.Load(stream);
+	}
+	public static async Task<Player> Load(ArchiverStream stream)
+	{
+		if (stream.Type != ArchiverType.Player && stream.CanRead)
 			throw new ArgumentException($"Expected player stream, found {stream.Type} stream");
 		// DEBUG
 		#if (PRINT_CHUNKS)

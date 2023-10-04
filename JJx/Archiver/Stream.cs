@@ -22,7 +22,7 @@ using JJx.Utilities;
 
 namespace JJx;
 
-internal enum ArchiverType : byte
+public enum ArchiverType : byte
 {
 	Unknown,
 	Player,
@@ -32,10 +32,10 @@ internal enum ArchiverType : byte
 }
 
 #nullable enable
-internal sealed class ArchiverStream : FileStream
+public sealed class ArchiverStream : FileStream
 {
 	/* Constructors */
-	private ArchiverStream(string path, FileMode mode, FileAccess access): base(path, mode, access) {}
+	private ArchiverStream(string path, FileMode mode, FileAccess access): base(path, mode, access) { }
 	/* Instance Methods */
 	// Override
 	public override void Close()
@@ -62,7 +62,7 @@ internal sealed class ArchiverStream : FileStream
 		}
 		base.Close();
 	}
-	public string[]? GetChunkStrings()
+	internal string[]? GetChunkStrings()
 	{
 		if (!this.CanRead || this._Chunks == null)
 			return null;
@@ -72,7 +72,7 @@ internal sealed class ArchiverStream : FileStream
 		return chunkStrings;
 	}
 	// Reading
-	public bool IsAtChunk(ChunkType type)
+	internal bool IsAtChunk(ChunkType type)
 	{
 		if (!this.CanRead || this._Chunks == null)
 			return false;
@@ -81,7 +81,7 @@ internal sealed class ArchiverStream : FileStream
 				return true;
 		return false;
 	}
-	public bool HasChunk(ChunkType type)
+	internal bool HasChunk(ChunkType type)
 	{
 		if (!this.CanRead || this._Chunks == null)
 			return false;
@@ -90,7 +90,7 @@ internal sealed class ArchiverStream : FileStream
 				return true;
 		return false;
 	}
-	public uint? GetChunkSize(ChunkType type)
+	internal uint? GetChunkSize(ChunkType type)
 	{
 		if (!this.CanRead || this._Chunks == null)
 			return null;
@@ -99,7 +99,7 @@ internal sealed class ArchiverStream : FileStream
 				return chunk.Size;
 		return null;
 	}
-	public void SeekToChunk(ChunkType type)
+	internal void SeekToChunk(ChunkType type)
 	{
 		if (!this.CanRead || this._Chunks == null)
 			return;
@@ -108,8 +108,8 @@ internal sealed class ArchiverStream : FileStream
 				this.Position = chunk.Location;
 	}
 	// Writing
-	public WritableChunk NewChunk(ChunkType type, byte version = 0, bool compressed = false) => new WritableChunk(type, version, compressed, this._Buffer, this._WriteChunks!.Add);
-	public void EmptyChunk(byte version = 64)
+	internal WritableChunk NewChunk(ChunkType type, byte version = 0, bool compressed = false) => new WritableChunk(type, version, compressed, this._Buffer, this._WriteChunks!.Add);
+	internal void EmptyChunk(byte version = 64)
 	{
 		this._WriteChunks!.Add(new Chunk(ChunkType.Padding, version, false, 0, 0));
 	}
@@ -144,7 +144,7 @@ internal sealed class ArchiverStream : FileStream
 		reader._Chunks = chunks;
 		return reader;
 	}
-	public static async Task<ArchiverStream> Writer(string path, ArchiverType type)
+	internal static async Task<ArchiverStream> Writer(string path, ArchiverType type)
 	{
 		var writer = new ArchiverStream(path, FileMode.Create, FileAccess.Write);
 		writer._Buffer = new MemoryStream(1024);
@@ -182,7 +182,7 @@ internal sealed class ArchiverStream : FileStream
 	/* Properties */
 	public ArchiverType Type { get; private set; } = ArchiverType.Unknown;
 	// Read
-	private Chunk[]? _Chunks = null;
+	internal Chunk[]? _Chunks = null;
 	// Write
 	private MemoryStream? _Buffer = null;
 	private List<Chunk>? _WriteChunks = null;

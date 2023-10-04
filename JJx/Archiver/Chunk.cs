@@ -109,6 +109,7 @@ internal sealed class Chunk
 	internal const byte SIZE = 12;
 }
 
+// TODO: Improve chunk write
 internal sealed class WritableChunk : IDisposable
 {
 	/* Constructors */
