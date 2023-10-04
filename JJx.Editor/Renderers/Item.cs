@@ -11,14 +11,14 @@ using JJx;
 public static class ItemRenderer
 {
     /* Static Methods */
-    public static void InitTexture(string path)
+    public static void InitRenderer(string path)
     {
         if (_Loaded)
             return;
         _Texture = Raylib.LoadTexture(path);
         _Loaded = true;
     }
-	public static void UnloadTexture()
+	public static void UnloadRenderer()
 	{
 		if (!_Loaded)
 			return;

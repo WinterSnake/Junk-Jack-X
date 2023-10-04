@@ -11,19 +11,19 @@ using JJx;
 public sealed class BlockRenderer
 {
     /* Static Methods */
-    public void InitRenderer(string path)
+    public static void InitRenderer(string path)
     {
         if (_Loaded)
             return;
         _Texture = Raylib.LoadTexture(path);
         _Loaded = true;
     }
-	public void UnloadRenderer()
+	public static void UnloadRenderer()
 	{
 		if (!_Loaded)
 			return;
         Raylib.UnloadTexture(Texture);
-        _Loaded = true;
+        _Loaded = false;
 		_Texture = null;
 	}
     /* Class Properties */

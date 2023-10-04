@@ -10,78 +10,115 @@ using System.Threading.Tasks;
 using Raylib_cs;
 using JJx;
 
+internal static class Program
+{
+	/* Static Constructorss */
+	static Program()
+	{
+		// Window
+		Raylib.SetConfigFlags(ConfigFlags.FLAG_WINDOW_RESIZABLE);
+		Raylib.InitWindow(0, 0, "Junk Jack X Editor");
+		Raylib.SetTargetFPS(144);
+		// Renderers
+		InterfaceRenderer.InitRenderer(_TexturePaths[0]);
+		BlockRenderer.InitRenderer(_TexturePaths[1]);
+		ItemRenderer.InitRenderer(_TexturePaths[2]);
+		// Editors
+		Program._PlayerEditor = new PlayerEditor();
+		Program._WorldEditor = new WorldEditor();
+	}
+	/* Static Methods */
+	private static void Main(string[] args)
+	{
+		// Debug
+		var task = Program.Load(args[0]);
+		task.Wait();
+		// Loop
+		while (!Raylib.WindowShouldClose())
+		{
+			Program.Update();
+			Raylib.ClearBackground(Color.BLACK);
+			Raylib.BeginDrawing();
+				Program.Draw();
+			Raylib.EndDrawing();
+		}
+		// Unloading
+		InterfaceRenderer.UnloadRenderer();
+		BlockRenderer.UnloadRenderer();
+		ItemRenderer.UnloadRenderer();
+		Raylib.CloseWindow();
+	}
+	private static void Draw()
+	{
+		switch (Program._CurrentScreen)
+		{
+			case Screen.Player:
+			{
+				_PlayerEditor.Draw();
+			} break;
+			case Screen.World:
+			{
+				_WorldEditor.Draw();
+			} break;
+			default:
+			{
+			} break;
+		}
+	}
+	private static void Update()
+	{
+		var delta = Raylib.GetFrameTime();
+		switch (Program._CurrentScreen)
+		{
+			case Screen.Player:
+			{
+				_PlayerEditor.Update(delta);
+			} break;
+			case Screen.World:
+			{
+				_WorldEditor.Update(delta);
+			} break;
+			default:
+			{
+			} break;
+		}
+	}
+	public static async Task Load(string path)
+	{
+		var stream = await JJx.ArchiverStream.Reader(path);
+		switch (stream.Type)
+		{
+			case JJx.ArchiverType.Map:
+			{
+				Program._WorldEditor.ActiveWorld = await JJx.World.Load(stream);
+				Program._CurrentScreen = Screen.World;
+			} break;
+			case JJx.ArchiverType.Player:
+			{
+				Program._PlayerEditor.ActivePlayer = await JJx.Player.Load(stream);
+				Program._CurrentScreen = Screen.Player;
+			} break;
+			default:
+			{
+				_CurrentScreen = Screen.Main;
+			} break;
+		}
+	}
+	/* Class Properties */
+	private static Screen _CurrentScreen = Screen.Main;
+	private static readonly PlayerEditor _PlayerEditor;
+	private static readonly WorldEditor _WorldEditor;
+	private static readonly string[] _TexturePaths = {
+		"data/gfx/interface.png",
+		"data/gfx/rocks.png",
+		"data/gfx/treasures.png",
+	};
+	private const byte _Speed = 30;
+}
+
 internal enum Screen : byte
 {
 	Main = 0,
 	Player = 1,
 	World = 2
-}
-
-internal static class Program
-{
-	/* Static Methods */
-	private static async Task Main(string[] args)
-	{
-		// Debug for now
-		Raylib.SetConfigFlags(ConfigFlags.FLAG_WINDOW_RESIZABLE);
-		Raylib.InitWindow(0, 0, "Junk Jack X Editor");
-		Raylib.SetTargetFPS(144);
-		// Load textures
-		InterfaceRenderer.InitTexture(_TexturePaths[0]);
-		ItemRenderer.InitTexture(_TexturePaths[1]);
-		Program._PlayerEditor = new PlayerEditor();
-		Program._WorldEditor = new WorldEditor();
-		// Main loop
-		while (!Raylib.WindowShouldClose())
-		{
-			var delta = Raylib.GetFrameTime();
-			// Update
-			switch (_CurrentScreen)
-			{
-				case Screen.Player:
-				{
-					_PlayerEditor.Update(delta);
-				} break;
-				case Screen.World:
-				{
-					_WorldEditor.Update(delta);
-				} break;
-				default:
-				{
-
-				} break;
-			}
-			// Drawing
-			Raylib.ClearBackground(Color.BLACK);
-			Raylib.BeginDrawing();
-				switch (_CurrentScreen)
-				{
-					case Screen.Player:
-					{
-						_PlayerEditor.Draw();
-					} break;
-					case Screen.World:
-					{
-						_WorldEditor.Draw();
-					} break;
-					default:
-					{
-
-					} break;
-				}
-			Raylib.EndDrawing();
-		}
-		InterfaceRenderer.UnloadTexture();
-		ItemRenderer.UnloadTexture();
-		Raylib.CloseWindow();
-	}
-	/* Class Properties */
-	private static Screen _CurrentScreen = Screen.Player;
-	private static PlayerEditor _PlayerEditor;
-	private static WorldEditor _WorldEditor;
-	private static string[] _TexturePaths = {
-		"data/gfx/interface.png",
-		"data/gfx/treasures.png",
-	};
-	private const byte _Speed = 30;
 }
