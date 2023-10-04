@@ -22,6 +22,7 @@ public sealed class WorldEditor
 		/// World
 		var areaMin = Raylib.GetScreenToWorld2D(Vector2.Zero, this._Camera);
 		Raylib.BeginMode2D(this._Camera);
+			// Tiles
 			for (int x = 0; x < this._World.Size.Width; ++x)
 			{
 				for (int y = 0; y < this._World.Size.Height; ++y)
@@ -38,45 +39,7 @@ public sealed class WorldEditor
 						screenVector.Y > Raylib.GetScreenHeight()
 					)
 						continue;
-					// Border
-					var tile = this._World.Blocks[x, y];
-					var destination = new Rectangle(x * 32, deltaY * 32, 32, 32);
-					if (y < this._World.Borders[x] && tile.BackgroundId == 0x0000 && tile.ForegroundId == 0x0000)
-						Raylib.DrawTexturePro(
-							BlockRenderer.Texture,
-							BlockRenderer.Border,
-							destination,
-							Vector2.Zero,
-							0.0f,
-							Color.WHITE
-						);
-					// Background
-					if (tile.BackgroundId != 0x0000)
-					{
-						Raylib.DrawTexturePro(
-							BlockRenderer.Texture,
-							BlockRenderer.GetIdSprite(tile.BackgroundId),
-							destination,
-							Vector2.Zero,
-							0.0f,
-							Color.DARKGRAY
-						);
-						// Background: Decorations
-					}
-					// Foreground
-					if (tile.ForegroundId != 0x0000)
-					{
-						// Background: Decorations
-						Raylib.DrawTexturePro(
-							BlockRenderer.Texture,
-							BlockRenderer.GetIdSprite(tile.ForegroundId),
-							destination,
-							Vector2.Zero,
-							0.0f,
-							Color.WHITE
-						);
-						// Foreground: Decorations
-					}
+					this.DrawTile(x, y, deltaY);
 				}
 			}
 			// Spawn
@@ -85,6 +48,77 @@ public sealed class WorldEditor
 		Raylib.EndMode2D();
 		/// GUI
 		/// Cursor
+	}
+	public void DrawTile(int x, int y, int deltaY)
+	{
+		// Border
+		var tile = this._World.Blocks[x, y];
+		var destination = new Rectangle(x * 32, deltaY * 32, 32, 32);
+		if (y < this._World.Borders[x] && tile.BackgroundId == 0x0000 && tile.ForegroundId == 0x0000)
+			Raylib.DrawTexturePro(
+				BlockRenderer.Texture,
+				BlockRenderer.Border,
+				destination,
+				Vector2.Zero,
+				0.0f,
+				Color.WHITE
+			);
+		// Background
+		if (tile.BackgroundId != 0x0000)
+		{
+			Raylib.DrawTexturePro(
+				BlockRenderer.Texture,
+				BlockRenderer.GetIdSprite(tile.BackgroundId),
+				destination,
+				Vector2.Zero,
+				0.0f,
+				Color.DARKGRAY
+			);
+			// Background: Decorations
+			if (tile.ForegroundId == 0x0000)
+			{
+				for (var i = 0; i < tile.DecorationIds.Length; ++ i)
+				{
+					var (id, background) = tile.GetDecoration((byte)i);
+					if (background && id != 0x0000)
+						Raylib.DrawTexturePro(
+							BlockRenderer.Texture,
+							BlockRenderer.GetIdSprite(id),
+							destination,
+							Vector2.Zero,
+							0.0f,
+							Color.DARKGRAY
+						);
+				}
+			}
+		}
+		// Foreground
+		if (tile.ForegroundId != 0x0000)
+		{
+			// Background: Decorations
+			Raylib.DrawTexturePro(
+				BlockRenderer.Texture,
+				BlockRenderer.GetIdSprite(tile.ForegroundId),
+				destination,
+				Vector2.Zero,
+				0.0f,
+				Color.WHITE
+			);
+			// Foreground: Decorations
+			for (var i = 0; i < tile.DecorationIds.Length; ++ i)
+			{
+				var (id, background) = tile.GetDecoration((byte)i);
+				if (!background && id != 0x0000)
+					Raylib.DrawTexturePro(
+						BlockRenderer.Texture,
+						BlockRenderer.GetIdSprite(id),
+						destination,
+						Vector2.Zero,
+						0.0f,
+						Color.WHITE
+					);
+			}
+		}
 	}
 	public void Update(float delta)
 	{
