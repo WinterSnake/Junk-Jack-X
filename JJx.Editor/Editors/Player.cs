@@ -1,5 +1,5 @@
 /*
-	Junk Jack X: Editors
+	Junk Jack X: Editor
 	- Player
 
 	Written By: Ryan Smith
@@ -19,8 +19,6 @@ internal sealed class PlayerEditor
 	/* Instance Methods */
 	public void Draw()
 	{
-		/// Player GUI
-		/// Editor GUI
 		// Items
 		this._ShowItemsButton.Draw();
 		//this._ShowItemsButton.Position = _ShowItems ? _ChestOpenedPosition : _ChestClosedPosition;
@@ -39,14 +37,13 @@ internal sealed class PlayerEditor
 		this._ShowItemsButton.SourceDefault = this._ShowItems ? InterfaceRenderer.IconOpenedChest : InterfaceRenderer.IconClosedChest;
 	}
 	/* Properties */
-	//public JJx.Player ActivePlayer;
+	public JJx.Player ActivePlayer = null;
 	private bool _ShowItems = false;
 	private readonly Button _ShowItemsButton = new Button(
 		_ChestClosedPosition, InterfaceRenderer.IconClosedChest, InterfaceRenderer.Texture
 	);
 	//private readonly ItemMenu _Items = new ItemMenu();
 	/* Class Properties */
-	public JJx.Player ActivePlayer = null;
 	/// GUI
 	private static Rectangle _ChestClosedPosition {
 		get { return new Rectangle(Raylib.GetScreenWidth() - 64, 0, 64, 64); }
