@@ -20,13 +20,65 @@ public sealed class WorldEditor
 	{
 		/// Camera
 		/// World
+		var areaMin = Raylib.GetScreenToWorld2D(Vector2.Zero, this._Camera);
 		Raylib.BeginMode2D(this._Camera);
-			// Borders
-			Raylib.DrawTexture(BlockRenderer.Texture, 0, 0, Color.WHITE);
-			// Background
-			// Background: Decorations
-			// Foreground
-			// Foreground: Decorations
+			for (int x = 0; x < this._World.Size.Width; ++x)
+			{
+				for (int y = 0; y < this._World.Size.Height; ++y)
+				{
+					var deltaY = this._World.Size.Height - y;
+					var screenVector = Raylib.GetWorldToScreen2D(
+						new Vector2(x * 32, deltaY * 32),
+						this._Camera
+					);
+					if (
+						screenVector.X < _OffScreenBuffer ||
+						screenVector.Y < _OffScreenBuffer ||
+						screenVector.X > Raylib.GetScreenWidth() ||
+						screenVector.Y > Raylib.GetScreenHeight()
+					)
+						continue;
+					// Border
+					var tile = this._World.Blocks[x, y];
+					var destination = new Rectangle(x * 32, deltaY * 32, 32, 32);
+					if (y < this._World.Borders[x] && tile.BackgroundId == 0x0000 && tile.ForegroundId == 0x0000)
+						Raylib.DrawTexturePro(
+							BlockRenderer.Texture,
+							BlockRenderer.Border,
+							destination,
+							Vector2.Zero,
+							0.0f,
+							Color.WHITE
+						);
+					// Background
+					if (tile.BackgroundId != 0x0000)
+					{
+						Raylib.DrawTexturePro(
+							BlockRenderer.Texture,
+							BlockRenderer.GetIdSprite(tile.BackgroundId),
+							destination,
+							Vector2.Zero,
+							0.0f,
+							Color.DARKGRAY
+						);
+						// Background: Decorations
+					}
+					// Foreground
+					if (tile.ForegroundId != 0x0000)
+					{
+						// Background: Decorations
+						Raylib.DrawTexturePro(
+							BlockRenderer.Texture,
+							BlockRenderer.GetIdSprite(tile.ForegroundId),
+							destination,
+							Vector2.Zero,
+							0.0f,
+							Color.WHITE
+						);
+						// Foreground: Decorations
+					}
+				}
+			}
 			// Spawn
 			// Player
 			// Entities
@@ -63,15 +115,17 @@ public sealed class WorldEditor
 		/// GUI
 	}
 	/* Properties */
-	public JJx.World ActiveWorld {
-		get { return this._ActiveWorld; }
+	public JJx.World World {
+		get { return this._World; }
 		set {
-			this._ActiveWorld = value;
-			//this._Camera.target = new Vector2(value.Player.X * 32, (value.Size.Height - value.Player.Y) * 32);
+			this._World = value;
+			this._Camera.target = new Vector2(value.Player.X * 32, (value.Size.Height - value.Player.Y) * 32);
 		}
 	}
-	private JJx.World _ActiveWorld = null;
+	private JJx.World _World = null;
 	private Camera2D _Camera = new Camera2D(Vector2.Zero, Vector2.Zero, 0.0f, 1.0f);
+	/* Class Properties */
 	public static float Speed  = 10.0f;
 	public static float Scroll =  0.25f;
+	private const sbyte _OffScreenBuffer = -128;
 }

@@ -40,6 +40,7 @@ internal static class Program
 			Raylib.ClearBackground(Color.BLACK);
 			Raylib.BeginDrawing();
 				Program.Draw();
+				Raylib.DrawFPS(0, 0);
 			Raylib.EndDrawing();
 		}
 		// Unloading
@@ -90,7 +91,7 @@ internal static class Program
 		{
 			case JJx.ArchiverType.Map:
 			{
-				Program._WorldEditor.ActiveWorld = await JJx.World.Load(stream);
+				Program._WorldEditor.World = await JJx.World.Load(stream);
 				Program._CurrentScreen = Screen.World;
 			} break;
 			case JJx.ArchiverType.Player:
