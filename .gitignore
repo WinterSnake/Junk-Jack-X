@@ -4,5 +4,8 @@ obj/
 **/bin/
 **/obj/
 
+# Python: Cache
+__pycache__
+
 # Session: tmux
 .tmux-session

@@ -1,14 +1,16 @@
 #!/usr/bin/python
 ##-------------------------------##
-## Junk Jack X: Json Builder     ##
+## Junk Jack X: Builder          ##
 ## Written By: Ryan Smith        ##
 ##-------------------------------##
 
 ## Imports
 import json
-from typing import Any
+import sys
 
 ## Body
-with open("english.json", 'r') as f:
-    data: dict[str, Any] = json.load(f)
-print(data)
+with open(sys.argv[1]) as f:
+    data = json.load(f)
+items = data['treasures']
+mobs = data['mobs']
+print(mobs)
