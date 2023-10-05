@@ -40,6 +40,21 @@ public sealed class Tile
 		this.UnknownTilePart1 = unknownId1;
 	}
 	/* Instance Methods */
+	public override string ToString()
+	{
+		var tileString = $"(Foreground: 0x{this.ForegroundId:X4}, Background: 0x{this.BackgroundId:X4}, Decorations: [";
+		for (var i = 0; i < this.DecorationIds.Length; ++i)
+		{
+			var decoration = this.GetDecoration((byte)i);
+			tileString += $"(0x{decoration.id:X4}, background: {decoration.background})";
+			if (i < this.DecorationIds.Length - 1)
+				tileString += ", ";
+			else
+				tileString += ']';
+		}
+		tileString += $", Unknown00: 0x{this.UnknownTilePart0:X4}, Unknown01: 0x{this.UnknownTilePart1:X4})";
+		return tileString;
+	}
 	public (ushort id, bool background) GetDecoration(byte index)
 	{
 		var id = this.DecorationIds[index];
