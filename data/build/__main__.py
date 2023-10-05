@@ -7,10 +7,10 @@
 ## Imports
 import json
 import sys
+from blocks import BLOCKS, Block
+from items import load_items, Item
 
 ## Body
 with open(sys.argv[1]) as f:
     data = json.load(f)
-items = data['treasures']
-mobs = data['mobs']
-print(mobs)
+items = load_items(data['treasures'])
