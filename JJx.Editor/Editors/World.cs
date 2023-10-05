@@ -68,7 +68,7 @@ public sealed class WorldEditor
 		{
 			Raylib.DrawTexturePro(
 				BlockRenderer.Texture,
-				BlockRenderer.GetIdSprite(tile.BackgroundId),
+				BlockRenderer.GetSprite(tile.BackgroundId),
 				destination,
 				Vector2.Zero,
 				0.0f,
@@ -83,7 +83,7 @@ public sealed class WorldEditor
 					if (background && id != 0x0000)
 						Raylib.DrawTexturePro(
 							BlockRenderer.Texture,
-							BlockRenderer.GetIdSprite(id),
+							BlockRenderer.GetSprite(id),
 							destination,
 							Vector2.Zero,
 							0.0f,
@@ -98,7 +98,7 @@ public sealed class WorldEditor
 			// Background: Decorations
 			Raylib.DrawTexturePro(
 				BlockRenderer.Texture,
-				BlockRenderer.GetIdSprite(tile.ForegroundId),
+				BlockRenderer.GetSprite(tile.ForegroundId),
 				destination,
 				Vector2.Zero,
 				0.0f,
@@ -111,7 +111,7 @@ public sealed class WorldEditor
 				if (!background && id != 0x0000)
 					Raylib.DrawTexturePro(
 						BlockRenderer.Texture,
-						BlockRenderer.GetIdSprite(id),
+						BlockRenderer.GetSprite(id),
 						destination,
 						Vector2.Zero,
 						0.0f,

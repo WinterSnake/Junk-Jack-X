@@ -26,7 +26,7 @@ public sealed class BlockRenderer
         _Loaded = false;
 		_Texture = null;
 	}
-	public static Rectangle GetIdSprite(ushort id)
+	public static Rectangle GetSprite(ushort id)
 	{
 		var special = (id & 0x7000) >> 12;
 		var shift   = (id & 0x0800) >>  6;
