@@ -54,7 +54,7 @@ def load_items(_items: list[dict[str, int | str]]) -> list[Item]:
 
 ## Classes
 class Item:
-    """"""
+    """JJx Item"""
 
     # -Constructor
     def __init__(
