@@ -22,8 +22,8 @@
 	Segment[0x14B]          = Sky Size              | Length:   1  (0x1) | Type: enum[uint8]        | Parent: InitSize
 	Segment[0x14C :  0x14F] = Language              | Length:   4  (0x4) | Type: char[4]
 	Segment[0x150 :  0x1CF] = Padding               | Length: 128 (0x80) | Type: uint32[32] = {0}
-	:<Border>
-	Segment[0x1D0 : {size}] = Borders               | Length:     {size} | Type: uint16[{size}]
+	:<Skyline>
+	Segment[0x1D0 : {size}] = Skyline               | Length:     {size} | Type: uint16[{size}]
 	:<Block>
 	Segment[{pos} : {size}] = Blocks                | Length:     {size} | Type: struct Block[{size.x][{size.y}]
 	-----------------------------------------------------------------------------------------------------------------------
@@ -83,18 +83,18 @@ public sealed class World
 		this.Gamemode = gamemode;
 		this.WorldInitSize = worldSize;
 		this.SkyInitSize = skySize;
-		this.Borders = new ushort[this.Size.Width];
-		for (var i = 0; i < this.Borders.Length; ++i)
-			this.Borders[i] = (ushort)(this.Size.Height / 2);
-		this.Blocks = new Tile[this.Size.Width, this.Size.Height];
+		this.Skyline = new ushort[this.Size.Width];
+		for (var i = 0; i < this.Skyline.Length; ++i)
+			this.Skyline[i] = (ushort)(this.Size.Height / 2);
+		this.Blocks = new Block[this.Size.Width, this.Size.Height];
 		for (var x = 0; x < this.Size.Width; ++x)
 		{
 			for (var y = 0; y < this.Size.Height; ++y)
 			{
 				if (y == 0)
-					this.Blocks[x, y] = new Tile(0x0054, 0x0054);
+					this.Blocks[x, y] = new Block(0x0054, 0x0054);
 				else
-					this.Blocks[x, y] = new Tile(0x0000, 0x0000);
+					this.Blocks[x, y] = new Block(0x0000, 0x0000);
 			}
 		}
 	}
@@ -102,7 +102,7 @@ public sealed class World
 		Guid id, DateTime lastPlayed, Version version, string name, string author,
 		(ushort, ushort) size, (ushort, ushort) player, (ushort, ushort) spawn, Planet planet,
 		Season season, Gamemode gamemode, InitSize worldInitSize, InitSize skyInitSize, string language,
-		ushort[] borders, Tile[,] blocks, uint ticks, TimePhase time, float poissonSum, Weather weather,
+		ushort[] skyline, Block[,] blocks, uint ticks, TimePhase time, float poissonSum, Weather weather,
 		byte poissonSkipped, Chest[] chests, Forge[] forges, Sign[] signs, Stable[] stables, Lab[] labs,
 		Shelf[] shelves, Fruit[] fruits, Lock[] locks, Entity[] entities
 	)
@@ -121,7 +121,7 @@ public sealed class World
 		this.WorldInitSize = worldInitSize;
 		this.SkyInitSize = skyInitSize;
 		this.Language = language;
-		this.Borders = borders;
+		this.Skyline = skyline;
 		this.Blocks = blocks;
 		this.Ticks = ticks;
 		this.Time = time;
@@ -140,7 +140,7 @@ public sealed class World
 		this.Entities.AddRange(entities);
 	}
 	/* Instance Methods */
-	public ulong GetTileFlatPosition(ushort x, ushort y) => (ulong)((y + x * this.Size.Height) * Tile.SIZE);
+	public ulong GetBlockFlatPosition(ushort x, ushort y) => (ulong)((y + x * this.Size.Height) * Block.SIZE);
 	public async Task Save(string path)
 	{
 		using var stream = await ArchiverStream.Writer(path, ArchiverType.Map);
@@ -190,18 +190,18 @@ public sealed class World
 			workingData = new byte[SIZEOF_PADDING];
 			await chunk.WriteAsync(workingData, 0, workingData.Length);
 		}
-		/// Border
-		using (var chunk = stream.NewChunk(ChunkType.WorldBorders))
+		/// Skyline
+		using (var chunk = stream.NewChunk(ChunkType.WorldSkyline))
 		{
-			workingData = new byte[this.Borders.Length * 2];
-			for (var i = 0; i < this.Borders.Length; ++i)
-				Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Borders[i], i * 2);
+			workingData = new byte[this.Skyline.Length * 2];
+			for (var i = 0; i < this.Skyline.Length; ++i)
+				Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Skyline[i], i * 2);
 			await chunk.WriteAsync(workingData, 0, workingData.Length);
 		}
 		/// Blocks
 		using (var chunk = stream.NewChunk(ChunkType.WorldBlocks, 1, compressed: true))
 		{
-			using var blocksDecompressedStream = new MemoryStream(this.Size.Width * this.Size.Height * Tile.SIZE);
+			using var blocksDecompressedStream = new MemoryStream(this.Size.Width * this.Size.Height * Block.SIZE);
 			for (var x = 0; x < this.Size.Width; ++x)
 				for (var y = 0; y < this.Size.Height; ++y)
 					await this.Blocks[x, y].ToStream(blocksDecompressedStream);
@@ -350,7 +350,7 @@ public sealed class World
 		{
 			for (var x = 0; x < this.Size.Width; ++x)
 				for (var y = 0; y < this.Size.Height; ++y)
-					this.Blocks[x, y] = await Tile.FromStream(stream);
+					this.Blocks[x, y] = await Block.FromStream(stream);
 			return;
 		}
 	}
@@ -445,9 +445,9 @@ public sealed class World
 		var language = Utilities.ByteConverter.GetString(new Span<byte>(workingData));
 		// Padding
 		stream.Seek(SIZEOF_PADDING, SeekOrigin.Current);
-		/// Border
-		var borders = new ushort[worldSize.width];
-		for (var i = 0; i < borders.Length / (workingData.Length / 2); ++i)
+		/// Skyline
+		var skyline = new ushort[worldSize.width];
+		for (var i = 0; i < skyline.Length / (workingData.Length / 2); ++i)
 		{
 			bytesRead = 0;
 			while (bytesRead < workingData.Length)
@@ -456,12 +456,12 @@ public sealed class World
 			{
 				var index = j + (i * (workingData.Length / 2));
 				var offset = j * 2;
-				borders[index] = Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), offset);
+				skyline[index] = Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), offset);
 			}
 		}
 		/// Blocks
 		bytesRead = 0;
-		var blocks = new Tile[worldSize.width, worldSize.height];
+		var blocks = new Block[worldSize.width, worldSize.height];
 		var blocksCompressedSize = stream.GetChunkSize(ChunkType.WorldBlocks);
 		using (var blocksCompressedStream = new MemoryStream((int)blocksCompressedSize))
 		{
@@ -474,7 +474,7 @@ public sealed class World
 			{
 				for (var x = 0; x < worldSize.width; ++x)
 					for (var y = 0; y < worldSize.height; ++y)
-						blocks[x, y] = await Tile.FromStream(blocksDecompressionStream);
+						blocks[x, y] = await Block.FromStream(blocksDecompressionStream);
 			}
 		}
 		/// Fog
@@ -619,7 +619,7 @@ public sealed class World
 
 		return new World(
 			id, lastPlayed, version, name, author, worldSize, playerPos, spawnPos,
-			planet, season, gamemode, worldInitSize, skyInitSize, language, borders, blocks,
+			planet, season, gamemode, worldInitSize, skyInitSize, language, skyline, blocks,
 			ticks, phase, poissonSum, weather, poissonSkipped, chests, forges, signs, stables,
 			labs, shelves, fruits, locks, entities
 		);
@@ -656,10 +656,10 @@ public sealed class World
 	public InitSize WorldInitSize;
 	public InitSize SkyInitSize;
 	public readonly string Language = "en";
-	// Border
-	public ushort[] Borders { get; private set; }
+	// Skyline
+	public ushort[] Skyline { get; private set; }
 	// Blocks
-	public Tile[,] Blocks { get; private set; }
+	public Block[,] Blocks { get; private set; }
 	/*
 		TODO: Memory Mapped File Implementation
 		https://learn.microsoft.com/en-us/dotnet/api/system.io.memorymappedfiles.memorymappedfile?view=net-7.0

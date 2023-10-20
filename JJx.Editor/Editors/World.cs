@@ -54,7 +54,7 @@ public sealed class WorldEditor
 		// Border
 		var tile = this._World.Blocks[x, y];
 		var destination = new Rectangle(x * 32, deltaY * 32, 32, 32);
-		if (y < this._World.Borders[x] && tile.BackgroundId == 0x0000 && tile.ForegroundId == 0x0000)
+		if (y < this._World.Skyline[x] && tile.BackgroundId == 0x0000 && tile.ForegroundId == 0x0000)
 			Raylib.DrawTexturePro(
 				BlockRenderer.Texture,
 				BlockRenderer.Border,

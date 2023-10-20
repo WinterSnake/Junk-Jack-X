@@ -1,6 +1,6 @@
 /*
 	Junk Jack X: World
-	- Tile
+	- Block
 
 	Segment Breakdown:
 	--------------------------------------------------------------------
@@ -21,23 +21,23 @@ using System.Threading.Tasks;
 
 namespace JJx;
 
-public sealed class Tile
+public sealed class Block
 {
 	/* Constructors */
-	public Tile(ushort foregroundId = 0x0000, ushort backgroundId = 0x0000)
+	public Block(ushort foregroundId = 0x0000, ushort backgroundId = 0x0000)
 	{
 		this.ForegroundId = foregroundId;
 		this.BackgroundId = backgroundId;
 		for (var i = 0; i < this.DecorationIds.Length; ++i)
 			this.DecorationIds[i] = 0x0000;
 	}
-	private Tile(ushort foregroundId, ushort backgroundId, ushort[] decorationIds, ushort unknownId0, ushort unknownId1)
+	private Block(ushort foregroundId, ushort backgroundId, ushort[] decorationIds, ushort unknownId0, ushort unknownId1)
 	{
 		this._ForegroundId = foregroundId;
 		this.BackgroundId = backgroundId;
 		this.DecorationIds = decorationIds;
-		this.UnknownTilePart0 = unknownId0;
-		this.UnknownTilePart1 = unknownId1;
+		this.UnknownBlockPart0 = unknownId0;
+		this.UnknownBlockPart1 = unknownId1;
 	}
 	/* Instance Methods */
 	public override string ToString()
@@ -52,7 +52,7 @@ public sealed class Tile
 			else
 				tileString += ']';
 		}
-		tileString += $", Unknown00: 0x{this.UnknownTilePart0:X4}, Unknown01: 0x{this.UnknownTilePart1:X4})";
+		tileString += $", Unknown00: 0x{this.UnknownBlockPart0:X4}, Unknown01: 0x{this.UnknownBlockPart1:X4})";
 		return tileString;
 	}
 	public (ushort id, bool background) GetDecoration(byte index)
@@ -74,12 +74,12 @@ public sealed class Tile
 		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.BackgroundId,  2);
 		for (var i = 0; i < this.DecorationIds.Length; ++i)
 			Utilities.ByteConverter.Write(new Span<byte>(workingData), this.DecorationIds[i],  4 + i * 2);
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.UnknownTilePart0, 12);
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.UnknownTilePart1, 14);
+		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.UnknownBlockPart0, 12);
+		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.UnknownBlockPart1, 14);
 		await stream.WriteAsync(workingData, 0, workingData.Length);
 	}
 	/* Static Methods */
-	public static async Task<Tile> FromStream(Stream stream)
+	public static async Task<Block> FromStream(Stream stream)
 	{
 		var bytesRead = 0;
 		var workingData = new byte[SIZE];
@@ -92,7 +92,7 @@ public sealed class Tile
 			decorationIds[i] = Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 4 + i * 2);
 		var unknownId0 = Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 12);
 		var unknownId1 = Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 14);
-		return new Tile(foregroundId, backgroundId, decorationIds, unknownId0, unknownId1);
+		return new Block(foregroundId, backgroundId, decorationIds, unknownId0, unknownId1);
 	}
 	/* Properties */
 	private ushort _ForegroundId;
@@ -102,8 +102,8 @@ public sealed class Tile
 	}
 	public ushort BackgroundId;
 	public readonly ushort[] DecorationIds = new ushort[COUNT_DECORATIONS];
-	public ushort UnknownTilePart0 = 0x0000;
-	public ushort UnknownTilePart1 = 0x0000;
+	public ushort UnknownBlockPart0 = 0x0000;
+	public ushort UnknownBlockPart1 = 0x0000;
 	/* Class Properties */
 	internal const byte SIZE = 16;
 	private const byte COUNT_DECORATIONS = 4;
