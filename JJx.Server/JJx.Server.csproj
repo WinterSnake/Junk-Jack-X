@@ -5,8 +5,6 @@
 	</PropertyGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\JJx\JJx.csproj" />
-	</ItemGroup>
-	<ItemGroup>
-	  <PackageReference Include="raylib-cs" Version="4.5.0.4" />
+	  <ProjectReference Include="..\JJx.Protocol\JJx.Protocol.csproj" />
 	</ItemGroup>
 </Project>
