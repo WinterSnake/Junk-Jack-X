@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JJx.Protocol", "JJx.Protoco
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JJx.Server", "JJx.Server\JJx.Server.csproj", "{F88DF961-9581-4E8E-8F16-3946110AF783}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JJx.Generator", "JJx.Generator\JJx.Generator.csproj", "{1084D11C-07CE-4021-8217-86451B89D644}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{F88DF961-9581-4E8E-8F16-3946110AF783}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F88DF961-9581-4E8E-8F16-3946110AF783}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F88DF961-9581-4E8E-8F16-3946110AF783}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1084D11C-07CE-4021-8217-86451B89D644}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1084D11C-07CE-4021-8217-86451B89D644}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1084D11C-07CE-4021-8217-86451B89D644}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1084D11C-07CE-4021-8217-86451B89D644}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
