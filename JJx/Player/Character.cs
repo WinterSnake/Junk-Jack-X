@@ -15,26 +15,27 @@ using System;
 
 namespace JJx;
 
-public enum HairColor : byte {
-	White = 0x0,
-	Grey,
-	Black,
-	Brown,
-	DarkBrown,
-	LightBrown,
-	Blonde,
-	DirtyBlonde,
-	LightBlonde,
-	Ginger,
-	Red,
-	Purple,
-	Blue,
-	Teal,
-	Green,
-	Yellow
+public enum HairColor : byte
+{
+	White       = 0x0,
+	Grey        = 0x1,
+	Black       = 0x2,
+	Brown       = 0x3,
+	DarkBrown   = 0x4,
+	LightBrown  = 0x5,
+	Blonde      = 0x6,
+	DirtyBlonde = 0x7,
+	LightBlonde = 0x8,
+	Ginger      = 0x9,
+	Red         = 0xA,
+	Purple      = 0xB,
+	Blue        = 0xC,
+	Teal        = 0xD,
+	Green       = 0xE,
+	Yellow      = 0xF,
 }
 
-public sealed class Character
+public struct Character
 {
 	/* Constructors */
 	public Character(bool gender, byte skinTone, byte hairStyle, HairColor hairColor)
@@ -45,6 +46,11 @@ public sealed class Character
 		this.HairColor = hairColor;
 	}
 	/* Instance Methods */
+	public override string ToString()
+	{
+		var gender = this.Gender ? "Female" : "Male";
+		return $"Gender={gender} | Race={this.SkinTone} | Hair[Style={this.HairStyle}, Color={this.HairColor}]";
+	}
 	public void Pack(Span<byte> bytes, int offset = 0)
 	{
 		if (bytes.Length + offset < SIZE) throw new IndexOutOfRangeException();

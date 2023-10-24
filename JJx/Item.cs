@@ -32,14 +32,18 @@ public sealed class Item
 		this.Icon = icon;
 	}
 	/* Instance Methods */
+	public override string ToString()
+	{
+		return $"Id={this.Id} | Count={this.Count} | Durability={this.Durability} | Properties={this.Modifier} | Icon={this.Icon}";
+	}
 	public async Task ToStream(Stream stream)
 	{
 		var workingData = new byte[SIZE];
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Modifier,   0);
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Id,         4);
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Count,      6);
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Durability, 8);
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Icon,      10);
+		BitConverter.Write(workingData, this.Modifier,   0);
+		BitConverter.Write(workingData, this.Id,         4);
+		BitConverter.Write(workingData, this.Count,      6);
+		BitConverter.Write(workingData, this.Durability, 8);
+		BitConverter.Write(workingData, this.Icon,      10);
 		await stream.WriteAsync(workingData, 0, workingData.Length);
 	}
 	/* Static Methods */
@@ -49,11 +53,11 @@ public sealed class Item
 		var workingData = new byte[SIZE];
 		while (bytesRead < SIZE)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZE - bytesRead);
-		var modifier   = Utilities.ByteConverter.GetUInt32(new Span<byte>(workingData),  0);
-		var id         = Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData),  4);
-		var count      = Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData),  6);
-		var durability = Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData),  8);
-		var icon       = Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 10);
+		var modifier   = BitConverter.GetUInt32(workingData,  0);
+		var id         = BitConverter.GetUInt16(workingData,  4);
+		var count      = BitConverter.GetUInt16(workingData,  6);
+		var durability = BitConverter.GetUInt16(workingData,  8);
+		var icon       = BitConverter.GetUInt16(workingData, 10);
 		return new Item(id, count, durability, modifier, icon);
 	}
 	/* Properties */
