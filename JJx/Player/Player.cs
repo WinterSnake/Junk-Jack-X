@@ -23,6 +23,9 @@
 	Segment[0x3C4 : 0x3FF] = Visual Armor Slots     | Length:  60  (0x3C) | Type: struct Item[5]    | Parent: Items
 	Segment[0x400 : 0x40B] = Craft Slot             | Length:  12   (0xC) | Type: struct Item       | Parent: Items
 	Segment[0x40C : 0x417] = Arrow Slot             | Length:  12   (0xC) | Type: struct Item       | Parent: Items
+	:<Status>
+	Segment[0x548 : 0x53B] = Health                 | Length:   4   (0x4) | Type: float32
+	Segment[0x53C : 0x54C] = Effects                | Length:  16  (0x10) | Type: struct Effect[4]
 	-----------------------------------------------------------------------------------------------------------------------------
 
 	Written By: Ryan Smith
