@@ -126,6 +126,7 @@ public sealed class Player
 	{
 		if (stream.Type != ArchiverType.Player && stream.CanRead)
 			throw new ArgumentException($"Expected player stream, found {stream.Type} stream");
+		Console.WriteLine(stream);
 		int bytesRead = 0;
 		var workingData = new byte[SIZEOF_BUFFER];
 		/// Info

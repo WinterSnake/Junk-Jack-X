@@ -37,7 +37,10 @@ public sealed class ArchiverStream : FileStream
 	/* Instance Methods */
 	public override string ToString()
 	{
-		return "ArchiverStream";
+		string[] chunks = new string[this.Chunks.Count];
+		for (var i = 0; i < this.Chunks.Count; ++i)
+			chunks[i] = '[' + this.Chunks[i].ToString() + ']';
+		return $"Type: {this.Type} | Chunks: {String.Join(" ; ", chunks)}";
 	}
 	public override void Close()
 	{

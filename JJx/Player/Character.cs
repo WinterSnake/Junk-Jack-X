@@ -35,7 +35,7 @@ public enum HairColor : byte
 	Yellow      = 0xF,
 }
 
-public struct Character
+public sealed class Character
 {
 	/* Constructors */
 	public Character(bool gender, byte skinTone, byte hairStyle, HairColor hairColor)
