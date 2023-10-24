@@ -7,9 +7,9 @@
 using System;
 using System.Text;
 
-namespace JJx.Utilities;
+namespace JJx;
 
-internal static class ByteConverter
+public static class BitConverter
 {
 	/* Static Methods */
 	// Read

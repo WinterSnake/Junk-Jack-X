@@ -2,191 +2,194 @@
 	Junk Jack X: Archiver
 	- Stream
 
-	Segment Breakdown:
-	-----------------------------------------------------------------------
-	:<Archiver Header>
-	Segment[0x0 : 0x3] = Magic       | Length: 2 (0x2) | Type: char[4]
-	Segment[0x4 : 0x5] = File Type   | Length: 2 (0x2) | Type: enum[uint16]
-	Segment[0x6 : 0x7] = Chunk Count | Length: 2 (0x2) | Type: uint16
-	Segment[0x8 : 0xC] = Padding     | Length: 4 (0x4) | Type: uint32
-	-----------------------------------------------------------------------
-	Size: 12 (0xC)
-
 	Written By: Ryan Smith
 */
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using JJx.Utilities;
+using Microsoft.Win32.SafeHandles;
 
 namespace JJx;
 
-public enum ArchiverType : byte
+public enum ArchiverType : ushort
 {
-	Unknown,
-	Player,
-	Adventure,
-	Map,
-	Stat
+	Invalid   = 0x00,
+	Player    = 0x01,
+	World     = 0x02,
+	Adventure = 0x03,
 }
 
-#nullable enable
 public sealed class ArchiverStream : FileStream
 {
 	/* Constructors */
-	private ArchiverStream(string path, FileMode mode, FileAccess access): base(path, mode, access) { }
+	// Reader
+	private ArchiverStream(SafeFileHandle readerHandle, ArchiverType type, List<Chunk> chunks): base(readerHandle, FileAccess.Read)
+	{
+		this.Type = type;
+		this.Chunks = chunks;
+	}
+	private ArchiverStream(string filePath, ArchiverType type): base(filePath, FileMode.Create, FileAccess.Write)
+	{
+		this.Type = type;
+		this._Buffer = new MemoryStream();
+	}
 	/* Instance Methods */
-	// Override
+	public override string ToString()
+	{
+		return "ArchiverStream";
+	}
 	public override void Close()
 	{
 		if (this.CanWrite)
 		{
 			var workingData = new byte[SIZEOF_HEADER - 2];
-			// Write Chunk Count
-			var chunkCount = (ushort)this._WriteChunks!.Count;
-			Utilities.ByteConverter.Write(new Span<byte>(workingData), chunkCount, 0);
-			// Padding
-			Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)0, 2);
+			// Chunk Count | Padding
+			JJx.BitConverter.Write(workingData, (uint)this.Chunks.Count, 0);
 			this.Write(workingData, 0, workingData.Length);
-			// Calculate Origin
-			var origin = (uint)(SIZEOF_HEADER + 4 + (this._WriteChunks!.Count * Chunk.SIZE));
-			// Write chunks
-			foreach (var chunk in this._WriteChunks!)
-				chunk.ToStream(this, origin);
-			// Write buffer
+			// Chunks
+			workingData = new byte[Chunk.SIZE];
+			var origin = SIZEOF_HEADER + SIZEOF_PADDING + (this.Chunks.Count * Chunk.SIZE);
+			foreach (var chunk in this.Chunks)
+			{
+				BitConverter.Write(workingData, (ushort)chunk.Type,              0);
+				BitConverter.Write(workingData, chunk.Version,                   2);
+				BitConverter.Write(workingData, chunk.Compressed,                3);
+				BitConverter.Write(workingData, (uint)(chunk.Position + origin), 4);
+				BitConverter.Write(workingData, chunk.Size,                      8);
+				this.Write(workingData, 0, workingData.Length);
+
+			}
+			// Buffer
 			this._Buffer!.Position = 0;
 			this._Buffer!.CopyTo(this);
-			this._Buffer!.Dispose();
-			this._Buffer = null;
 		}
 		base.Close();
 	}
-	internal string[]? GetChunkStrings()
+	protected override void Dispose(bool disposing)
 	{
-		if (!this.CanRead || this._Chunks == null)
-			return null;
-		string[] chunkStrings = new string[this._Chunks.Length];
-		for (var i = 0; i < this._Chunks.Length; ++i)
-			chunkStrings[i] = this._Chunks[i].ToString();
-		return chunkStrings;
+		if (disposing && this.CanWrite)
+			this._Buffer!.Dispose();
+		base.Dispose(disposing);
 	}
 	// Reading
-	internal bool IsAtChunk(ChunkType type)
+	public bool AtChunk(ChunkType type)
 	{
-		if (!this.CanRead || this._Chunks == null)
-			return false;
-		foreach (var chunk in this._Chunks)
-			if (chunk.Type == type && this.Position == chunk.Location)
-				return true;
+		if (!this.CanRead) return false;
+		foreach (var chunk in this.Chunks)
+		{
+			if (chunk.Type == type)
+				return this.Position == chunk.Position;
+		}
 		return false;
 	}
-	internal bool HasChunk(ChunkType type)
+	public void JumpToChunk(ChunkType type)
 	{
-		if (!this.CanRead || this._Chunks == null)
-			return false;
-		foreach (var chunk in this._Chunks)
+		foreach (var chunk in this.Chunks)
 			if (chunk.Type == type)
-				return true;
-		return false;
-	}
-	internal uint? GetChunkSize(ChunkType type)
-	{
-		if (!this.CanRead || this._Chunks == null)
-			return null;
-		foreach (var chunk in this._Chunks)
-			if (chunk.Type == type)
-				return chunk.Size;
-		return null;
-	}
-	internal void SeekToChunk(ChunkType type)
-	{
-		if (!this.CanRead || this._Chunks == null)
-			return;
-		foreach (var chunk in this._Chunks)
-			if (chunk.Type == type)
-				this.Position = chunk.Location;
+				this.Position = chunk.Position;
 	}
 	// Writing
-	internal WritableChunk NewChunk(ChunkType type, byte version = 0, bool compressed = false) => new WritableChunk(type, version, compressed, this._Buffer, this._WriteChunks!.Add);
-	internal void EmptyChunk(byte version = 64)
+	public Stream StartChunk(ChunkType type, byte version = 0, bool compressed = false)
 	{
-		this._WriteChunks!.Add(new Chunk(ChunkType.Padding, version, false, 0, 0));
+		this._ActiveChunk = new Chunk(type, version, compressed, (uint)this._Buffer.Position, 0);
+		return this._Buffer;
+	}
+	public void EndChunk()
+	{
+		if (!this._ActiveChunk.HasValue)
+			return;
+		var curChunk = this._ActiveChunk.Value;
+		var endChunk = new Chunk(
+			curChunk.Type, curChunk.Version, curChunk.Compressed,
+			curChunk.Position, (uint)(this._Buffer.Position - curChunk.Position)
+		);
+		this.Chunks.Add(endChunk);
+		this._ActiveChunk = null;
 	}
 	/* Static Methods */
-	public static async Task<ArchiverStream> Reader(string path)
+	// Reading
+	public static async Task<ArchiverStream> Reader(string filePath)
 	{
-		var reader = new ArchiverStream(path, FileMode.Open, FileAccess.Read);
+		var reader = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 		int bytesRead = 0;
 		var workingData = new byte[SIZEOF_HEADER];
 		while (bytesRead < SIZEOF_HEADER)
 			bytesRead += await reader.ReadAsync(workingData, bytesRead, SIZEOF_HEADER - bytesRead);
 		/// Header
-		var headerMagic = ByteConverter.GetString(new Span<byte>(workingData), 0, 4);
-		var headerId    = ByteConverter.GetUInt16(new Span<byte>(workingData), 4);
-		var chunkCount  = ByteConverter.GetUInt16(new Span<byte>(workingData), 6);
+		var type = ArchiverType.Invalid;
+		var magic = JJx.BitConverter.GetString(workingData, 0, length: 4);
+		var id = JJx.BitConverter.GetUInt16(workingData, 4);
+		var chunkCount = JJx.BitConverter.GetUInt16(workingData, 6);
 		// Type
-		if (headerMagic == "JJXC" && headerId == 0)
-			reader.Type = ArchiverType.Player;
-		else if (headerMagic == "JJXM")
+		switch (id)
 		{
-			if (headerId == 1)
-				reader.Type = ArchiverType.Map;
-			else if (headerId == 2)
-				reader.Type = ArchiverType.Adventure;
+			case 0:
+			{
+				type = ArchiverType.Player;
+			} break;
+			case 1:
+			{
+				type = ArchiverType.World;
+			} break;
+			case 2:
+			{
+				type = ArchiverType.Adventure;
+			} break;
 		}
-		// Padding
-		reader.Seek(4, SeekOrigin.Current);
-		// Chunk
-		var chunks = new Chunk[chunkCount];
+		if (type == ArchiverType.Invalid)
+			throw new ArgumentException($"'{filePath}' has invalid JJx format; Magic: {magic}, Id: {id}");
+		/// Chunks
+		reader.Seek(SIZEOF_PADDING, SeekOrigin.Current);
+		var chunks = new List<Chunk>(chunkCount);
 		for (var i = 0; i < chunkCount; ++i)
-			chunks[i] = await Chunk.FromStream(reader);
-		reader._Chunks = chunks;
-		return reader;
+		{
+			var chunk = await Chunk.FromStream(reader);
+			chunks.Add(chunk);
+		}
+		return new ArchiverStream(reader.SafeFileHandle, type, chunks);
 	}
-	internal static async Task<ArchiverStream> Writer(string path, ArchiverType type)
+	// Writing
+	public static async Task<ArchiverStream> Writer(string filePath, ArchiverType type)
 	{
-		var writer = new ArchiverStream(path, FileMode.Create, FileAccess.Write);
-		writer._Buffer = new MemoryStream(1024);
-		writer._WriteChunks = new List<Chunk>();
+		if (type == ArchiverType.Invalid)
+			throw new ArgumentException("Cannot create ArchiverType.Invalid ArchiverStream");
+		var writer = new ArchiverStream(filePath, type);
 		var workingData = new byte[SIZEOF_HEADER - 2];
 		switch (type)
 		{
 			case ArchiverType.Player:
 			{
-				Utilities.ByteConverter.Write(new Span<byte>(workingData), "JJXC", length: 4);
-				Utilities.ByteConverter.Write(new Span<byte>(workingData), (ushort)0, 4);
+				JJx.BitConverter.Write(workingData, "JJXC", length: 4);
+				JJx.BitConverter.Write(workingData, (ushort)0, 4);
 			} break;
-			case ArchiverType.Map:
+			case ArchiverType.World:
 			{
-				Utilities.ByteConverter.Write(new Span<byte>(workingData), (ushort)1, 4);
-				goto World;
+				JJx.BitConverter.Write(workingData, (ushort)1, 4);
+				goto Map;
 			}
 			case ArchiverType.Adventure:
 			{
-				Utilities.ByteConverter.Write(new Span<byte>(workingData), (ushort)2, 4);
-				goto World;
+				JJx.BitConverter.Write(workingData, (ushort)2, 4);
+				goto Map;
 			}
-			default:
+			Map:
 			{
-				throw new ArgumentException($"Unsupported writer format '{type}'");
-			}
-			World:
-			{
-				Utilities.ByteConverter.Write(new Span<byte>(workingData), "JJXM", length: 4);
+				JJx.BitConverter.Write(workingData, "JJXM", length: 4);
 			} break;
 		}
 		await writer.WriteAsync(workingData, 0, workingData.Length);
 		return writer;
 	}
 	/* Properties */
-	public ArchiverType Type { get; private set; } = ArchiverType.Unknown;
-	// Read
-	internal Chunk[]? _Chunks = null;
-	// Write
-	private MemoryStream? _Buffer = null;
-	private List<Chunk>? _WriteChunks = null;
+	public readonly ArchiverType Type;
+	private readonly List<Chunk> Chunks = new List<Chunk>();
+	// Writing
+	#nullable enable
+	private Chunk? _ActiveChunk = null;
+	private readonly MemoryStream? _Buffer = null;
+	#nullable disable
 	/* Class Properties */
-	private const byte SIZEOF_HEADER = 8;
+	private const byte SIZEOF_HEADER  = 8;
+	private const byte SIZEOF_PADDING = 4;
 }
-#nullable disable
