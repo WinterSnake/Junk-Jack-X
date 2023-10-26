@@ -61,7 +61,6 @@ public sealed class ArchiverStream : FileStream
 				BitConverter.Write(workingData, (uint)(chunk.Position + origin), 4);
 				BitConverter.Write(workingData, chunk.Size,                      8);
 				this.Write(workingData, 0, workingData.Length);
-
 			}
 			// Buffer
 			this._Buffer!.Position = 0;
@@ -80,11 +79,16 @@ public sealed class ArchiverStream : FileStream
 	{
 		if (!this.CanRead) return false;
 		foreach (var chunk in this.Chunks)
-		{
 			if (chunk.Type == type)
 				return this.Position == chunk.Position;
-		}
 		return false;
+	}
+	public uint GetChunkSize(ChunkType type)
+	{
+		foreach (var chunk in this.Chunks)
+			if (chunk.Type == type)
+				return chunk.Size;
+		return 0;
 	}
 	public void JumpToChunk(ChunkType type)
 	{
@@ -93,10 +97,9 @@ public sealed class ArchiverStream : FileStream
 				this.Position = chunk.Position;
 	}
 	// Writing
-	public Stream StartChunk(ChunkType type, byte version = 0, bool compressed = false)
+	public void AddEmptyChunk(byte version = 64)
 	{
-		this._ActiveChunk = new Chunk(type, version, compressed, (uint)this._Buffer.Position, 0);
-		return this._Buffer;
+		this.Chunks.Add(new Chunk(ChunkType.Padding, version, false, 0, 0));
 	}
 	public void EndChunk()
 	{
@@ -109,6 +112,11 @@ public sealed class ArchiverStream : FileStream
 		);
 		this.Chunks.Add(endChunk);
 		this._ActiveChunk = null;
+	}
+	public Stream StartChunk(ChunkType type, byte version = 0, bool compressed = false)
+	{
+		this._ActiveChunk = new Chunk(type, version, compressed, (uint)this._Buffer.Position, 0);
+		return this._Buffer;
 	}
 	/* Static Methods */
 	// Reading

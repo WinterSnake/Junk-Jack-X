@@ -44,7 +44,7 @@ public enum ChunkType : ushort
 	WorldCircuitry     = 0x0010,
 	WorldWeather       = 0x0011,
 	WorldTime          = 0x0012,
-	WorldEntities      = 0x0013,
+	WorldMobs          = 0x0013,
 	// Adventure
 	AdventurePortals   = 0x0014,
 	// Player

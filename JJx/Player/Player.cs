@@ -129,7 +129,6 @@ public sealed class Player
 	{
 		if (stream.Type != ArchiverType.Player && stream.CanRead)
 			throw new ArgumentException($"Expected player stream, found {stream.Type} stream");
-		Console.WriteLine(stream);
 		int bytesRead = 0;
 		var workingData = new byte[SIZEOF_BUFFER];
 		/// Info
@@ -138,13 +137,13 @@ public sealed class Player
 		// UUID
 		while (bytesRead < SIZEOF_UUID)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_UUID - bytesRead);
-		var id = new Guid(new Span<byte>(workingData, 0, 16));
+		var id = new Guid(new Span<byte>(workingData, 0, SIZEOF_UUID));
 		// Name
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_NAME)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_NAME - bytesRead);
 		var name = BitConverter.GetString(workingData);
-		// Version | Unlocked Planets | Gameplay Flags | Character | Unknown | Difficulty | Unknown
+		// {Version | Unlocked Planets | Gameplay Flags | Character | Unknown | Difficulty | Unknown}
 		bytesRead = 0;
 		while (bytesRead < workingData.Length)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, workingData.Length - bytesRead);
