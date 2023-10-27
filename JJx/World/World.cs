@@ -101,7 +101,7 @@ public sealed class World
 		Gamemode gamemode, GenSize initSize, GenSize skySize, string language, ushort[] skyline,
 		TileMap blockmap, uint ticks, DayPhase phase, float poissonSum, Weather weather, byte poissonSkipped,
 		Chest[] chests, Forge[] forges, Sign[] signs, Stable[] stables, Lab[] labs, Shelf[] shelves,
-		Fruit[] fruits, Lock[] locks, Mob[] mobs
+		Fruit[] fruits, Decay[] decay, Lock[] locks, Mob[] mobs
 	)
 	{
 		// Info
@@ -137,6 +137,7 @@ public sealed class World
 		this.Labs = new List<Lab>(labs);
 		this.Shelves = new List<Shelf>(shelves);
 		this.Fruits = new List<Fruit>(fruits);
+		this.Decay = new List<Decay>(decay);
 		this.Locks = new List<Lock>(locks);
 		this.Mobs = new List<Mob>(mobs);
 	}
@@ -288,12 +289,10 @@ public sealed class World
 		stream.EndChunk();
 		/// Plant: Decay
 		var worldPlantDecay = stream.StartChunk(ChunkType.WorldPlantDecay);
-			BitConverter.Write(workingData, (uint)0);
+			BitConverter.Write(workingData, (uint)this.Decay.Count);
 			await worldPlantDecay.WriteAsync(workingData, 0, SIZEOF_TILECOUNT);
-			//BitConverter.Write(workingData, (uint)this.PlantDecay.Count);
-			//await worldPlantDecay.WriteAsync(workingData, 0, SIZEOF_TILECOUNT);
-			//foreach (var planetDecay in this.PlantDecay)
-			//	await planetDecay.ToStream(worldPlantDecay);
+			foreach (var decay in this.Decay)
+				await decay.ToStream(worldPlantDecay);
 		stream.EndChunk();
 		/// Locks
 		var worldLocks = stream.StartChunk(ChunkType.WorldLocks);
@@ -532,11 +531,9 @@ public sealed class World
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
 		var plantDecayCount = BitConverter.GetUInt32(workingData, 0);
-		Console.WriteLine($"Plant Decay Count: {plantDecayCount}");
-		var decayData = new byte[stream.GetChunkSize(ChunkType.WorldPlantDecay) - SIZEOF_TILECOUNT];
-		//var plantDecay = new PlantDecay[planetDecayCount];
-		//for (var i = 0; i < plantDecay.Length; ++i)
-		//	PlantDecay[i] = await PlantDecay.FromStream(stream);
+		var plantDecay = new Decay[plantDecayCount];
+		for (var i = 0; i < plantDecay.Length; ++i)
+			plantDecay[i] = await JJx.Decay.FromStream(stream);
 		/// Locks
 		if (!stream.AtChunk(ChunkType.WorldLocks))
 			stream.JumpToChunk(ChunkType.WorldLocks);
@@ -578,7 +575,7 @@ public sealed class World
 			id, version, lastPlayed, name, author, playerLocation, spawnLocation,
 			planet, season, gamemode, initSize, skySize, language, skyline, blockmap,
 			ticks, phase, poissonSum, weather, poissonSkipped, chests, forges, signs,
-			stables, labs, shelves, fruits, locks, mobs 
+			stables, labs, shelves, fruits, plantDecay, locks, mobs 
 		);
 	}
 	/* Properties */
@@ -634,17 +631,17 @@ public sealed class World
 	public Weather Weather = Weather.None;
 	public byte PoissonSkipped = 0;
 	// Containers
-	public readonly List<Chest>  Chests         = new List<Chest>();
-	public readonly List<Forge>  Forges         = new List<Forge>();
-	public readonly List<Sign>   Signs          = new List<Sign>();
-	public readonly List<Stable> Stables        = new List<Stable>();
-	public readonly List<Lab>    Labs           = new List<Lab>();
-	public readonly List<Shelf>  Shelves        = new List<Shelf>();
-	//public readonly List<Plant>  Plants         = new List<Plant>();
-	public readonly List<Fruit>  Fruits         = new List<Fruit>();
-	//public readonly List<PlantDecay> PlantDecay = new List<PlantDecay>();
-	public readonly List<Lock>   Locks          = new List<Lock>();
-	public readonly List<Mob> Mobs              = new List<Mob>();
+	public List<Chest>  Chests  = new List<Chest>();
+	public List<Forge>  Forges  = new List<Forge>();
+	public List<Sign>   Signs   = new List<Sign>();
+	public List<Stable> Stables = new List<Stable>();
+	public List<Lab>    Labs    = new List<Lab>();
+	public List<Shelf>  Shelves = new List<Shelf>();
+	//public List<Plant>  Plants  = new List<Plant>();
+	public List<Fruit>  Fruits  = new List<Fruit>();
+	public List<Decay>  Decay   = new List<Decay>();
+	public List<Lock>   Locks   = new List<Lock>();
+	public List<Mob>    Mobs    = new List<Mob>();
 	/* Class Properties */
 	private const byte SIZEOF_BUFFER    =    32;
 	private const byte SIZEOF_UUID      =    16;
