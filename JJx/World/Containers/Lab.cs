@@ -1,6 +1,6 @@
 /*
-	Junk Jack X: World.Container
-	- Lab
+	Junk Jack X: World
+	- Container: Lab
 
 	Segment Breakdown:
 	----------------------------------------------------------------

@@ -33,6 +33,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace JJx;
@@ -52,7 +53,7 @@ public sealed class World
 	public World(
 		string name, GenSize initSize, GenSize skySize, Gamemode gamemode,
 		string author = "author", Season season = Season.None, Planet planet = Planet.Terra,
-		(ushort width, ushort height)? size = null, TileMap? tilemap = null
+		(ushort width, ushort height)? size = null, TileMap? blockmap = null
 	)
 	{
 		// Info
@@ -69,34 +70,36 @@ public sealed class World
 		this.InitSize = initSize;
 		this.SkySize = skySize;
 		this._Language = "en";
-		// -Size
-		if (tilemap != null)
-			size = (tilemap.Width, tilemap.Height);
-		else if (!size.HasValue)
+		// -Size | BlockMap
+		if (blockmap != null)
+			this.BlockMap = blockmap;
+		else
 		{
-			switch (initSize)
+			if (!size.HasValue)
 			{
-				case GenSize.Tiny:   size = ( 512, 128); break;
-				case GenSize.Small:  size = ( 768, 256); break;
-				case GenSize.Normal: size = (1024, 256); break;
-				case GenSize.Large:  size = (2048, 384); break;
-				case GenSize.Huge:   size = (4096, 512); break;
-				default: throw new ArgumentException("Cannot create world with custom init size without specifying actual world size");
+				switch (initSize)
+				{
+					case GenSize.Tiny:   size = ( 512, 128); break;
+					case GenSize.Small:  size = ( 768, 256); break;
+					case GenSize.Normal: size = (1024, 256); break;
+					case GenSize.Large:  size = (2048, 384); break;
+					case GenSize.Huge:   size = (4096, 512); break;
+					default: throw new ArgumentException("Cannot create world with custom init size without specifying actual world size");
+				}
 			}
+			this.BlockMap = new TileMap(size.Value);
 		}
 		// Skyline
-		this.Skyline = new ushort[size.Value.width];
+		this.Skyline = new ushort[this.Size.Width];
 		for (var i = 0; i < this.Skyline.Length; ++i)
-			this.Skyline[i] = (ushort)(size.Value.height / 1.5);
-		// Blocks
-		this.TileMap = tilemap == null ? new TileMap(size.Value) : tilemap;
+			this.Skyline[i] = (ushort)(this.Size.Height / 1.5);
 	}
 	#nullable disable
 	private World(
 		Guid id, Version version, DateTime lastPlayed, string name, string author,
 		(ushort, ushort) player, (ushort, ushort) spawn, Planet planet, Season season,
 		Gamemode gamemode, GenSize initSize, GenSize skySize, string language, ushort[] skyline,
-		TileMap tilemap, uint ticks, DayPhase phase, float poissonSum, Weather weather, byte poissonSkipped,
+		TileMap blockmap, uint ticks, DayPhase phase, float poissonSum, Weather weather, byte poissonSkipped,
 		Chest[] chests, Forge[] forges, Sign[] signs, Stable[] stables, Lab[] labs, Shelf[] shelves,
 		Fruit[] fruits, Lock[] locks, Mob[] mobs
 	)
@@ -118,7 +121,7 @@ public sealed class World
 		// Skyline
 		this.Skyline = skyline;
 		// Blocks
-		this.TileMap = tilemap;
+		this.BlockMap = blockmap;
 		// Time
 		this.Ticks = ticks;
 		this.Phase = phase;
@@ -200,7 +203,7 @@ public sealed class World
 		stream.EndChunk();
 		/// Blocks
 		var worldBlocks = stream.StartChunk(ChunkType.WorldBlocks, 1, compressed: true);
-			await this.TileMap.ToStream(worldBlocks, compressed: true);
+			await this.BlockMap.ToStream(worldBlocks, compressed: true);
 		stream.EndChunk();
 		/// Fog
 		if (this.Gamemode == Gamemode.Survival || this.Gamemode == Gamemode.Adventure)
@@ -410,13 +413,13 @@ public sealed class World
 		if (!stream.AtChunk(ChunkType.WorldBlocks))
 			stream.JumpToChunk(ChunkType.WorldBlocks);
 		bytesRead = 0;
-		TileMap tilemap;
+		TileMap blockmap;
 		using (var blockStream = new MemoryStream())
 		{
 			blockStream.SetLength(stream.GetChunkSize(ChunkType.WorldBlocks));
 			while (bytesRead < blockStream.Length)
 				bytesRead += await stream.ReadAsync(blockStream.GetBuffer(), bytesRead, (int)blockStream.Length - bytesRead);
-			tilemap = await TileMap.FromStream(blockStream, worldSize, stream.IsChunkCompressed(ChunkType.WorldBlocks));
+			blockmap = await TileMap.FromStream(blockStream, worldSize, stream.IsChunkCompressed(ChunkType.WorldBlocks));
 		}
 		/// Fog
 		if (gamemode == Gamemode.Survival || gamemode == Gamemode.Adventure)
@@ -528,7 +531,9 @@ public sealed class World
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
-		var planetDecayCount = BitConverter.GetUInt32(workingData, 0);
+		var plantDecayCount = BitConverter.GetUInt32(workingData, 0);
+		Console.WriteLine($"Plant Decay Count: {plantDecayCount}");
+		var decayData = new byte[stream.GetChunkSize(ChunkType.WorldPlantDecay) - SIZEOF_TILECOUNT];
 		//var plantDecay = new PlantDecay[planetDecayCount];
 		//for (var i = 0; i < plantDecay.Length; ++i)
 		//	PlantDecay[i] = await PlantDecay.FromStream(stream);
@@ -571,7 +576,7 @@ public sealed class World
 		/// World
 		return new World(
 			id, version, lastPlayed, name, author, playerLocation, spawnLocation,
-			planet, season, gamemode, initSize, skySize, language, skyline, tilemap,
+			planet, season, gamemode, initSize, skySize, language, skyline, blockmap,
 			ticks, phase, poissonSum, weather, poissonSkipped, chests, forges, signs,
 			stables, labs, shelves, fruits, locks, mobs 
 		);
@@ -599,7 +604,7 @@ public sealed class World
 			else this._Author = value.Substring(0, SIZEOF_AUTHOR - 1);
 		}
 	}
-	public (ushort Width, ushort Height) Size { get { return (this.TileMap.Width, this.TileMap.Height); }}
+	public (ushort Width, ushort Height) Size { get { return (this.BlockMap.Width, this.BlockMap.Height); }}
 	public (ushort X, ushort Y) Player;
 	public (ushort X, ushort Y) Spawn;
 	public Planet Planet;
@@ -619,8 +624,8 @@ public sealed class World
 	// Skyline
 	public ushort[] Skyline { get; private set; }
 	// Blocks
-	private TileMap TileMap;
-	public Tile[,] Blocks { get { return this.TileMap.Tiles; }}
+	public readonly TileMap BlockMap;
+	public Tile[,] Blocks { get { return this.BlockMap.Tiles; }}
 	// Time
 	public uint Ticks = 0;
 	public DayPhase Phase = DayPhase.Day;
@@ -629,16 +634,17 @@ public sealed class World
 	public Weather Weather = Weather.None;
 	public byte PoissonSkipped = 0;
 	// Containers
-	public readonly List<Chest>  Chests  = new List<Chest>();
-	public readonly List<Forge>  Forges  = new List<Forge>();
-	public readonly List<Sign>   Signs   = new List<Sign>();
-	public readonly List<Stable> Stables = new List<Stable>();
-	public readonly List<Lab>    Labs    = new List<Lab>();
-	public readonly List<Shelf>  Shelves = new List<Shelf>();
-	//public readonly List<Plant>  Plants  = new List<Plant>();
-	public readonly List<Fruit>  Fruits  = new List<Fruit>();
-	public readonly List<Lock>   Locks   = new List<Lock>();
-	public readonly List<Mob> Mobs       = new List<Mob>();
+	public readonly List<Chest>  Chests         = new List<Chest>();
+	public readonly List<Forge>  Forges         = new List<Forge>();
+	public readonly List<Sign>   Signs          = new List<Sign>();
+	public readonly List<Stable> Stables        = new List<Stable>();
+	public readonly List<Lab>    Labs           = new List<Lab>();
+	public readonly List<Shelf>  Shelves        = new List<Shelf>();
+	//public readonly List<Plant>  Plants         = new List<Plant>();
+	public readonly List<Fruit>  Fruits         = new List<Fruit>();
+	//public readonly List<PlantDecay> PlantDecay = new List<PlantDecay>();
+	public readonly List<Lock>   Locks          = new List<Lock>();
+	public readonly List<Mob> Mobs              = new List<Mob>();
 	/* Class Properties */
 	private const byte SIZEOF_BUFFER    =    32;
 	private const byte SIZEOF_UUID      =    16;

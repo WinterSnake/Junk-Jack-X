@@ -1,6 +1,6 @@
 /*
-	Junk Jack X: World.Container
-	- Chest
+	Junk Jack X: World
+	- Container: Chest
 
 	Segment Breakdown:
 	----------------------------------------------------------------

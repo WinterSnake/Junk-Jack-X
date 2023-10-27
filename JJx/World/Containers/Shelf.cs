@@ -1,6 +1,6 @@
 /*
-	Junk Jack X: World.Container
-	- Shelf
+	Junk Jack X: World
+	- Container: Shelf
 
 	Segment Breakdown:
 	----------------------------------------------------------------

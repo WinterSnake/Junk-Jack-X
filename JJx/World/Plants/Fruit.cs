@@ -1,6 +1,6 @@
 /*
-	Junk Jack X: World Plants
-	- Fruit
+	Junk Jack X: World
+	- Plant: Fruit
 
 	Segment Breakdown:
 	----------------------------------------------------------------

@@ -1,14 +1,14 @@
 /*
-	Junk Jack X: World.Container
-	- Sign
+	Junk Jack X: World
+	- Container: Sign
 
 	Segment Breakdown:
-	----------------------------------------------------------------
+	--------------------------------------------------------------------------
 	Segment[0x0 :    0x1] = X Position      | Length: 2  (0x02) | Type: uint16
 	Segment[0x2 :    0x3] = Y Position      | Length: 2  (0x02) | Type: uint16
 	Segment[0x4 :    0x5] = Text Size       | Length: 2  (0x02) | Type: uint16
 	Segment[0x6 : {size}] = Text            | Length:    {size} | Type: char*
-	----------------------------------------------------------------
+	--------------------------------------------------------------------------
 	Size: 6 (0x6) + char*
 
 	Written By: Ryan Smith

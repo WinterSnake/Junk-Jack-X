@@ -23,6 +23,15 @@ namespace JJx;
 public sealed class Tile
 {
 	/* Constructors */
+	public Tile(ushort foregroundId, ushort backgroundId)
+	{
+		this.ForegroundId = foregroundId;
+		this.BackgroundId = backgroundId;
+		for (var i = 0; i < this.DecorationIds.Length; ++i)
+			this.DecorationIds[i] = 0x0000;
+		this.CircuitryId  = 0x0000;
+		this.FluidId      = 0x0000;
+	}
 	private Tile(
 		ushort foregroundId, ushort backgroundId, ushort[] decorationIds,
 		ushort circuitryId, ushort fluidId
@@ -69,7 +78,7 @@ public sealed class Tile
 	/* Properties */
 	public ushort BackgroundId;
 	public ushort ForegroundId;
-	public readonly ushort[] DecorationIds;
+	public readonly ushort[] DecorationIds = new ushort[COUNTOF_DECORATIONS];
 	public ushort CircuitryId;
 	public ushort FluidId;
 	/* Class Properties */
