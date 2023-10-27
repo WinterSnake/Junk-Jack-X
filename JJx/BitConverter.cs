@@ -68,15 +68,17 @@ public static class BitConverter
 	}
 	public static string GetString(ReadOnlySpan<byte> bytes, int offset = 0, int length = 0)
 	{
+		if (offset > 0)
+			bytes = bytes.Slice(offset);
 		// Length Specific
 		if (length > 0)
 		{
 			if (bytes.Length < offset + length) throw new IndexOutOfRangeException();
-			return Encoding.ASCII.GetString(bytes.Slice(offset, length));
+			return Encoding.ASCII.GetString(bytes.Slice(0, length));
 		}
 		// Null termination
 		return Encoding.ASCII.GetString(
-			bytes.Slice(offset, bytes.IndexOf(byte.MinValue))
+			bytes.Slice(0, bytes.IndexOf(byte.MinValue))
 		);
 	}
 	public static DateTime GetDateTime(ReadOnlySpan<byte> bytes, int offset = 0)

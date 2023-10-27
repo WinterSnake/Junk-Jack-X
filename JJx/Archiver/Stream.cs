@@ -103,14 +103,10 @@ public sealed class ArchiverStream : FileStream
 	}
 	public void EndChunk()
 	{
-		if (!this._ActiveChunk.HasValue)
+		if (this._ActiveChunk == null)
 			return;
-		var curChunk = this._ActiveChunk.Value;
-		var endChunk = new Chunk(
-			curChunk.Type, curChunk.Version, curChunk.Compressed,
-			curChunk.Position, (uint)(this._Buffer.Position - curChunk.Position)
-		);
-		this.Chunks.Add(endChunk);
+		this._ActiveChunk.Size = (uint)(this._Buffer.Position - this._ActiveChunk.Position);
+		this.Chunks.Add(this._ActiveChunk);
 		this._ActiveChunk = null;
 	}
 	public Stream StartChunk(ChunkType type, byte version = 0, bool compressed = false)

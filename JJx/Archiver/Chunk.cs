@@ -50,12 +50,12 @@ public enum ChunkType : ushort
 	// Player
 	PlayerInfo         = 0x8000,
 	PlayerInventory    = 0x8001,
-	PlayerCraftbook    = 0x8002,
+	PlayerCraftbooks   = 0x8002,
 	PlayerAchievements = 0x8003,
 	PlayerStatus       = 0x8004,
 }
 
-internal struct Chunk
+internal sealed class Chunk
 {
 	/* Constructors */
 	public Chunk(ChunkType type, byte version, bool compressed, uint position, uint size)
@@ -90,7 +90,7 @@ internal struct Chunk
 	public readonly byte Version;
 	public readonly bool Compressed;
 	public readonly uint Position;
-	public readonly uint Size;
+	public uint Size { get; internal set; }
 	/* Class Properties */
 	internal const byte SIZE = 12;
 }
