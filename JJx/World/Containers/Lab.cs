@@ -45,7 +45,7 @@ public sealed class Lab
 			await item.ToStream(stream);
 	}
 	/* Static Methods */
-	public async Task<Lab> FromStream(Stream stream)
+	public static async Task<Lab> FromStream(Stream stream)
 	{
 		int bytesRead = 0;
 		var workingData = new byte[SIZE];

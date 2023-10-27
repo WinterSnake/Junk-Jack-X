@@ -3,8 +3,11 @@
 	- Lock
 
 	Segment Breakdown:
-	------------------------------------------------------------------------
-	------------------------------------------------------------------------
+	----------------------------------------------------------------
+	Segment[0x0 : 0x1] = X Position | Length: 2 (0x2) | Type: uint16
+	Segment[0x2 : 0x3] = Y Position | Length: 2 (0x2) | Type: uint16
+	Segment[0x4]       = Radius     | Length: 1 (0x1) | Type: uint8
+	----------------------------------------------------------------
 
 	Written By: Ryan Smith
 */
@@ -30,11 +33,11 @@ public sealed class Lock
 		BitConverter.Write(workingData, this.Position.X, 0);
 		BitConverter.Write(workingData, this.Position.Y, 2);
 		// Radius
-		BitConverter.Write(workingData, this.Radius, 4);
+		workingData[4] = this.Radius;
 		await stream.WriteAsync(workingData, 0, workingData.Length);
 	}
 	/* Static Methods */
-	public async Task<Lock> FromStream(Stream stream)
+	public static async Task<Lock> FromStream(Stream stream)
 	{
 		int bytesRead = 0;
 		var workingData = new byte[SIZE];

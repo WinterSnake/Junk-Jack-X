@@ -40,7 +40,7 @@ public sealed class Sign
 		await stream.WriteAsync(workingData, 0, workingData.Length);
 	}
 	/* Static Methods */
-	public async Task<Sign> FromStream(Stream stream)
+	public static async Task<Sign> FromStream(Stream stream)
 	{
 		int bytesRead = 0;
 		var workingData = new byte[SIZE];

@@ -45,7 +45,7 @@ public sealed class Shelf
 			await item.ToStream(stream);
 	}
 	/* Static Methods */
-	public async Task<Shelf> FromStream(Stream stream)
+	public static async Task<Shelf> FromStream(Stream stream)
 	{
 		int bytesRead = 0;
 		var workingData = new byte[SIZE];

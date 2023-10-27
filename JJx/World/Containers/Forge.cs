@@ -47,7 +47,7 @@ public sealed class Forge
 			await item.ToStream(stream);
 	}
 	/* Static Methods */
-	public async Task<Forge> FromStream(Stream stream)
+	public static async Task<Forge> FromStream(Stream stream)
 	{
 		int bytesRead = 0;
 		var workingData = new byte[SIZE];

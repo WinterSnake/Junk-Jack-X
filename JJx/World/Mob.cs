@@ -42,7 +42,7 @@ public sealed class Mob
 		await stream.WriteAsync(workingData, 0, workingData.Length);
 	}
 	/* Static Methods */
-	public async Task<Mob> FromStream(Stream stream)
+	public static async Task<Mob> FromStream(Stream stream)
 	{
 		int bytesRead = 0;
 		var workingData = new byte[SIZE];
