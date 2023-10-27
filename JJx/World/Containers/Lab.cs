@@ -1,5 +1,5 @@
 /*
-	Junk Jack X: World Container
+	Junk Jack X: World.Container
 	- Lab
 
 	Segment Breakdown:
@@ -7,7 +7,7 @@
 	Segment[0x0 : 0x1] = X Position | Length: 2 (0x2) | Type: uint16
 	Segment[0x2 : 0x3] = Y Position | Length: 2 (0x2) | Type: uint16
 	----------------------------------------------------------------
-	Size: 4 (0x4)
+	Size: 4 (0x04) + 60 (0x3C) {Item[5]}
 
 	Written By: Ryan Smith
 */
@@ -23,6 +23,7 @@ public sealed class Lab
 	public Lab((ushort, ushort) position)
 	{
 		this.Position = position;
+		this.Items = new Item[COUNTOF_ITEMS];
 		for (var i = 0; i < this.Items.Length; ++i)
 			this.Items[i] = new Item(0xFFFF, 0);
 	}
@@ -36,35 +37,35 @@ public sealed class Lab
 	{
 		var workingData = new byte[SIZE];
 		// Position
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Position.X, 0);
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Position.Y, 2);
+		BitConverter.Write(workingData, this.Position.X, 0);
+		BitConverter.Write(workingData, this.Position.Y, 2);
 		await stream.WriteAsync(workingData, 0, workingData.Length);
 		// Items
 		foreach (var item in this.Items)
 			await item.ToStream(stream);
 	}
 	/* Static Methods */
-	public static async Task<Lab> FromStream(Stream stream)
+	public async Task<Lab> FromStream(Stream stream)
 	{
 		int bytesRead = 0;
 		var workingData = new byte[SIZE];
-		while (bytesRead < SIZE)
-			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZE - bytesRead);
+		while (bytesRead < workingData.Length)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, workingData.Length - bytesRead);
 		// Position
 		var position = (
-			Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 0),
-			Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 2)
+			BitConverter.GetUInt16(workingData, 0),
+			BitConverter.GetUInt16(workingData, 2)
 		);
 		// Items
-		var items = new Item[COUNT_ITEMS];
+		var items = new Item[COUNTOF_ITEMS];
 		for (var i = 0; i < items.Length; ++i)
 			items[i] = await Item.FromStream(stream);
 		return new Lab(position, items);
 	}
 	/* Properties */
 	public (ushort X, ushort Y) Position;
-	public readonly Item[] Items = new Item[COUNT_ITEMS];
+	public readonly Item[] Items;
 	/* Class Properties */
-	private const byte SIZE        = 4;
-	private const byte COUNT_ITEMS = 5;
+	private const byte SIZE          = 4;
+	private const byte COUNTOF_ITEMS = 5;
 }

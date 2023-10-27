@@ -1,5 +1,5 @@
 /*
-	Junk Jack X: World Container
+	Junk Jack X: World.Container
 	- Forge
 
 	Segment Breakdown:
@@ -8,7 +8,7 @@
 	Segment[0x2 : 0x3] = Y Position | Length:  2 (0x2) | Type: uint16
 	Segment[0x4 : 0xF] = UNKNOWN    | Length: 12 (0xC) | Type: Forge::Status
 	------------------------------------------------------------------------
-	Size: 16 (0xF)
+	Size: 16 (0x10) + 36 (0x24) {Item[3]}
 
 	Written By: Ryan Smith
 */
@@ -24,6 +24,7 @@ public sealed class Forge
 	public Forge((ushort, ushort) position)
 	{
 		this.Position = position;
+		this.Items = new Item[COUNTOF_ITEMS];
 		for (var i = 0; i < this.Items.Length; ++i)
 			this.Items[i] = new Item(0xFFFF, 0);
 	}
@@ -37,39 +38,37 @@ public sealed class Forge
 	{
 		var workingData = new byte[SIZE];
 		// Position
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Position.X, 0);
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Position.Y, 2);
-		// =UNKNOWN=
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), (uint)0,  4);
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), (ulong)0, 8);
+		BitConverter.Write(workingData, this.Position.X, 0);
+		BitConverter.Write(workingData, this.Position.Y, 2);
+		// Status
 		await stream.WriteAsync(workingData, 0, workingData.Length);
 		// Items
 		foreach (var item in this.Items)
 			await item.ToStream(stream);
 	}
 	/* Static Methods */
-	public static async Task<Forge> FromStream(Stream stream)
+	public async Task<Forge> FromStream(Stream stream)
 	{
 		int bytesRead = 0;
 		var workingData = new byte[SIZE];
-		while (bytesRead < SIZE)
-			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZE - bytesRead);
+		while (bytesRead < workingData.Length)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, workingData.Length - bytesRead);
 		// Position
 		var position = (
-			Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 0),
-			Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 2)
+			BitConverter.GetUInt16(workingData, 0),
+			BitConverter.GetUInt16(workingData, 2)
 		);
-		// =UNKNOWN=
+		// Status
 		// Items
-		var items = new Item[COUNT_ITEMS];
+		var items = new Item[COUNTOF_ITEMS];
 		for (var i = 0; i < items.Length; ++i)
 			items[i] = await Item.FromStream(stream);
 		return new Forge(position, items);
 	}
 	/* Properties */
 	public (ushort X, ushort Y) Position;
-	public readonly Item[] Items = new Item[COUNT_ITEMS];
+	public readonly Item[] Items;
 	/* Class Properties */
-	private const byte SIZE        = 16;
-	private const byte COUNT_ITEMS = 3;
+	private const byte SIZE          = 16;
+	private const byte COUNTOF_ITEMS =  3;
 }

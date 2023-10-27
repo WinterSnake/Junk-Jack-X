@@ -29,8 +29,8 @@ public sealed class Fruit
 	{
 		var workingData = new byte[SIZE];
 		// Position
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Position.X, 0);
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Position.Y, 2);
+		BitConverter.Write(workingData, this.Position.X, 0);
+		BitConverter.Write(workingData, this.Position.Y, 2);
 		await stream.WriteAsync(workingData, 0, workingData.Length);
 	}
 	/* Static Methods */
@@ -38,17 +38,17 @@ public sealed class Fruit
 	{
 		int bytesRead = 0;
 		var workingData = new byte[SIZE];
-		while (bytesRead < SIZE)
-			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZE - bytesRead);
+		while (bytesRead < workingData.Length)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, workingData.Length - bytesRead);
 		// Position
 		var position = (
-			Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 0),
-			Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 2)
+			BitConverter.GetUInt16(workingData, 0),
+			BitConverter.GetUInt16(workingData, 2)
 		);
 		return new Fruit(position);
 	}
 	/* Properties */
 	public (ushort X, ushort Y) Position;
 	/* Class Properties */
-	private const byte SIZE        = 4;
+	private const byte SIZE = 4;
 }

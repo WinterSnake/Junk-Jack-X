@@ -1,13 +1,15 @@
 /*
-	Junk Jack X: World.Container
-	- Shelf
+	Junk Jack X: World
+	- Mob
 
 	Segment Breakdown:
-	----------------------------------------------------------------
+	------------------------------------------------------------------------
 	Segment[0x0 : 0x1] = X Position | Length: 2 (0x2) | Type: uint16
 	Segment[0x2 : 0x3] = Y Position | Length: 2 (0x2) | Type: uint16
-	----------------------------------------------------------------
-	Size: 4 (0x04) + 48 (0x30) {Item[4]}
+	Segment[0x4]       = Type       | Length: 1 (0x1) | Type: enum[uint8]
+	Segment[0x5 : 0x6] = Id         | Length: 2 (0x2) | Type: uint16
+	------------------------------------------------------------------------
+	Size: 7 (0x7)
 
 	Written By: Ryan Smith
 */
@@ -17,20 +19,14 @@ using System.Threading.Tasks;
 
 namespace JJx;
 
-public sealed class Shelf
+public sealed class Mob
 {
 	/* Constructors */
-	public Shelf((ushort, ushort) position)
+	public Mob(ushort id, (ushort, ushort) position, Type spec = Type.Creature)
 	{
+		this.Id = id;
 		this.Position = position;
-		this.Items = new Item[COUNTOF_ITEMS];
-		for (var i = 0; i < this.Items.Length; ++i)
-			this.Items[i] = new Item(0xFFFF, 0);
-	}
-	private Shelf((ushort, ushort) position, Item[] items)
-	{
-		this.Position = position;
-		this.Items = items;
+		this.Spec = spec;
 	}
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
@@ -39,13 +35,14 @@ public sealed class Shelf
 		// Position
 		BitConverter.Write(workingData, this.Position.X, 0);
 		BitConverter.Write(workingData, this.Position.Y, 2);
+		// Spec
+		BitConverter.Write(workingData, (byte)this.Spec, 4);
+		// Id
+		BitConverter.Write(workingData, this.Id, 5);
 		await stream.WriteAsync(workingData, 0, workingData.Length);
-		// Items
-		foreach (var item in this.Items)
-			await item.ToStream(stream);
 	}
 	/* Static Methods */
-	public async Task<Shelf> FromStream(Stream stream)
+	public async Task<Mob> FromStream(Stream stream)
 	{
 		int bytesRead = 0;
 		var workingData = new byte[SIZE];
@@ -56,16 +53,24 @@ public sealed class Shelf
 			BitConverter.GetUInt16(workingData, 0),
 			BitConverter.GetUInt16(workingData, 2)
 		);
-		// Items
-		var items = new Item[COUNTOF_ITEMS];
-		for (var i = 0; i < items.Length; ++i)
-			items[i] = await Item.FromStream(stream);
-		return new Shelf(position, items);
+		// Spec
+		var spec = (Type)workingData[4];
+		// Id
+		var id = BitConverter.GetUInt16(workingData, 5);
+		return new Mob(id, position, spec);
 	}
 	/* Properties */
+	public ushort Id;
+	public Type Spec;
 	public (ushort X, ushort Y) Position;
-	public readonly Item[] Items;
 	/* Class Properties */
-	private const byte SIZE          = 4;
-	private const byte COUNTOF_ITEMS = 4;
+	private const byte SIZE = 7;
+	/* Sub-Classes */
+	public enum Type
+	{
+		Creature,
+		Monster,
+		Pet,
+		Special,
+	}
 }

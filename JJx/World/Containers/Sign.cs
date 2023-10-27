@@ -1,15 +1,15 @@
 /*
-	Junk Jack X: World Container
+	Junk Jack X: World.Container
 	- Sign
 
 	Segment Breakdown:
-	--------------------------------------------------------------------------
+	----------------------------------------------------------------
 	Segment[0x0 :    0x1] = X Position      | Length: 2  (0x02) | Type: uint16
 	Segment[0x2 :    0x3] = Y Position      | Length: 2  (0x02) | Type: uint16
 	Segment[0x4 :    0x5] = Text Size       | Length: 2  (0x02) | Type: uint16
 	Segment[0x6 : {size}] = Text            | Length:    {size} | Type: char*
-	--------------------------------------------------------------------------
-	Size: 6 + {size}
+	----------------------------------------------------------------
+	Size: 6 (0x6) + char*
 
 	Written By: Ryan Smith
 */
@@ -22,8 +22,7 @@ namespace JJx;
 public sealed class Sign
 {
 	/* Constructors */
-	public Sign((ushort, ushort) position): this(position, String.Empty) { }
-	public Sign((ushort, ushort) position, string text)
+	public Sign((ushort, ushort) position, string text = "")
 	{
 		this.Position = position;
 		this.Text = text;
@@ -33,34 +32,33 @@ public sealed class Sign
 	{
 		var workingData = new byte[SIZE + this.Text.Length + 1];
 		// Position
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Position.X, 0);
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Position.Y, 2);
-		// Text Length
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), (ushort)(this.Text.Length + 1), 4);
+		BitConverter.Write(workingData, this.Position.X, 0);
+		BitConverter.Write(workingData, this.Position.Y, 2);
 		// Text
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Text, 6);
+		BitConverter.Write(workingData, (ushort)(this.Text.Length + 1), 4);
+		BitConverter.Write(workingData, this.Text, 6);
 		await stream.WriteAsync(workingData, 0, workingData.Length);
 	}
 	/* Static Methods */
-	public static async Task<Sign> FromStream(Stream stream)
+	public async Task<Sign> FromStream(Stream stream)
 	{
-		var bytesRead = 0;
+		int bytesRead = 0;
 		var workingData = new byte[SIZE];
-		while (bytesRead < SIZE)
-			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZE - bytesRead);
-		// Position
-		var position = (
-			Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 0),
-			Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 2)
-		);
-		// Text Length
-		var size = Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 4);
-		// Text
-		bytesRead = 0;
-		workingData = new byte[size];
 		while (bytesRead < workingData.Length)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, workingData.Length - bytesRead);
-		var text = Utilities.ByteConverter.GetString(new Span<byte>(workingData));
+		// Position
+		var position = (
+			BitConverter.GetUInt16(workingData, 0),
+			BitConverter.GetUInt16(workingData, 2)
+		);
+		// Text: Length
+		var textLength = BitConverter.GetUInt16(workingData, 4);
+		// Text
+		bytesRead = 0;
+		workingData = new byte[textLength];
+		while (bytesRead < workingData.Length)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, workingData.Length - bytesRead);
+		var text = BitConverter.GetString(workingData);
 		return new Sign(position, text);
 	}
 	/* Properties */

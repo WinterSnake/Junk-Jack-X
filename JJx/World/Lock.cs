@@ -3,12 +3,8 @@
 	- Lock
 
 	Segment Breakdown:
-	----------------------------------------------------------------
-	Segment[0x0 : 0x1] = X Position | Length: 2 (0x2) | Type: uint16
-	Segment[0x2 : 0x3] = Y Position | Length: 2 (0x2) | Type: uint16
-	Segment[0x4]       = Radius     | Length: 1 (0x1) | Type: uint8
-	----------------------------------------------------------------
-	Size: 5 (0x5)
+	------------------------------------------------------------------------
+	------------------------------------------------------------------------
 
 	Written By: Ryan Smith
 */
@@ -21,41 +17,41 @@ namespace JJx;
 public sealed class Lock
 {
 	/* Constructors */
-	public Lock(byte radius, (ushort, ushort) position)
+	public Lock((ushort, ushort) position, byte radius)
 	{
-		this.Radius = radius;
 		this.Position = position;
+		this.Radius = radius;
 	}
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
 	{
 		var workingData = new byte[SIZE];
 		// Position
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Position.X, 0);
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Position.Y, 2);
+		BitConverter.Write(workingData, this.Position.X, 0);
+		BitConverter.Write(workingData, this.Position.Y, 2);
 		// Radius
-		Utilities.ByteConverter.Write(new Span<byte>(workingData), this.Radius, 4);
+		BitConverter.Write(workingData, this.Radius, 4);
 		await stream.WriteAsync(workingData, 0, workingData.Length);
 	}
 	/* Static Methods */
-	public static async Task<Lock> FromStream(Stream stream)
+	public async Task<Lock> FromStream(Stream stream)
 	{
-		var bytesRead = 0;
+		int bytesRead = 0;
 		var workingData = new byte[SIZE];
-		while (bytesRead < SIZE)
-			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZE - bytesRead);
+		while (bytesRead < workingData.Length)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, workingData.Length - bytesRead);
 		// Position
 		var position = (
-			Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 0),
-			Utilities.ByteConverter.GetUInt16(new Span<byte>(workingData), 2)
+			BitConverter.GetUInt16(workingData, 0),
+			BitConverter.GetUInt16(workingData, 2)
 		);
 		// Radius
-		var radius = Utilities.ByteConverter.GetUInt8(new Span<byte>(workingData), 4);
-		return new Lock(radius, position);
+		var radius = workingData[4];
+		return new Lock(position, radius);
 	}
 	/* Properties */
-	public byte Radius;
 	public (ushort X, ushort Y) Position;
+	public byte Radius;
 	/* Class Properties */
 	public const uint RADIUS_WOOD     = 0x0A;
 	public const uint RADIUS_IRON     = 0x14;
