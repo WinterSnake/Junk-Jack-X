@@ -37,7 +37,7 @@ public enum ChunkType : ushort
 	WorldSigns         = 0x0009,
 	WorldShelves       = 0x000A,
 	WorldPlants        = 0x000B,
-	WorldPlantFruits   = 0x000C,
+	WorldFruits        = 0x000C,
 	WorldPlantDecay    = 0x000D,
 	WorldLocks         = 0x000E,
 	WorldFluid         = 0x000F,

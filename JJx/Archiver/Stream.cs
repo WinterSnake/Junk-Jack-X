@@ -90,6 +90,14 @@ public sealed class ArchiverStream : FileStream
 				return chunk.Size;
 		return 0;
 	}
+	public bool IsChunkCompressed(ChunkType type)
+	{
+		if (!this.CanRead) return false;
+		foreach (var chunk in this.Chunks)
+			if (chunk.Type == type)
+				return chunk.Compressed;
+		return false;
+	}
 	public void JumpToChunk(ChunkType type)
 	{
 		foreach (var chunk in this.Chunks)
