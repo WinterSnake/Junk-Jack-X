@@ -1,5 +1,6 @@
 /*
 	Junk Jack X: Player
+	- Effect
 
 	Segment Breakdown:
 	-----------------------------------------------------------
@@ -37,8 +38,8 @@ public sealed class Effect
 	{
 		int bytesRead = 0;
 		var workingData = new byte[SIZE];
-		while (bytesRead < SIZE)
-			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZE - bytesRead);
+		while (bytesRead < workingData.Length)
+			bytesRead += await stream.ReadAsync(workingData, bytesRead, workingData.Length - bytesRead);
 		var id    = BitConverter.GetUInt16(workingData, 0);
 		var ticks = BitConverter.GetUInt16(workingData, 2);
 		return new Effect(id, ticks);

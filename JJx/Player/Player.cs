@@ -23,6 +23,8 @@
 	Segment[0x3C4 : 0x3FF] = Visual Armor Slots     | Length:  60  (0x3C) | Type: struct Item[5]    | Parent: Items
 	Segment[0x400 : 0x40B] = Craft Slot             | Length:  12   (0xC) | Type: struct Item       | Parent: Items
 	Segment[0x40C : 0x417] = Arrow Slot             | Length:  12   (0xC) | Type: struct Item       | Parent: Items
+	:<Craftbooks>
+	:<Achievements>
 	:<Status>
 	Segment[0x548 : 0x53B] = Health                 | Length:   4   (0x4) | Type: float32
 	Segment[0x53C : 0x54C] = Effects                | Length:  16  (0x10) | Type: struct Effect[4]
@@ -46,15 +48,19 @@ public sealed class Player
 		// Info
 		this.Id = Guid.NewGuid();
 		this.Name = name;
-		this.Version = Version.Latest;
 		this.UnlockedPlanets = unlockedPlanets;
 		this.Gameplay = new Gameplay(difficulty, flags);
+		// -Character
+		var rnd = new Random();
+		this.Character = new Character(
+			rnd.NextDouble() >= 0.5,
+			(byte)rnd.Next(Character.MAX_SKINTONES + 1),
+			(byte)rnd.Next(Character.MAX_HAIRSTYLES + 1),
+			(HairColor)(rnd.Next(Enum.GetValues(typeof(HairColor)).Length))
+		);
 		// Inventory
-		this.Items = new Item[COUNTOF_ITEMS];
 		for (var i = 0; i < this.Items.Length; ++i)
 			this.Items[i] = new Item(0xFFFF, 0);
-		// Status
-		this.Effects = new Effect[COUNTOF_EFFECTS];
 	}
 	private Player(
 		Guid id, string name, Version version, Planet unlockedPlanets, Character character, Gameplay gameplay,
@@ -95,7 +101,7 @@ public sealed class Player
 			// =UNKNOWN= :size(2):
 			BitConverter.Write(workingData, (ushort)0, 14);
 			// Gameplay: Difficulty
-			BitConverter.Write(workingData, (byte)this.Gameplay.Difficulty, 16);
+			workingData[16] = (byte)this.Gameplay.Difficulty;
 			// =UNKNOWN= :size(3):
 			await playerInfo.WriteAsync(workingData, 0, workingData.Length);
 		stream.EndChunk();
@@ -104,10 +110,10 @@ public sealed class Player
 			foreach (var item in this.Items)
 				await item.ToStream(playerInventory);
 		stream.EndChunk();
-		/// Craftbook
-		var playerCraftbook = stream.StartChunk(ChunkType.PlayerCraftbook);
+		/// Craftbooks
+		var playerCraftbooks = stream.StartChunk(ChunkType.PlayerCraftbooks);
 			workingData = new byte[0x100];
-			await playerCraftbook.WriteAsync(workingData, 0, workingData.Length);
+			await playerCraftbooks.WriteAsync(workingData, 0, workingData.Length);
 		stream.EndChunk();
 		/// Achievements
 		var playerAchievements = stream.StartChunk(ChunkType.PlayerAchievements);
@@ -116,9 +122,11 @@ public sealed class Player
 		stream.EndChunk();
 		/// Status
 		var playerStatus = stream.StartChunk(ChunkType.PlayerStatus);
+			// Health
 			workingData = new byte[SIZEOF_HEALTH];
 			BitConverter.Write(workingData, this.Health / 10.0f, 0);
 			await playerStatus.WriteAsync(workingData, 0, workingData.Length);
+			// Effects
 			foreach (var effect in this.Effects)
 				await effect.ToStream(playerStatus);
 		stream.EndChunk();
@@ -157,7 +165,7 @@ public sealed class Player
 		var character = Character.Unpack(workingData, 12);
 		// =UNKNOWN= :size(2):
 		// -Difficulty
-		var difficulty = (Difficulty)BitConverter.GetUInt8(workingData, 16);
+		var difficulty = (Difficulty)workingData[16];
 		// =UNKNOWN= :size(3):
 		/// Inventory
 		if (!stream.AtChunk(ChunkType.PlayerInventory))
@@ -165,21 +173,23 @@ public sealed class Player
 		var items = new Item[COUNTOF_ITEMS];
 		for (var i = 0; i < items.Length; ++i)
 			items[i] = await Item.FromStream(stream);
-		/// Craftbook
-		if (!stream.AtChunk(ChunkType.PlayerCraftbook))
-			stream.JumpToChunk(ChunkType.PlayerCraftbook);
-		stream.Position += 0x100;
+		/// Craftbooks
+		if (!stream.AtChunk(ChunkType.PlayerCraftbooks))
+			stream.JumpToChunk(ChunkType.PlayerCraftbooks);
+		stream.Position += stream.GetChunkSize(ChunkType.PlayerCraftbooks);
 		/// Achievements
 		if (!stream.AtChunk(ChunkType.PlayerAchievements))
 			stream.JumpToChunk(ChunkType.PlayerAchievements);
-		stream.Position += 0x20;
+		stream.Position += stream.GetChunkSize(ChunkType.PlayerAchievements);
 		/// Status
 		if (!stream.AtChunk(ChunkType.PlayerStatus))
 			stream.JumpToChunk(ChunkType.PlayerStatus);
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_HEALTH)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_HEALTH - bytesRead);
+		// Health
 		float health = BitConverter.GetFloat32(workingData) * 10.0f;
+		// Effects
 		var effects = new Effect[COUNTOF_EFFECTS];
 		for (var i = 0; i < effects.Length; ++i)
 			effects[i] = await Effect.FromStream(stream);
@@ -200,12 +210,12 @@ public sealed class Player
 			else this._Name = value.Substring(0, SIZEOF_NAME - 1);
 		}
 	}
-	public readonly Version Version;
+	public readonly Version Version = Version.Latest;
 	public Planet UnlockedPlanets;
 	public Character Character;
 	public Gameplay Gameplay;
 	// Inventory
-	public readonly Item[] Items;
+	public readonly Item[] Items = new Item[COUNTOF_ITEMS];
 	public ArraySegment<Item> SurvivalHotbar { get { return new ArraySegment<Item>(this.Items,  0, 10); }}  // 10
 	public ArraySegment<Item> CreativeHotbar { get { return new ArraySegment<Item>(this.Items, 10, 10); }}  // 20
 	public ArraySegment<Item> CraftingSlots  { get { return new ArraySegment<Item>(this.Items, 20,  9); }}  // 29
@@ -219,7 +229,7 @@ public sealed class Player
 	// Achievements
 	// Status
 	public float Health = 50.0f;
-	public readonly Effect[] Effects;
+	public readonly Effect[] Effects = new Effect[COUNTOF_EFFECTS];
 	/* Class Properties */
 	private const byte SIZEOF_BUFFER   = 20;
 	private const byte SIZEOF_UUID     = 16;
