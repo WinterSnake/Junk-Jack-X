@@ -510,7 +510,7 @@ public sealed class World
 		while (bytesRead < SIZEOF_TILECOUNT)
 			bytesRead += await stream.ReadAsync(workingData, bytesRead, SIZEOF_TILECOUNT - bytesRead);
 		var plantCount = BitConverter.GetUInt32(workingData, 0);
-		Console.WriteLine($"Plant[Size: {stream.GetChunkSize(ChunkType.WorldPlants)} | Count: {plantCount}]");
+		//Console.WriteLine($"Plant[Size: {stream.GetChunkSize(ChunkType.WorldPlants)} | Count: {plantCount}]");
 		//var plants = new Plant[plantCount];
 		//for (var i = 0; i < plants.Length; ++i)
 		//	plants[i] = await Plant.FromStream(stream);
