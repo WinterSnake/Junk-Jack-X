@@ -71,6 +71,16 @@ internal sealed class Chunk
 	{
 		return $"Type: {this.Type} | Version: {this.Version} | Compressed: {this.Compressed} | Position: 0x{this.Position:X4} | Size: 0x{this.Size:X4}";
 	}
+	public async Task ToStream(Stream stream)
+	{
+		var workingData = new byte[SIZE];
+		BitConverter.Write(workingData, (ushort)this.Type, 0);
+		BitConverter.Write(workingData, this.Version,      2);
+		BitConverter.Write(workingData, this.Compressed,   3);
+		BitConverter.Write(workingData, this.Position,     4);
+		BitConverter.Write(workingData, this.Size,         8);
+		await stream.WriteAsync(workingData, 0, workingData.Length);
+	}
 	/* Static Methods */
 	public static async Task<Chunk> FromStream(Stream stream)
 	{
@@ -89,7 +99,7 @@ internal sealed class Chunk
 	public readonly ChunkType Type;
 	public readonly byte Version;
 	public readonly bool Compressed;
-	public readonly uint Position;
+	public uint Position { get; internal set; }
 	public uint Size { get; internal set; }
 	/* Class Properties */
 	internal const byte SIZE = 12;

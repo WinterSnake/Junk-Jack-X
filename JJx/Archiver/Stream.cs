@@ -51,16 +51,11 @@ public sealed class ArchiverStream : FileStream
 			JJx.BitConverter.Write(workingData, (uint)this.Chunks.Count, 0);
 			this.Write(workingData, 0, workingData.Length);
 			// Chunks
-			workingData = new byte[Chunk.SIZE];
-			var origin = SIZEOF_HEADER + SIZEOF_PADDING + (this.Chunks.Count * Chunk.SIZE);
+			uint origin = (uint)(SIZEOF_HEADER + SIZEOF_PADDING + (this.Chunks.Count * Chunk.SIZE));
 			foreach (var chunk in this.Chunks)
 			{
-				BitConverter.Write(workingData, (ushort)chunk.Type,              0);
-				BitConverter.Write(workingData, chunk.Version,                   2);
-				BitConverter.Write(workingData, chunk.Compressed,                3);
-				BitConverter.Write(workingData, (uint)(chunk.Position + origin), 4);
-				BitConverter.Write(workingData, chunk.Size,                      8);
-				this.Write(workingData, 0, workingData.Length);
+				chunk.Position += origin;
+				chunk.ToStream(this).Wait();
 			}
 			// Buffer
 			this._Buffer!.Position = 0;
