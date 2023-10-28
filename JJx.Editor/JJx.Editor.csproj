@@ -4,9 +4,9 @@
 		<TargetFramework>net7.0</TargetFramework>
 	</PropertyGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\JJx\JJx.csproj" />
+		<ProjectReference Include="../JJx/JJx.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-	  <PackageReference Include="raylib-cs" Version="4.5.0.4" />
+		<PackageReference Include="raylib-cs" Version="4.5.0.4" />
 	</ItemGroup>
 </Project>

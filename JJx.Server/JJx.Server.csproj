@@ -4,7 +4,7 @@
 		<TargetFramework>net7.0</TargetFramework>
 	</PropertyGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\JJx\JJx.csproj" />
-	  <ProjectReference Include="..\JJx.Protocol\JJx.Protocol.csproj" />
+		<ProjectReference Include="../JJx/JJx.csproj" />
+		<ProjectReference Include="../JJx.Protocol/JJx.Protocol.csproj" />
 	</ItemGroup>
 </Project>
