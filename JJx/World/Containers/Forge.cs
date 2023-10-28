@@ -11,7 +11,8 @@
 	Segment[0x8 : 0x9] = Fuel Ticks Init       | Length: 2 (0x2) | Type: uint16
 	Segment[0xA : 0xB] = Smelt Ticks Init      | Length: 2 (0x2) | Type: uint16
 	Segment[0xC]       = Ticking               | Length: 2 (0x2) | Type: bool
-	Segment[0xD : 0xF] = UNKNOWN               | Length: 3 (0xv) | Type: ???
+	Segment[0xD]       = UNKNOWN               | Length: 1 (0x1) | Type: uint8
+	Segment[0xE : 0xF] = Padding               | Length: 2 (0x1) | Type: uint16
 	---------------------------------------------------------------------------
 	Size: 16 (0x10) + 36 (0x24) {Item[3]}
 
@@ -48,6 +49,11 @@ public sealed class Forge
 		this.Items = items;
 	}
 	/* Instance Methods */
+	public override string ToString()
+	{
+		return $"Forge[{this.Position}]: Items=[{String.Join<Item>(", ", this.Items)}], " + 
+			   $"Ticks[Fuel={this.TicksRemainingFuel}, Smelt={this.TicksRemainingSmelt}]";
+	}
 	public async Task ToStream(Stream stream)
 	{
 		var workingData = new byte[SIZE];
@@ -60,6 +66,7 @@ public sealed class Forge
 		BitConverter.Write(workingData, this.TicksInitFuel,       8);
 		BitConverter.Write(workingData, this.TicksInitSmelt,     10);
 		BitConverter.Write(workingData, this.Ticking,            12);
+		// -UNKNOWN
 		await stream.WriteAsync(workingData, 0, workingData.Length);
 		// Items
 		foreach (var item in this.Items)
@@ -84,8 +91,7 @@ public sealed class Forge
 		var ticksInitSmelt      = BitConverter.GetUInt16(workingData, 10);
 		var ticking             = BitConverter.GetBool(workingData,   12);
 		// -UNKNOWN
-		//var statusData = String.Join(", ", workingData.TakeLast(3).Select(x => $"0x{x:X2}"));
-		//Console.WriteLine($"Status: {statusData}");
+		//Console.WriteLine($"Unknown Byte: {workingData[13]}");
 		// Items
 		var items = new Item[COUNTOF_ITEMS];
 		for (var i = 0; i < items.Length; ++i)
@@ -98,12 +104,12 @@ public sealed class Forge
 	/* Properties */
 	public (ushort X, ushort Y) Position;
 	public bool   Ticking = false;
-	public ushort TicksInitFuel = 0;
-	public ushort TicksInitSmelt = 0;
-	public ushort TicksRemainingFuel = 0;
-	public ushort TicksRemainingSmelt = 0;
+	public ushort TicksInitFuel;
+	public ushort TicksInitSmelt;
+	public ushort TicksRemainingFuel;
+	public ushort TicksRemainingSmelt;
 	public readonly Item[] Items = new Item[COUNTOF_ITEMS];
 	/* Class Properties */
-	private const byte SIZE          = 16;
-	private const byte COUNTOF_ITEMS =  3;
+	private const byte SIZE           = 16;
+	private const byte COUNTOF_ITEMS  =  3;
 }

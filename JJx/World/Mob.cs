@@ -72,5 +72,6 @@ public sealed class Mob
 		Monster,
 		Pet,
 		Special,
+		Breed,
 	}
 }
