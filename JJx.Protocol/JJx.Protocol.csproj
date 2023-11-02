@@ -4,5 +4,6 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="../JJx/JJx.csproj" />
+		<ProjectReference Include="../ENetSharp/ENetSharp.csproj" />
 	</ItemGroup>
 </Project>
