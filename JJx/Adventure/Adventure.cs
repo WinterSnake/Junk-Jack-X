@@ -71,6 +71,10 @@ public sealed class Adventure
 		stream.EndChunk();
 		/// Portals
 		var adventurePortals = stream.StartChunk(ChunkType.AdventurePortals);
+			BitConverter.Write(workingData, (uint)this.Portals.Count);
+			await adventurePortals.WriteAsync(workingData, 0, SIZEOF_TILECOUNT);
+			foreach (var portal in this.Portals)
+				await portal.ToStream(adventurePortals);
 		stream.EndChunk();
 	}
 	/* Static Methods */
