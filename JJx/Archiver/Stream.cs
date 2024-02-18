@@ -14,10 +14,9 @@ namespace JJx;
 
 public enum ArchiverType : ushort
 {
-	Invalid   = 0x00,
-	Player    = 0x01,
-	World     = 0x02,
-	Adventure = 0x03,
+	Player    = 0x00,
+	World     = 0x01,
+	Adventure = 0x02,
 }
 
 public sealed class ArchiverStream : FileStream
@@ -127,28 +126,13 @@ public sealed class ArchiverStream : FileStream
 		while (bytesRead < SIZEOF_HEADER)
 			bytesRead += await reader.ReadAsync(workingData, bytesRead, SIZEOF_HEADER - bytesRead);
 		/// Header
-		var type = ArchiverType.Invalid;
 		var magic = JJx.BitConverter.GetString(workingData, 0, length: 4);
 		var id = JJx.BitConverter.GetUInt16(workingData, 4);
 		var chunkCount = JJx.BitConverter.GetUInt16(workingData, 6);
 		// Type
-		switch (id)
-		{
-			case 0:
-			{
-				type = ArchiverType.Player;
-			} break;
-			case 1:
-			{
-				type = ArchiverType.World;
-			} break;
-			case 2:
-			{
-				type = ArchiverType.Adventure;
-			} break;
-		}
-		if (type == ArchiverType.Invalid)
-			throw new ArgumentException($"'{filePath}' has invalid JJx format; Magic: {magic}, Id: {id}");
+		if (!Enum.IsDefined(typeof(ArchiverType), id))
+			throw new ArgumentException($"'{filePath}' has invalid JJx format; Magic: '{magic}', Id: {id}");
+		ArchiverType type = (ArchiverType)id;
 		/// Chunks
 		reader.Seek(SIZEOF_PADDING, SeekOrigin.Current);
 		var chunks = new List<Chunk>(chunkCount);
@@ -162,8 +146,6 @@ public sealed class ArchiverStream : FileStream
 	// Writing
 	public static async Task<ArchiverStream> Writer(string filePath, ArchiverType type)
 	{
-		if (type == ArchiverType.Invalid)
-			throw new ArgumentException("Cannot create ArchiverType.Invalid ArchiverStream");
 		var writer = new ArchiverStream(filePath, type);
 		var workingData = new byte[SIZEOF_HEADER - 2];
 		switch (type)
