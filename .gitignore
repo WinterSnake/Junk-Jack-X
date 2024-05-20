@@ -1,0 +1,6 @@
+# C#: Build
+**/bin
+**/obj
+
+# Environment
+.tmux-session
