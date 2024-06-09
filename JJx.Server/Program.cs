@@ -17,8 +17,15 @@ internal static class Program
 	private static async Task Main(string[] args)
 	{
 		Console.WriteLine("JJx: Server");
-		var address = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12345);
 		ManagedENet.Startup();
+		var address = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12345);
+		var server = new JJx.Protocol.Server(address, 16);
+		while (true)
+		{
+			server.ProcessEvent();
+		}
+
+		/*
 		var server = new ENetHost(address, 16, 16);
 
 		while (true)
@@ -52,5 +59,6 @@ internal static class Program
 				} break;
 			}
 		}
+		*/
 	}
 }

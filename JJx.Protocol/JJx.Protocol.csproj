@@ -5,4 +5,7 @@
 	<ItemGroup>
 		<ProjectReference Include="../JJx.Core/JJx.Core.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="ENet.Managed" Version="4.2.6" />
+	</ItemGroup>
 </Project>
