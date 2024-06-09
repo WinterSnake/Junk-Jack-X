@@ -8,6 +8,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using ENet.Managed;
+using JJx;
+using JJx.Protocol;
 
 internal static class Program
 {
@@ -36,6 +38,16 @@ internal static class Program
 				case ENetEventType.Receive:
 				{
 					Console.WriteLine("Received data from user..");
+					Console.WriteLine($"Length: {@event.Packet.Data.Length} | Type: {@event.Packet.Data[0]:X} | SubType: {@event.Packet.Data[1]:X}");
+					ushort op = (ushort)((@event.Packet.Data[0] << 8) | (@event.Packet.Data[1] << 0));
+					switch (op)
+					{
+						case 0x0002:
+						{
+							var clientInfo = ClientInfoMessage.FromBuffer(@event.Packet.Data.Slice(2));
+							Console.WriteLine(clientInfo);
+						} break;
+					}
 					@event.Packet.Destroy();
 				} break;
 			}
