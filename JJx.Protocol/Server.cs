@@ -21,11 +21,16 @@ public class Server : Connection
 	// Events
 	public override void OnConnect(ENetPeer peer)
 	{
-		Console.WriteLine($"Peer[Address]: {peer.GetRemoteEndPoint()}");
 	}
 	public override void OnDisconnect(ENetPeer peer)
 	{
 	}
+	public override void OnClientInfo(ClientInfo info)
+	{
+		Console.WriteLine(info);
+	}
+	/* Properties */
+	public event Action<ClientInfo> OnClientInfoEvent;
 	/* Class Properties */
 	private const byte CHANNEL_COUNT = 16;
 }

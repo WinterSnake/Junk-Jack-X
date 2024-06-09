@@ -16,6 +16,7 @@ internal enum ProtocolHeader : ushort
 	Management = (0x00 << 8),
 	// Sub-Type: Management
 	ManagementLogin = Management | (0x02 << 0),
+	ManagementAccept = Management | (0x03 << 0),
 }
 
 public abstract class Connection
@@ -44,17 +45,24 @@ public abstract class Connection
 			} break;
 			case ENetEventType.Receive:
 			{
-				Console.WriteLine($"Channel: {@event.ChannelId} | Flags: {@event.Packet.Flags}");
+				Console.WriteLine($"Channel: {@event.ChannelId} | Flags: {@event.Packet.Flags} | Size: {@event.Packet.Data.Length - 2}");
 				var header = (ProtocolHeader)((@event.Packet.Data[0] << 8) | (@event.Packet.Data[1] << 0));
 				switch (header)
 				{
 					case ProtocolHeader.ManagementLogin:
 					{
-						Console.WriteLine("Login management");
+						var info = ClientInfo.Deserialize(@event.Packet.Data.Slice(2));
+						this.OnClientInfo(info);
+					} break;
+					case ProtocolHeader.ManagementAccept:
+					{
+						Console.WriteLine($"[0]{@event.Packet.Data[2]:X}");
+						Console.WriteLine($"[1]{@event.Packet.Data[3]:X}");
+						this.OnClientAccepted();
 					} break;
 					default:
 					{
-						Console.WriteLine($"Unknown header: {(ushort)header:X2}");
+						Console.WriteLine($"Unknown header: {header}");
 					} break;
 				}
 				@event.Packet.Destroy();
@@ -64,6 +72,8 @@ public abstract class Connection
 	// Events
 	public abstract void OnConnect(ENetPeer peer);
 	public abstract void OnDisconnect(ENetPeer peer);
+	public virtual void OnClientAccepted() {}
+	public virtual void OnClientInfo(ClientInfo info) {}
 	/* Properties */
 	protected ENetHost _Host;
 }
