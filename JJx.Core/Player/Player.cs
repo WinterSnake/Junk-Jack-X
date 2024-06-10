@@ -75,6 +75,13 @@ public sealed class Player
 		var bytesRead = 0;
 		var buffer = new byte[SIZEOF_BUFFER];
 		/// Info
+		if (!stream.IsAtChunk(ArchiverChunkType.PlayerInfo))
+		{
+			#if DEBUG
+				Console.WriteLine($"Not at PlayerInfo chunk. At {stream.Position:X4}, jumping to: {stream.GetChunkPosition(ArchiverChunkType.PlayerInfo):X4}");
+			#endif
+			stream.JumpToChunk(ArchiverChunkType.PlayerInfo);
+		}
 		while (bytesRead < buffer.Length)
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, buffer.Length - bytesRead);
 		// UUID
@@ -91,9 +98,37 @@ public sealed class Player
 		var character  = Character.Unpack(buffer, Player.OFFSET_CHARACTER);
 		var difficulty = (Difficulty)buffer[Player.OFFSET_DIFFICULTY];
 		/// Inventory
+		if (!stream.IsAtChunk(ArchiverChunkType.PlayerInventory))
+		{
+			#if DEBUG
+				Console.WriteLine($"Not at PlayerInventory chunk. At {stream.Position:X4}, jumping to: {stream.GetChunkPosition(ArchiverChunkType.PlayerInventory):X4}");
+			#endif
+			stream.JumpToChunk(ArchiverChunkType.PlayerInventory);
+		}
 		/// Craftbook
+		if (!stream.IsAtChunk(ArchiverChunkType.PlayerCraftbooks))
+		{
+			#if DEBUG
+				Console.WriteLine($"Not at PlayerCraftbooks chunk. At {stream.Position:X4}, jumping to: {stream.GetChunkPosition(ArchiverChunkType.PlayerCraftbooks):X4}");
+			#endif
+			stream.JumpToChunk(ArchiverChunkType.PlayerCraftbooks);
+		}
 		/// Achievements
+		if (!stream.IsAtChunk(ArchiverChunkType.PlayerAchievements))
+		{
+			#if DEBUG
+				Console.WriteLine($"Not at PlayerAchievements chunk. At {stream.Position:X4}, jumping to: {stream.GetChunkPosition(ArchiverChunkType.PlayerAchievements):X4}");
+			#endif
+			stream.JumpToChunk(ArchiverChunkType.PlayerAchievements);
+		}
 		/// Status
+		if (!stream.IsAtChunk(ArchiverChunkType.PlayerStatus))
+		{
+			#if DEBUG
+				Console.WriteLine($"Not at PlayerStatus chunk. At {stream.Position:X4}, jumping to: {stream.GetChunkPosition(ArchiverChunkType.PlayerStatus):X4}");
+			#endif
+			stream.JumpToChunk(ArchiverChunkType.PlayerStatus);
+		}
 		return new Player(id, name, version, planet, character, new Gameplay(difficulty, flags));
 	}
 	/* Properties */
