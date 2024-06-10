@@ -7,13 +7,13 @@
 	:<Info>
 	Segment[0x48  : 0x57]  = UUID                   | Length: 16  (0x10)  | Type: uuid
 	Segment[0x58  : 0x67]  = Name                   | Length: 16  (0x10)  | Type: char*
-	Segment[0x68  : 0x6B]  = Game Version           | Length:  4   (0x4)  | Type: enum[uint32]      | Parent: JJx.Version
-	Segment[0x6C  : 0x6F]  = Theme\Unlocked Planets | Length:  4   (0x4)  | Type: enum flag[uint32] | Parent: World.Planet
-	Segment[0x70  : 0x73]  = Gameplay Flags         | Length:  4   (0x4)  | Type: enum flag[uint32] | Parent: Gameplay.Flags
+	Segment[0x68  : 0x6B]  = Game Version           | Length:  4   (0x4)  | Type: enum[uint32]      | Parent: Version
+	Segment[0x6C  : 0x6F]  = Theme\Unlocked Planets | Length:  4   (0x4)  | Type: enum flag[uint32] | Parent: Planet
+	Segment[0x70  : 0x73]  = Gameplay Flags         | Length:  4   (0x4)  | Type: enum flag[uint32] | Parent: Gameplay.Flag
 	Segment[0x74]          = Hair Color             | Length:  1   (0x1)  | Type: bitfield          | Parent: Character
 	Segment[0x75]          = Gender/Skin/Hair       | Length:  1   (0x1)  | Type: bitfield          | Parent: Character
 	Segment[0x76  :  0x77] = UNKNOWN                | Length:  2   (0x2)  | Type: ???
-	Segment[0x78]          = Gameplay Difficulty    | Length:  1   (0x1)  | Type: enum[uint8]       | Parent: Gameplay.Difficulty
+	Segment[0x78]          = Gameplay Difficulty    | Length:  1   (0x1)  | Type: enum[uint8]       | Parent: Difficulty
 	Segment[0x79  :  0x7B] = UNKNOWN                | Length:  3   (0x3)  | Type: ???
 	:<Inventory>
 	Segment[0x7C  :  0xF3] = Hotbar: Survival       | Length: 120  (0x78) | Type: struct Item[10]   | Parent: Items
@@ -38,21 +38,35 @@ using System.Threading.Tasks;
 
 namespace JJx;
 
-public class Player
+public sealed class Player
 {
 	/* Constructor */
-	public Player(string name)
+	public Player(string name, Gameplay.Flag flags = Gameplay.Flag.None)
 	{
 		// Info
 		this.Id = Guid.NewGuid();
 		this.Name = name;
+		this.UnlockedPlanets = Planet.Terra;
+		this.Character = new Character(
+			Random.Shared.NextDouble() >= 0.5, // Gender
+			(byte)Random.Shared.Next(Character.MAX_SKINTONES + 1), // Skin
+			(byte)Random.Shared.Next(Character.MAX_HAIRSTYLES + 1), // Hair: Style
+			(HairColor)Random.Shared.Next(Enum.GetValues(typeof(HairColor)).Length) // Hair: Color
+		);
+		this.Gameplay = new Gameplay(Difficulty.Normal, flags);
 	}
-	private Player(Guid id, string name)
+	private Player(Guid id, string name, Version version, Planet planet, Character character, Gameplay gameplay)
 	{
 		this.Id = id;
 		this._Name = name;
+		this.Version = version;
+		this.UnlockedPlanets = planet;
+		this.Character = character;
+		this.Gameplay = gameplay;
 	}
 	/* Instance Methods */
+	public override string ToString()
+		=> $"{this.Name}({this.Character}): Unlocked Planets={this.UnlockedPlanets}, Gameplay=[{this.Gameplay}]";
 	/* Static Methods */
 	public static async Task<Player> FromStream(ArchiverStream stream)
 	{
@@ -67,9 +81,23 @@ public class Player
 		var id = new Guid(new Span<byte>(buffer, Player.OFFSET_UUID, Player.SIZEOF_UUID));
 		// Name
 		var name = JJx.BitConverter.GetString(buffer, Player.OFFSET_NAME);
-		return new Player(id, name);
+		// {Version | Unlocked Planets | Gameplay Flags | Character | Unknown | Difficulty | Unknown}
+		bytesRead = 0;
+		while (bytesRead < Player.SIZEOF_INFO)
+			bytesRead += await stream.ReadAsync(buffer, bytesRead, Player.SIZEOF_INFO - bytesRead);
+		var version    = (Version)JJx.BitConverter.LittleEndian.GetUInt32(buffer, Player.OFFSET_VERSION);
+		var planet     = (Planet)JJx.BitConverter.LittleEndian.GetUInt32(buffer, Player.OFFSET_PLANET);
+		var flags      = (Gameplay.Flag)JJx.BitConverter.LittleEndian.GetUInt32(buffer, Player.OFFSET_FLAGS);
+		var character  = Character.Unpack(buffer, Player.OFFSET_CHARACTER);
+		var difficulty = (Difficulty)buffer[Player.OFFSET_DIFFICULTY];
+		/// Inventory
+		/// Craftbook
+		/// Achievements
+		/// Status
+		return new Player(id, name, version, planet, character, new Gameplay(difficulty, flags));
 	}
 	/* Properties */
+	// Info
 	public readonly Guid Id;
 	private string _Name;
 	public string Name {
@@ -81,10 +109,23 @@ public class Player
 		}
 	}
 	public readonly Version Version = Version.Latest;
+	public Planet UnlockedPlanets;
+	public Character Character;
+	public Gameplay Gameplay;
+	// Inventory
+	// Craftbook
+	// Achievements
+	// Status
 	/* Class Properties */
-	private const byte OFFSET_UUID   =  0;
-	private const byte OFFSET_NAME   = 16;
-	private const byte SIZEOF_UUID   = 16;
-	private const byte SIZEOF_NAME   = 16;
-	private const byte SIZEOF_BUFFER = 32;
+	private const byte OFFSET_UUID       =  0;
+	private const byte OFFSET_NAME       = 16;
+	private const byte OFFSET_VERSION    =  0;
+	private const byte OFFSET_PLANET     =  4;
+	private const byte OFFSET_FLAGS      =  8;
+	private const byte OFFSET_CHARACTER  = 12;
+	private const byte OFFSET_DIFFICULTY = 16;
+	private const byte SIZEOF_BUFFER     = 32;
+	private const byte SIZEOF_UUID       = 16;
+	private const byte SIZEOF_NAME       = 16;
+	private const byte SIZEOF_INFO       = 18 + Character.SIZE; // Version(4), Planets(4), Flags(4), Character(2), UNKNOWN(2), Difficulty(1), UNKNOWN(3)
 }
