@@ -84,7 +84,9 @@ public sealed class Player
 	}
 	public async Task ToStream(ArchiverStream stream)
 	{
-		var buffer = new byte[Player.SIZEOF_BUFFER];
+		if (stream.Type != ArchiverStreamType.Player || !stream.CanWrite)
+			throw new ArgumentException($"Expected writeable player stream, either incorrect stream type (Type:{stream.Type}) or not writeable (Writeable:{stream.CanWrite})");
+		var buffer = new byte[SIZEOF_BUFFER];
 		/// Info
 		var playerInfoChunk = stream.StartChunk(ArchiverChunkType.PlayerInfo);
 		{
@@ -92,23 +94,23 @@ public sealed class Player
 			var uuid = this.Id.ToByteArray();
 			await playerInfoChunk.WriteAsync(uuid, 0, uuid.Length);
 			// Name
-			JJx.BitConverter.Write(this.Name, buffer, length: Player.SIZEOF_NAME);
-			await playerInfoChunk.WriteAsync(buffer, 0, Player.SIZEOF_NAME);
+			BitConverter.Write(this.Name, buffer, length: SIZEOF_NAME);
+			await playerInfoChunk.WriteAsync(buffer, 0, SIZEOF_NAME);
 			// Version
-			JJx.BitConverter.LittleEndian.Write((uint)this.Version, buffer, Player.OFFSET_VERSION);
+			BitConverter.LittleEndian.Write((uint)this.Version, buffer, OFFSET_VERSION);
 			// Unlocked Planets
-			JJx.BitConverter.LittleEndian.Write((uint)this.UnlockedPlanets, buffer, Player.OFFSET_PLANET);
+			BitConverter.LittleEndian.Write((uint)this.UnlockedPlanets, buffer, OFFSET_PLANET);
 			// Gameplay Flags
-			JJx.BitConverter.LittleEndian.Write((uint)this.Gameplay.Flags, buffer, Player.OFFSET_FLAGS);
+			BitConverter.LittleEndian.Write((uint)this.Gameplay.Flags, buffer, OFFSET_FLAGS);
 			// Character
-			this.Character.Pack(buffer, Player.OFFSET_CHARACTER);
+			this.Character.Pack(buffer, OFFSET_CHARACTER);
 			// Unknown (SIZE=2)
-			JJx.BitConverter.LittleEndian.Write((ushort)0, buffer, Player.OFFSET_CHARACTER + Character.SIZE);
+			BitConverter.LittleEndian.Write((ushort)0, buffer, OFFSET_CHARACTER + Character.SIZE);
 			// Difficulty
-			buffer[Player.OFFSET_DIFFICULTY] = (byte)this.Gameplay.Difficulty;
+			buffer[OFFSET_DIFFICULTY] = (byte)this.Gameplay.Difficulty;
 			// Unknown (SIZE=3)
-			JJx.BitConverter.LittleEndian.Write((uint)0, buffer, Player.OFFSET_DIFFICULTY + 1);
-			await playerInfoChunk.WriteAsync(buffer, 0, Player.SIZEOF_INFO);
+			BitConverter.LittleEndian.Write((uint)0, buffer, OFFSET_DIFFICULTY + 1);
+			await playerInfoChunk.WriteAsync(buffer, 0, SIZEOF_INFO);
 		}
 		stream.EndChunk();
 		/// Inventory
@@ -133,7 +135,7 @@ public sealed class Player
 		/// Status
 		var playerStatusChunk = stream.StartChunk(ArchiverChunkType.PlayerStatus);
 		{
-			JJx.BitConverter.LittleEndian.Write(this.Health / 10.0f, buffer, Player.OFFSET_HEALTH);
+			BitConverter.LittleEndian.Write(this.Health / 10.0f, buffer, OFFSET_HEALTH);
 			await playerStatusChunk.WriteAsync(buffer, 0, sizeof(float));
 			foreach (var effect in this.Effects)
 				await effect.ToStream(playerStatusChunk);
@@ -158,49 +160,49 @@ public sealed class Player
 		while (bytesRead < buffer.Length)
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, buffer.Length - bytesRead);
 		// UUID
-		var id = new Guid(new Span<byte>(buffer, Player.OFFSET_UUID, Player.SIZEOF_UUID));
+		var id = new Guid(new Span<byte>(buffer, OFFSET_UUID, SIZEOF_UUID));
 		// Name
-		var name = JJx.BitConverter.GetString(buffer, Player.OFFSET_NAME);
+		var name = BitConverter.GetString(buffer, OFFSET_NAME);
 		// {Version | Unlocked Planets | Gameplay Flags | Character | Unknown | Difficulty | Unknown}
 		bytesRead = 0;
-		while (bytesRead < Player.SIZEOF_INFO)
-			bytesRead += await stream.ReadAsync(buffer, bytesRead, Player.SIZEOF_INFO - bytesRead);
-		var version    = (Version)JJx.BitConverter.LittleEndian.GetUInt32(buffer, Player.OFFSET_VERSION);
-		var planet     = (Planet)JJx.BitConverter.LittleEndian.GetUInt32(buffer, Player.OFFSET_PLANET);
-		var flags      = (Gameplay.Flag)JJx.BitConverter.LittleEndian.GetUInt32(buffer, Player.OFFSET_FLAGS);
-		var character  = Character.Unpack(buffer, Player.OFFSET_CHARACTER);
-		var difficulty = (Difficulty)buffer[Player.OFFSET_DIFFICULTY];
+		while (bytesRead < SIZEOF_INFO)
+			bytesRead += await stream.ReadAsync(buffer, bytesRead, SIZEOF_INFO - bytesRead);
+		var version    = (Version)BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_VERSION);
+		var planet     = (Planet)BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_PLANET);
+		var flags      = (Gameplay.Flag)BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_FLAGS);
+		var character  = Character.Unpack(buffer, OFFSET_CHARACTER);
+		var difficulty = (Difficulty)buffer[OFFSET_DIFFICULTY];
 		/// Inventory
 		if (!stream.IsAtChunk(ArchiverChunkType.PlayerInventory))
 			stream.JumpToChunk(ArchiverChunkType.PlayerInventory);
-		var inventory = new Item[Player.COUNTOF_INVENTORY];
+		var inventory = new Item[COUNTOF_INVENTORY];
 		for (var i = 0; i < inventory.Length; ++i)
 			inventory[i] = await Item.FromStream(stream);
 		/// Craftbook
 		if (!stream.IsAtChunk(ArchiverChunkType.PlayerCraftbooks))
 			stream.JumpToChunk(ArchiverChunkType.PlayerCraftbooks);
 		bytesRead = 0;
-		var craftbookArray = new byte[Player.SIZEOF_CRAFTBOOKS];
-		while (bytesRead < craftbookArray.Length)
-			bytesRead += await stream.ReadAsync(craftbookArray, bytesRead, craftbookArray.Length - bytesRead);
+		var craftbook = new byte[SIZEOF_CRAFTBOOKS];
+		while (bytesRead < craftbook.Length)
+			bytesRead += await stream.ReadAsync(craftbook, bytesRead, craftbook.Length - bytesRead);
 		/// Achievements
 		if (!stream.IsAtChunk(ArchiverChunkType.PlayerAchievements))
 			stream.JumpToChunk(ArchiverChunkType.PlayerAchievements);
 		bytesRead = 0;
-		var achievementsArray = new byte[Player.SIZEOF_ACHIEVEMENTS];
-		while (bytesRead < achievementsArray.Length)
-			bytesRead += await stream.ReadAsync(achievementsArray, bytesRead, achievementsArray.Length - bytesRead);
+		var achievements = new byte[SIZEOF_ACHIEVEMENTS];
+		while (bytesRead < achievements.Length)
+			bytesRead += await stream.ReadAsync(achievements, bytesRead, achievements.Length - bytesRead);
 		/// Status
 		if (!stream.IsAtChunk(ArchiverChunkType.PlayerStatus))
 			stream.JumpToChunk(ArchiverChunkType.PlayerStatus);
 		bytesRead = 0;
 		while (bytesRead < sizeof(float))
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, sizeof(float) - bytesRead);
-		var health = JJx.BitConverter.LittleEndian.GetFloat(buffer) * 10.0f;
-		var effects = new Effect[Player.COUNTOF_EFFECTS];
+		var health = BitConverter.LittleEndian.GetFloat(buffer) * 10.0f;
+		var effects = new Effect[COUNTOF_EFFECTS];
 		for (var i = 0; i < effects.Length; ++i)
 			effects[i] = await Effect.FromStream(stream);
-		return new Player(id, name, version, planet, character, new Gameplay(difficulty, flags), inventory, craftbookArray, achievementsArray, health, effects);
+		return new Player(id, name, version, planet, character, new Gameplay(difficulty, flags), inventory, craftbook, achievements, health, effects);
 	}
 	/* Properties */
 	// Info
@@ -210,7 +212,7 @@ public sealed class Player
 		get { return this._Name; }
 		set {
 			if (String.IsNullOrEmpty(value)) return;
-			else if (value.Length < Player.SIZEOF_NAME) this._Name = value;
+			else if (value.Length < SIZEOF_NAME) this._Name = value;
 			else this._Name = value.Substring(0, SIZEOF_NAME - 1);
 		}
 	}
@@ -219,14 +221,14 @@ public sealed class Player
 	public Character Character;
 	public Gameplay Gameplay;
 	// Inventory
-	public readonly Item[] Inventory = new Item[Player.COUNTOF_INVENTORY];
+	public readonly Item[] Inventory = new Item[COUNTOF_INVENTORY];
 	// Craftbook
-	public readonly byte[] CraftbookArray = new byte[Player.SIZEOF_CRAFTBOOKS];
+	public readonly byte[] CraftbookArray = new byte[SIZEOF_CRAFTBOOKS];
 	// Achievements
-	public readonly byte[] AchievementArray = new byte[Player.SIZEOF_ACHIEVEMENTS];
+	public readonly byte[] AchievementArray = new byte[SIZEOF_ACHIEVEMENTS];
 	// Status
 	public float Health = 50.0f;
-	public readonly Effect[] Effects = new Effect[Player.COUNTOF_EFFECTS];
+	public readonly Effect[] Effects = new Effect[COUNTOF_EFFECTS];
 	/* Class Properties */
 	private const byte OFFSET_UUID       =  0;
 	private const byte OFFSET_NAME       = 16;
@@ -239,7 +241,7 @@ public sealed class Player
 	private const byte SIZEOF_BUFFER     = 32;
 	private const byte SIZEOF_UUID       = 16;
 	private const byte SIZEOF_NAME       = 16;
-	private const byte SIZEOF_INFO       = (sizeof(uint) * 3) + Character.SIZE + 2 + sizeof(byte) + 3; // Version(4), Planets(4), Flags(4), Character(2), UNKNOWN(2), Difficulty(1), UNKNOWN(3) == 20
+	private const byte SIZEOF_INFO       = (sizeof(uint) * 3) + Character.SIZE + 2 + sizeof(byte) + 3;  // Version(4), Planet(4), Flags(4), Character(2), UNKNOWN(2), Difficulty(1), UNKNOWN(3) == 20
 	private const byte COUNTOF_INVENTORY = 77;
 	private const byte COUNTOF_EFFECTS   =  4;
 	// Temporary

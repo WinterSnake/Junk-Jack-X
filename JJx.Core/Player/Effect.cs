@@ -26,20 +26,20 @@ public sealed class Effect
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
 	{
-		var buffer = new byte[Effect.SIZE];
-		JJx.BitConverter.LittleEndian.Write(this.Id, buffer, Effect.OFFSET_ID);
-		JJx.BitConverter.LittleEndian.Write(this.Ticks, buffer, Effect.OFFSET_TICKS);
+		var buffer = new byte[SIZE];
+		BitConverter.LittleEndian.Write(this.Id, buffer, OFFSET_ID);
+		BitConverter.LittleEndian.Write(this.Ticks, buffer, OFFSET_TICKS);
 		await stream.WriteAsync(buffer, 0, buffer.Length);
 	}
 	/* Static Methods */
 	public static async Task<Effect> FromStream(Stream stream)
 	{
 		var bytesRead = 0;
-		var buffer = new byte[Effect.SIZE];
+		var buffer = new byte[SIZE];
 		while (bytesRead < buffer.Length)
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, buffer.Length - bytesRead);
-		var id = JJx.BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_ID);
-		var ticks = JJx.BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_TICKS);
+		var id    = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_ID);
+		var ticks = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_TICKS);
 		return new Effect(id, ticks);
 	}
 	/* Properties */

@@ -35,25 +35,25 @@ public sealed class Item
 	public async Task ToStream(Stream stream)
 	{
 		var buffer = new byte[Item.SIZE];
-		JJx.BitConverter.LittleEndian.Write(this.Modifier, buffer, Item.OFFSET_MODIFIER);
-		JJx.BitConverter.LittleEndian.Write(this.Id, buffer, Item.OFFSET_ID);
-		JJx.BitConverter.LittleEndian.Write(this.Count, buffer, Item.OFFSET_COUNT);
-		JJx.BitConverter.LittleEndian.Write(this.Durability, buffer, Item.OFFSET_DURABILITY);
-		JJx.BitConverter.LittleEndian.Write(this.Icon, buffer, Item.OFFSET_ICON);
+		BitConverter.LittleEndian.Write(this.Modifier, buffer, OFFSET_MODIFIER);
+		BitConverter.LittleEndian.Write(this.Id, buffer, OFFSET_ID);
+		BitConverter.LittleEndian.Write(this.Count, buffer, OFFSET_COUNT);
+		BitConverter.LittleEndian.Write(this.Durability, buffer, OFFSET_DURABILITY);
+		BitConverter.LittleEndian.Write(this.Icon, buffer, OFFSET_ICON);
 		await stream.WriteAsync(buffer, 0, buffer.Length);
 	}
 	/* Static Methods */
 	public static async Task<Item> FromStream(Stream stream)
 	{
 		var bytesRead = 0;
-		var buffer = new byte[Item.SIZE];
+		var buffer = new byte[SIZE];
 		while (bytesRead < buffer.Length)
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, buffer.Length - bytesRead);
-		var modifier   = JJx.BitConverter.LittleEndian.GetUInt32(buffer, Item.OFFSET_MODIFIER);
-		var id         = JJx.BitConverter.LittleEndian.GetUInt16(buffer, Item.OFFSET_ID);
-		var count      = JJx.BitConverter.LittleEndian.GetUInt16(buffer, Item.OFFSET_COUNT);
-		var durability = JJx.BitConverter.LittleEndian.GetUInt16(buffer, Item.OFFSET_DURABILITY);
-		var icon       = JJx.BitConverter.LittleEndian.GetUInt16(buffer, Item.OFFSET_ICON);
+		var modifier   = BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_MODIFIER);
+		var id         = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_ID);
+		var count      = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_COUNT);
+		var durability = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_DURABILITY);
+		var icon       = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_ICON);
 		return new Item(id, count, durability, modifier, icon);
 	}
 	/* Properties */

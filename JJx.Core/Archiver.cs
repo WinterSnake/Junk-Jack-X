@@ -62,14 +62,11 @@ public sealed class ArchiverStream : FileStream
 	public async Task CloseAsync()
 	{
 		if (this._HasClosed) return;
-		uint chunkOrigin = (uint)(
-			ArchiverStream.SIZEOF_BUFFER + ArchiverStream.SIZEOF_PADDING +  // Account for header offset
-			(this.Chunks.Count * ArchiverChunk.SIZE) -                      // Account for total chunks offset
-			this.Position                                                   // Account for bufferedstream position offset
-		);
+		// Account for header offset (BUFFER + PADDING); Total chunks offset (Chunks * Chunk.SIZE); bufferedstream start position (this.Position)
+		uint chunkOrigin = (uint)(SIZEOF_BUFFER + SIZEOF_PADDING + (this.Chunks.Count * ArchiverChunk.SIZE) - this.Position);
 		// Chunk Count + UNKNOWN (SIZE=4)
 		var buffer = new byte[ArchiverStream.SIZEOF_BUFFER - 2];
-		JJx.BitConverter.LittleEndian.Write((ushort)this.Chunks.Count, buffer);
+		BitConverter.LittleEndian.Write((ushort)this.Chunks.Count, buffer);
 		await this.WriteAsync(buffer, 0, buffer.Length);
 		// Chunks
 		foreach (var chunk in this.Chunks)
@@ -84,6 +81,13 @@ public sealed class ArchiverStream : FileStream
 		this._HasClosed = true;
 	}
 	// Reading
+	public bool HasChunk(ArchiverChunkType type)
+	{
+		foreach (var chunk in this.Chunks)
+			if (chunk.Type == type)
+				return true;
+		return false;
+	}
 	public bool IsAtChunk(ArchiverChunkType type)
 	{
 		foreach (var chunk in this.Chunks)
@@ -98,6 +102,13 @@ public sealed class ArchiverStream : FileStream
 				return chunk.Compressed;
 		throw new ArgumentException($"Stream did not have expected {type} chunk type.");
 	}
+	public uint GetChunkSize(ArchiverChunkType type)
+	{
+		foreach (var chunk in this.Chunks)
+			if (chunk.Type == type)
+				return chunk.Size;
+		throw new ArgumentException($"Stream did not have expected {type} chunk type.");
+	}
 	public void JumpToChunk(ArchiverChunkType type)
 	{
 		if (!this.CanSeek) throw new ArgumentException("Expected a seekable stream");
@@ -106,7 +117,7 @@ public sealed class ArchiverStream : FileStream
 			if (chunk.Type == type)
 			{
 				#if DEBUG
-					Console.WriteLine($"Stream at 0x{this.Position:X4}, jumping to chunk {type} @0x{chunk.Position:X4}");
+					Console.WriteLine($"Stream at 0x{this.Position:X8}, jumping to chunk {type} @0x{chunk.Position:X8}");
 				#endif
 				this.Position = chunk.Position;
 			}
@@ -131,14 +142,14 @@ public sealed class ArchiverStream : FileStream
 	public static async Task<ArchiverStream> Reader(string filePath)
 	{
 		var bytesRead = 0;
-		var buffer = new byte[ArchiverStream.SIZEOF_BUFFER];
+		var buffer = new byte[SIZEOF_BUFFER];
 		var reader = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 		while (bytesRead < buffer.Length)
 			bytesRead += await reader.ReadAsync(buffer, bytesRead, buffer.Length - bytesRead);
 		// Header
-		var magic = JJx.BitConverter.GetString(buffer, ArchiverStream.OFFSET_MAGIC, length: ArchiverStream.SIZEOF_MAGIC);
-		var type = (ArchiverStreamType)JJx.BitConverter.LittleEndian.GetUInt16(buffer, ArchiverStream.OFFSET_TYPE);
-		var chunkCount = JJx.BitConverter.LittleEndian.GetUInt16(buffer, ArchiverStream.OFFSET_CHUNKCOUNT);
+		var magic = BitConverter.GetString(buffer, OFFSET_MAGIC, length: SIZEOF_MAGIC);
+		var type = (ArchiverStreamType)BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_TYPE);
+		var chunkCount = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_CHUNKCOUNT);
 		// Chunks
 		reader.Seek(SIZEOF_PADDING, SeekOrigin.Current);
 		var chunks = new List<ArchiverChunk>(chunkCount);
@@ -154,7 +165,7 @@ public sealed class ArchiverStream : FileStream
 	}
 	public static async Task<ArchiverStream> Writer(string filePath, ArchiverStreamType type)
 	{
-		var buffer = new byte[ArchiverStream.SIZEOF_BUFFER - 2];
+		var buffer = new byte[SIZEOF_BUFFER - 2];
 		var writer = new ArchiverStream(type, filePath);
 		string magic;
 		switch (type)
@@ -167,8 +178,8 @@ public sealed class ArchiverStream : FileStream
 			} break;
 			default: throw new ArgumentException($"Unknown Archiver Stream Type {type}");
 		}
-		JJx.BitConverter.Write(magic, buffer, ArchiverStream.OFFSET_MAGIC, length: ArchiverStream.SIZEOF_MAGIC);
-		JJx.BitConverter.LittleEndian.Write((ushort)type, buffer, ArchiverStream.OFFSET_TYPE);
+		BitConverter.Write(magic, buffer, OFFSET_MAGIC, length: SIZEOF_MAGIC);
+		BitConverter.LittleEndian.Write((ushort)type, buffer, OFFSET_TYPE);
 		await writer.WriteAsync(buffer, 0, buffer.Length);
 		return writer;
 	}
@@ -215,29 +226,29 @@ internal sealed class ArchiverChunk
 		this.Size = size;
 	}
 	/* Instance Methods */
-	public override string ToString() => $"Chunk{{Type: {this.Type} | Version: {this.Version} | Compressed: {this.Compressed} | Position: 0x{this.Position:X4} | Size: 0x{this.Size:X4}}}";
+	public override string ToString() => $"Chunk{{Type: {this.Type} | Version: {this.Version} | Compressed: {this.Compressed} | Position: 0x{this.Position:X8} | Size: 0x{this.Size:X4}}}";
 	public async Task ToStream(Stream stream)
 	{
-		var buffer = new byte[ArchiverChunk.SIZE];
-		JJx.BitConverter.LittleEndian.Write((ushort)this.Type, buffer, ArchiverChunk.OFFSET_TYPE);
-		buffer[ArchiverChunk.OFFSET_VERSION] = this.Version;
-		JJx.BitConverter.Write(this.Compressed, buffer, ArchiverChunk.OFFSET_COMPRESSEDFLAG);
-		JJx.BitConverter.LittleEndian.Write(this.Position, buffer, ArchiverChunk.OFFSET_POSITION);
-		JJx.BitConverter.LittleEndian.Write(this.Size, buffer, ArchiverChunk.OFFSET_SIZE);
+		var buffer = new byte[SIZE];
+		BitConverter.LittleEndian.Write((ushort)this.Type, buffer, OFFSET_TYPE);
+		buffer[OFFSET_VERSION] = this.Version;
+		BitConverter.Write(this.Compressed, buffer, OFFSET_COMPRESSEDFLAG);
+		BitConverter.LittleEndian.Write(this.Position, buffer, OFFSET_POSITION);
+		BitConverter.LittleEndian.Write(this.Size, buffer, OFFSET_SIZE);
 		await stream.WriteAsync(buffer, 0, buffer.Length);
 	}
 	/* Static Methods */
 	public static async Task<ArchiverChunk> FromStream(Stream stream)
 	{
 		int bytesRead = 0;
-		var buffer = new byte[ArchiverChunk.SIZE];
+		var buffer = new byte[SIZE];
 		while (bytesRead < buffer.Length)
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, buffer.Length - bytesRead);
-		var type       = (ArchiverChunkType)JJx.BitConverter.LittleEndian.GetUInt16(buffer, ArchiverChunk.OFFSET_TYPE);
-		var version    = buffer[ArchiverChunk.OFFSET_VERSION];
-		var compressed = JJx.BitConverter.GetBool(buffer, ArchiverChunk.OFFSET_COMPRESSEDFLAG);
-		var position   = JJx.BitConverter.LittleEndian.GetUInt32(buffer, ArchiverChunk.OFFSET_POSITION);
-		var size       = JJx.BitConverter.LittleEndian.GetUInt32(buffer, ArchiverChunk.OFFSET_SIZE);
+		var type       = (ArchiverChunkType)BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_TYPE);
+		var version    = buffer[OFFSET_VERSION];
+		var compressed = BitConverter.GetBool(buffer, OFFSET_COMPRESSEDFLAG);
+		var position   = BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_POSITION);
+		var size       = BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_SIZE);
 		return new ArchiverChunk(type, version, compressed, position, size);
 	}
 	/* Properties */
