@@ -28,45 +28,33 @@ public sealed class ArchiverStream : FileStream
 		this.Chunks = chunks;
 	}
 	/* Instance Methods */
-	// Reading
 	public bool IsAtChunk(ArchiverChunkType type)
 	{
-		if (!this.CanRead) throw new ArgumentException("Expected a readable stream");
 		foreach (var chunk in this.Chunks)
 			if (chunk.Type == type)
 				return this.Position == chunk.Position;
-		throw new KeyNotFoundException($"Expected {type} chunk but found none.");
+		throw new ArgumentException($"Stream did not have expected {type} chunk type.");
 	}
 	public bool IsChunkCompressed(ArchiverChunkType type)
 	{
-		if (!this.CanRead) throw new ArgumentException("Expected a readable stream");
 		foreach (var chunk in this.Chunks)
 			if (chunk.Type == type)
 				return chunk.Compressed;
-		throw new KeyNotFoundException($"Expected {type} chunk but found none.");
+		throw new ArgumentException($"Stream did not have expected {type} chunk type.");
 	}
 	public void JumpToChunk(ArchiverChunkType type)
 	{
-		if (!this.CanRead) throw new ArgumentException("Expected a readable stream");
+		if (!this.CanSeek) throw new ArgumentException("Expected a seekable stream");
 		foreach (var chunk in this.Chunks)
+		{
 			if (chunk.Type == type)
+			{
+				#if DEBUG
+					Console.WriteLine($"Stream at 0x{this.Position:X4}, jumping to chunk {type} @0x{chunk.Position:X4}");
+				#endif
 				this.Position = chunk.Position;
-	}
-	public uint GetChunkPosition(ArchiverChunkType type)
-	{
-		if (!this.CanRead) throw new ArgumentException("Expected a readable stream");
-		foreach (var chunk in this.Chunks)
-			if (chunk.Type == type)
-				return chunk.Position;
-		throw new KeyNotFoundException($"Expected {type} chunk but found none.");
-	}
-	public uint GetChunkSize(ArchiverChunkType type)
-	{
-		if (!this.CanRead) throw new ArgumentException("Expected a readable stream");
-		foreach (var chunk in this.Chunks)
-			if (chunk.Type == type)
-				return chunk.Size;
-		throw new KeyNotFoundException($"Expected {type} chunk but found none.");
+			}
+		}
 	}
 	/* Static Methods */
 	public static async Task<ArchiverStream> Reader(string filePath)
@@ -95,7 +83,7 @@ public sealed class ArchiverStream : FileStream
 	}
 	/* Properties */
 	public readonly ArchiverStreamType Type;
-	internal readonly List<ArchiverChunk> Chunks;
+	private readonly List<ArchiverChunk> Chunks;
 	/* Class Properties */
 	private const byte OFFSET_MAGIC      = 0;
 	private const byte OFFSET_TYPE       = 4;

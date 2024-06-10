@@ -55,6 +55,30 @@ public class BitConverter
 			);
 		}
 	}
+	public float GetFloat(ReadOnlySpan<byte> buffer, int offset = 0)
+	{
+		if (buffer.Length < offset + 4) throw new IndexOutOfRangeException();
+		int flt;
+		if (this._LittleEndian)
+		{
+			flt = (int)(
+				(buffer[offset + 3] << 24) |
+				(buffer[offset + 2] << 16) |
+				(buffer[offset + 1] <<  8) |
+				(buffer[offset + 0] <<  0)
+			);
+		}
+		else
+		{
+			flt = (int)(
+				(buffer[offset + 0] << 24) |
+				(buffer[offset + 1] << 16) |
+				(buffer[offset + 2] <<  8) |
+				(buffer[offset + 3] <<  0)
+			);
+		}
+		unsafe { return *(float*)&flt; }
+	}
 	// Writing
 	public void Write(ushort @value, Span<byte> buffer, int offset = 0)
 	{
@@ -88,6 +112,26 @@ public class BitConverter
 			buffer[offset + 3] = (byte)((@value & 0x000000FF) >>  0);
 		}
 	}
+	public void Write(float @value, Span<byte> buffer, int offset = 0)
+	{
+		if (buffer.Length < offset + 4) throw new IndexOutOfRangeException();
+		int @int;
+		unsafe { @int = *(int*)&@value; }
+		if (this._LittleEndian)
+		{
+			buffer[offset + 3] = (byte)((@int & 0xFF000000) >> 24);
+			buffer[offset + 2] = (byte)((@int & 0x00FF0000) >> 16);
+			buffer[offset + 1] = (byte)((@int & 0x0000FF00) >>  8);
+			buffer[offset + 0] = (byte)((@int & 0x000000FF) >>  0);
+		}
+		else
+		{
+			buffer[offset + 0] = (byte)((@int & 0xFF000000) >> 24);
+			buffer[offset + 1] = (byte)((@int & 0x00FF0000) >> 16);
+			buffer[offset + 2] = (byte)((@int & 0x0000FF00) >>  8);
+			buffer[offset + 3] = (byte)((@int & 0x000000FF) >>  0);
+		}
+	}
 	/* Static Methods */
 	// Reading
 	public static bool GetBool(ReadOnlySpan<byte> buffer, int offset = 0)
@@ -113,13 +157,10 @@ public class BitConverter
 	}
 	public static void Write(string @value, Span<byte> buffer, int offset = 0, int length = 0)
 	{
-		if (offset > 0) buffer = buffer.Slice(offset);
-		length = length == 0 ? @value.Length : length;
-		if (buffer.Length < length) throw new IndexOutOfRangeException();
 	}
 	/* Properties */
 	private readonly bool _LittleEndian;
 	/* Class Properties */
-	public static readonly BitConverter BigEndian = new BitConverter(false);
-	public static readonly BitConverter LittleEndian = new BitConverter(true);
+	public static readonly JJx.BitConverter BigEndian = new BitConverter(false);
+	public static readonly JJx.BitConverter LittleEndian = new BitConverter(true);
 }
