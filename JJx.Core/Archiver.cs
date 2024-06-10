@@ -2,6 +2,25 @@
 	Junk Jack X: Core
 	- Archiver Stream+Chunk
 
+	Segment Breakdown:
+	----------------------------------------------------------------------------------------------------
+	:<Header>
+	Segment[0x0 : 0x3] = Magic       | Length: 4 (0x4) | Type: chr[4]
+	Segment[0x4 : 0x5] = File Type   | Length: 2 (0x2) | Type: enum[uint16] | Parent: ArchiverStreamType
+	Segment[0x6 : 0x7] = Chunk Count | Length: 2 (0x2) | Type: uint16
+	Segment[0x8 : 0xB] = UNKNOWN     | Length: 4 (0x4) | Type: ???
+	----------------------------------------------------------------------------------------------------
+	Size: 12 (0xC)
+	----------------------------------------------------------------------------------------------------
+	:<Chunk>
+	Segment[0x0 : 0x1] = Type       | Length: 2 (0x2) | Type: enum[uint16] | Parent: ArchiverChunkType
+	Segment[0x2]       = Version    | Length: 1 (0x1) | Type: uint8
+	Segment[0x3]       = Compressed | Length: 1 (0x1) | Type: bool
+	Segment[0x4 : 0x7] = Location   | Length: 4 (0x4) | Type: uint32
+	Segment[0x8 : 0xC] = Size       | Length: 4 (0x4) | Type: uint32
+	----------------------------------------------------------------------------------------------------
+	Size: 12 (0xC)
+
 	Written By: Ryan Smith
 */
 using System;
@@ -73,7 +92,7 @@ public sealed class ArchiverStream : FileStream
 		var chunks = new List<ArchiverChunk>(chunkCount);
 		for (var i = 0; i < chunks.Capacity; ++i)
 		{
-			var chunk = await ArchiverChunk.Deserialize(reader);
+			var chunk = await ArchiverChunk.FromStream(reader);
 			#if DEBUG
 				Console.WriteLine(chunk);
 			#endif
@@ -120,7 +139,7 @@ internal sealed class ArchiverChunk
 	/* Instance Methods */
 	public override string ToString() => $"Chunk{{Type: {this.Type} | Version: {this.Version} | Compressed: {this.Compressed} | Position: 0x{this.Position:X4} | Size: 0x{this.Size:X4}}}";
 	/* Static Methods */
-	public static async Task<ArchiverChunk> Deserialize(Stream stream)
+	public static async Task<ArchiverChunk> FromStream(Stream stream)
 	{
 		int bytesRead = 0;
 		var buffer = new byte[ArchiverChunk.SIZE];
