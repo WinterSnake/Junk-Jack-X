@@ -54,8 +54,12 @@ public sealed class Player
 			(HairColor)Random.Shared.Next(Enum.GetValues(typeof(HairColor)).Length) // Hair: Color
 		);
 		this.Gameplay = new Gameplay(Difficulty.Normal, flags);
+		// Inventory
+		for (var i = 0; i < this.Inventory.Length; ++i)
+			this.Inventory[i] = new Item(0xFFFF, 0x0000);
+		// Status
 	}
-	private Player(Guid id, string name, Version version, Planet planet, Character character, Gameplay gameplay, float health, Effect[] effects)
+	private Player(Guid id, string name, Version version, Planet planet, Character character, Gameplay gameplay, Item[] inventory, float health, Effect[] effects)
 	{
 		this.Id = id;
 		this._Name = name;
@@ -63,6 +67,7 @@ public sealed class Player
 		this.UnlockedPlanets = planet;
 		this.Character = character;
 		this.Gameplay = gameplay;
+		this.Inventory = inventory;
 		this.Health = health;
 		this.Effects = effects;
 	}
@@ -97,6 +102,9 @@ public sealed class Player
 		/// Inventory
 		if (!stream.IsAtChunk(ArchiverChunkType.PlayerInventory))
 			stream.JumpToChunk(ArchiverChunkType.PlayerInventory);
+		var inventory = new Item[Player.COUNTOF_INVENTORY];
+		for (var i = 0; i < inventory.Length; ++i)
+			inventory[i] = await Item.FromStream(stream);
 		/// Craftbook
 		if (!stream.IsAtChunk(ArchiverChunkType.PlayerCraftbooks))
 			stream.JumpToChunk(ArchiverChunkType.PlayerCraftbooks);
@@ -113,7 +121,7 @@ public sealed class Player
 		var effects = new Effect[Player.COUNTOF_EFFECTS];
 		for (var i = 0; i < effects.Length; ++i)
 			effects[i] = await Effect.FromStream(stream);
-		return new Player(id, name, version, planet, character, new Gameplay(difficulty, flags), health, effects);
+		return new Player(id, name, version, planet, character, new Gameplay(difficulty, flags), inventory, health, effects);
 	}
 	/* Properties */
 	// Info
@@ -132,6 +140,7 @@ public sealed class Player
 	public Character Character;
 	public Gameplay Gameplay;
 	// Inventory
+	public readonly Item[] Inventory = new Item[Player.COUNTOF_INVENTORY];
 	// Craftbook
 	// Achievements
 	// Status
@@ -150,5 +159,6 @@ public sealed class Player
 	private const byte SIZEOF_UUID       = 16;
 	private const byte SIZEOF_NAME       = 16;
 	private const byte SIZEOF_INFO       = 18 + Character.SIZE; // Version(4), Planets(4), Flags(4), Character(2), UNKNOWN(2), Difficulty(1), UNKNOWN(3)
+	private const byte COUNTOF_INVENTORY = 77;
 	private const byte COUNTOF_EFFECTS   =  4;
 }
