@@ -59,7 +59,7 @@ public sealed class Player
 			this.Inventory[i] = new Item(0xFFFF, 0x0000);
 		// Status
 	}
-	private Player(Guid id, string name, Version version, Planet planet, Character character, Gameplay gameplay, Item[] inventory, float health, Effect[] effects)
+	private Player(Guid id, string name, Version version, Planet planet, Character character, Gameplay gameplay, Item[] inventory, byte[] craftbooks, byte[] achievements, float health, Effect[] effects)
 	{
 		this.Id = id;
 		this._Name = name;
@@ -68,6 +68,8 @@ public sealed class Player
 		this.Character = character;
 		this.Gameplay = gameplay;
 		this.Inventory = inventory;
+		this.CraftbookArray = craftbooks;
+		this.AchievementArray = achievements;
 		this.Health = health;
 		this.Effects = effects;
 	}
@@ -108,9 +110,17 @@ public sealed class Player
 		/// Craftbook
 		if (!stream.IsAtChunk(ArchiverChunkType.PlayerCraftbooks))
 			stream.JumpToChunk(ArchiverChunkType.PlayerCraftbooks);
+		bytesRead = 0;
+		var craftbookArray = new byte[Player.SIZEOF_CRAFTBOOKS];
+		while (bytesRead < craftbookArray.Length)
+			bytesRead += await stream.ReadAsync(craftbookArray, bytesRead, craftbookArray.Length - bytesRead);
 		/// Achievements
 		if (!stream.IsAtChunk(ArchiverChunkType.PlayerAchievements))
 			stream.JumpToChunk(ArchiverChunkType.PlayerAchievements);
+		bytesRead = 0;
+		var achievementsArray = new byte[Player.SIZEOF_ACHIEVEMENTS];
+		while (bytesRead < achievementsArray.Length)
+			bytesRead += await stream.ReadAsync(craftbookArray, bytesRead, achievementsArray.Length - bytesRead);
 		/// Status
 		if (!stream.IsAtChunk(ArchiverChunkType.PlayerStatus))
 			stream.JumpToChunk(ArchiverChunkType.PlayerStatus);
@@ -121,7 +131,7 @@ public sealed class Player
 		var effects = new Effect[Player.COUNTOF_EFFECTS];
 		for (var i = 0; i < effects.Length; ++i)
 			effects[i] = await Effect.FromStream(stream);
-		return new Player(id, name, version, planet, character, new Gameplay(difficulty, flags), inventory, health, effects);
+		return new Player(id, name, version, planet, character, new Gameplay(difficulty, flags), inventory, craftbookArray, achievementsArray, health, effects);
 	}
 	/* Properties */
 	// Info
@@ -142,7 +152,9 @@ public sealed class Player
 	// Inventory
 	public readonly Item[] Inventory = new Item[Player.COUNTOF_INVENTORY];
 	// Craftbook
+	public readonly byte[] CraftbookArray = new byte[Player.SIZEOF_CRAFTBOOKS];
 	// Achievements
+	public readonly byte[] AchievementArray = new byte[Player.SIZEOF_ACHIEVEMENTS];
 	// Status
 	public float Health = 50.0f;
 	public readonly Effect[] Effects = new Effect[Player.COUNTOF_EFFECTS];
@@ -161,4 +173,7 @@ public sealed class Player
 	private const byte SIZEOF_INFO       = 18 + Character.SIZE; // Version(4), Planets(4), Flags(4), Character(2), UNKNOWN(2), Difficulty(1), UNKNOWN(3)
 	private const byte COUNTOF_INVENTORY = 77;
 	private const byte COUNTOF_EFFECTS   =  4;
+	// Temporary
+	private const ushort SIZEOF_CRAFTBOOKS = 0x0100;
+	private const byte   SIZEOF_ACHIEVEMENTS = 0x20;
 }
