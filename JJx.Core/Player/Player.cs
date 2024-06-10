@@ -239,7 +239,7 @@ public sealed class Player
 	private const byte SIZEOF_BUFFER     = 32;
 	private const byte SIZEOF_UUID       = 16;
 	private const byte SIZEOF_NAME       = 16;
-	private const byte SIZEOF_INFO       = 18 + Character.SIZE; // Version(4), Planets(4), Flags(4), Character(2), UNKNOWN(2), Difficulty(1), UNKNOWN(3)
+	private const byte SIZEOF_INFO       = (sizeof(uint) * 3) + Character.SIZE + 2 + sizeof(byte) + 3; // Version(4), Planets(4), Flags(4), Character(2), UNKNOWN(2), Difficulty(1), UNKNOWN(3) == 20
 	private const byte COUNTOF_INVENTORY = 77;
 	private const byte COUNTOF_EFFECTS   =  4;
 	// Temporary
