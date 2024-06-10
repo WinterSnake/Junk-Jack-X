@@ -32,11 +32,21 @@ public sealed class Item
 	}
 	/* Instance Methods */
 	public override string ToString() => $"Item(Id:{this.Id}, Count:{this.Count}, Modifier:0x{this.Modifier:X4})";
+	public async Task ToStream(Stream stream)
+	{
+		var buffer = new byte[Item.SIZE];
+		JJx.BitConverter.LittleEndian.Write(this.Modifier, buffer, Item.OFFSET_MODIFIER);
+		JJx.BitConverter.LittleEndian.Write(this.Id, buffer, Item.OFFSET_ID);
+		JJx.BitConverter.LittleEndian.Write(this.Count, buffer, Item.OFFSET_COUNT);
+		JJx.BitConverter.LittleEndian.Write(this.Durability, buffer, Item.OFFSET_DURABILITY);
+		JJx.BitConverter.LittleEndian.Write(this.Icon, buffer, Item.OFFSET_ICON);
+		await stream.WriteAsync(buffer, 0, buffer.Length);
+	}
 	/* Static Methods */
 	public static async Task<Item> FromStream(Stream stream)
 	{
 		var bytesRead = 0;
-		var buffer = new byte[Item.SIZEOF_BUFFER];
+		var buffer = new byte[Item.SIZE];
 		while (bytesRead < buffer.Length)
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, buffer.Length - bytesRead);
 		var modifier   = JJx.BitConverter.LittleEndian.GetUInt32(buffer, Item.OFFSET_MODIFIER);
@@ -53,10 +63,10 @@ public sealed class Item
 	public uint Modifier;
 	public ushort Icon;
 	/* Class Properties */
+	private const byte SIZE              = 12;
 	private const byte OFFSET_MODIFIER   =  0;
 	private const byte OFFSET_ID         =  4;
 	private const byte OFFSET_COUNT      =  6;
 	private const byte OFFSET_DURABILITY =  8;
 	private const byte OFFSET_ICON       = 10;
-	private const byte SIZEOF_BUFFER     = 12;
 }

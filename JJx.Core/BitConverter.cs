@@ -157,6 +157,11 @@ public class BitConverter
 	}
 	public static void Write(string @value, Span<byte> buffer, int offset = 0, int length = 0)
 	{
+		length = length == 0 ? @value.Length + 1 : length;
+		if (buffer.Length < offset + length) throw new IndexOutOfRangeException();
+		var valueBytes = Encoding.ASCII.GetBytes(@value);
+		for (var i = 0; i < length; ++i)
+			buffer[offset + i] = i < valueBytes.Length ? valueBytes[i] : (byte)0;
 	}
 	/* Properties */
 	private readonly bool _LittleEndian;

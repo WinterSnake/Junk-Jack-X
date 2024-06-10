@@ -24,6 +24,13 @@ public sealed class Effect
 		this.Ticks = ticks;
 	}
 	/* Instance Methods */
+	public async Task ToStream(Stream stream)
+	{
+		var buffer = new byte[Effect.SIZE];
+		JJx.BitConverter.LittleEndian.Write(this.Id, buffer, Effect.OFFSET_ID);
+		JJx.BitConverter.LittleEndian.Write(this.Ticks, buffer, Effect.OFFSET_TICKS);
+		await stream.WriteAsync(buffer, 0, buffer.Length);
+	}
 	/* Static Methods */
 	public static async Task<Effect> FromStream(Stream stream)
 	{

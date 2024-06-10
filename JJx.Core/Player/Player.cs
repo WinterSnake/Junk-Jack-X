@@ -34,6 +34,7 @@
 	Written By: Ryan Smith
 */
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace JJx;
@@ -76,7 +77,76 @@ public sealed class Player
 	/* Instance Methods */
 	public override string ToString()
 		=> $"{this.Name}({this.Character}): Unlocked Planets={this.UnlockedPlanets}, Gameplay=[{this.Gameplay}], Health: {this.Health}";
+	public async Task Save(string fileName)
+	{
+		using var writer = await ArchiverStream.Writer(fileName, ArchiverStreamType.Player);
+		await this.ToStream(writer);
+		await writer.End();
+	}
+	public async Task ToStream(ArchiverStream stream)
+	{
+		var buffer = new byte[Player.SIZEOF_BUFFER];
+		/// Info
+		var playerInfoChunk = stream.StartChunk(ArchiverChunkType.PlayerInfo);
+		{
+			// UUID
+			var uuid = this.Id.ToByteArray();
+			await playerInfoChunk.WriteAsync(uuid, 0, uuid.Length);
+			// Name
+			JJx.BitConverter.Write(this.Name, buffer, length: Player.SIZEOF_NAME);
+			await playerInfoChunk.WriteAsync(buffer, 0, Player.SIZEOF_NAME);
+			// Version
+			JJx.BitConverter.LittleEndian.Write((uint)this.Version, buffer, Player.OFFSET_VERSION);
+			// Unlocked Planets
+			JJx.BitConverter.LittleEndian.Write((uint)this.UnlockedPlanets, buffer, Player.OFFSET_PLANET);
+			// Gameplay Flags
+			JJx.BitConverter.LittleEndian.Write((uint)this.Gameplay.Flags, buffer, Player.OFFSET_FLAGS);
+			// Character
+			this.Character.Pack(buffer, Player.OFFSET_CHARACTER);
+			// Unknown (SIZE=2)
+			JJx.BitConverter.LittleEndian.Write((ushort)0, buffer, Player.OFFSET_CHARACTER + Character.SIZE);
+			// Difficulty
+			buffer[Player.OFFSET_DIFFICULTY] = (byte)this.Gameplay.Difficulty;
+			// Unknown (SIZE=3)
+			JJx.BitConverter.LittleEndian.Write((uint)0, buffer, Player.OFFSET_DIFFICULTY + 1);
+			await playerInfoChunk.WriteAsync(buffer, 0, Player.SIZEOF_INFO);
+		}
+		stream.EndChunk();
+		/// Inventory
+		var playerInventoryChunk = stream.StartChunk(ArchiverChunkType.PlayerInventory);
+		{
+			foreach (var item in this.Inventory)
+				await item.ToStream(playerInventoryChunk);
+		}
+		stream.EndChunk();
+		/// Craftbooks
+		var playerCraftbooksChunk = stream.StartChunk(ArchiverChunkType.PlayerCraftbooks);
+		{
+			await playerCraftbooksChunk.WriteAsync(this.CraftbookArray, 0, this.CraftbookArray.Length);
+		}
+		stream.EndChunk();
+		/// Achievements
+		var playerAchievementsChunk = stream.StartChunk(ArchiverChunkType.PlayerAchievements, version: 1);
+		{
+			await playerAchievementsChunk.WriteAsync(this.AchievementArray, 0, this.AchievementArray.Length);
+		}
+		stream.EndChunk();
+		/// Status
+		var playerStatusChunk = stream.StartChunk(ArchiverChunkType.PlayerStatus);
+		{
+			JJx.BitConverter.LittleEndian.Write(this.Health / 10.0f, buffer, Player.OFFSET_HEALTH);
+			await playerStatusChunk.WriteAsync(buffer, 0, sizeof(float));
+			foreach (var effect in this.Effects)
+				await effect.ToStream(playerStatusChunk);
+		}
+		stream.EndChunk();
+	}
 	/* Static Methods */
+	public static async Task<Player> Load(string fileName)
+	{
+		using var reader = await ArchiverStream.Reader(fileName);
+		return await Player.FromStream(reader);
+	}
 	public static async Task<Player> FromStream(ArchiverStream stream)
 	{
 		if (stream.Type != ArchiverStreamType.Player || !stream.CanRead)
@@ -120,7 +190,7 @@ public sealed class Player
 		bytesRead = 0;
 		var achievementsArray = new byte[Player.SIZEOF_ACHIEVEMENTS];
 		while (bytesRead < achievementsArray.Length)
-			bytesRead += await stream.ReadAsync(craftbookArray, bytesRead, achievementsArray.Length - bytesRead);
+			bytesRead += await stream.ReadAsync(achievementsArray, bytesRead, achievementsArray.Length - bytesRead);
 		/// Status
 		if (!stream.IsAtChunk(ArchiverChunkType.PlayerStatus))
 			stream.JumpToChunk(ArchiverChunkType.PlayerStatus);
