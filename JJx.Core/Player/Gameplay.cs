@@ -1,6 +1,6 @@
 /*
-	Junk Jack X: Player
-	- Gameplay
+	Junk Jack X: Core
+	- [Player]Gameplay
 
 	Written By: Ryan Smith
 */

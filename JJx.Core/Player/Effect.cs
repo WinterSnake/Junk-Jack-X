@@ -1,6 +1,6 @@
 /*
 	Junk Jack X: Core
-	- Effect
+	- [Player]Effect
 
 	Segment Breakdown:
 	-----------------------------------------------------------

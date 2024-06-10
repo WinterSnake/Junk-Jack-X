@@ -1,6 +1,6 @@
 /*
-	Junk Jack X: Player
-	- Character
+	Junk Jack X: Core
+	- [Player]Character
 
 	Segment Breakdown:
 	---------------------------------------------------------------------------------------------

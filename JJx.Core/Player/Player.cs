@@ -57,9 +57,8 @@ public sealed class Player
 		// Inventory
 		for (var i = 0; i < this.Inventory.Length; ++i)
 			this.Inventory[i] = new Item(0xFFFF, 0x0000);
-		// Status
 	}
-	private Player(Guid id, string name, Version version, Planet planet, Character character, Gameplay gameplay, Item[] inventory, byte[] craftbooks, byte[] achievements, float health, Effect[] effects)
+	private Player(Guid id, string name, Version version, Planet planet, Character character, Gameplay gameplay, Item[] inventory, Craftbook craftbooks, Achievements achievements, float health, Effect[] effects)
 	{
 		this.Id = id;
 		this._Name = name;
@@ -68,8 +67,8 @@ public sealed class Player
 		this.Character = character;
 		this.Gameplay = gameplay;
 		this.Inventory = inventory;
-		this.CraftbookArray = craftbooks;
-		this.AchievementArray = achievements;
+		this.Craftbook = craftbooks;
+		this.Achievements = achievements;
 		this.Health = health;
 		this.Effects = effects;
 	}
@@ -120,13 +119,13 @@ public sealed class Player
 		/// Craftbooks
 		var playerCraftbooksChunk = stream.StartChunk(ArchiverChunkType.PlayerCraftbooks);
 		{
-			await playerCraftbooksChunk.WriteAsync(this.CraftbookArray, 0, this.CraftbookArray.Length);
+			await this.Craftbook.ToStream(playerCraftbooksChunk);
 		}
 		stream.EndChunk();
 		/// Achievements
 		var playerAchievementsChunk = stream.StartChunk(ArchiverChunkType.PlayerAchievements, version: 1);
 		{
-			await playerAchievementsChunk.WriteAsync(this.AchievementArray, 0, this.AchievementArray.Length);
+			await this.Achievements.ToStream(playerAchievementsChunk);
 		}
 		stream.EndChunk();
 		/// Status
@@ -178,17 +177,11 @@ public sealed class Player
 		/// Craftbook
 		if (!stream.IsAtChunk(ArchiverChunkType.PlayerCraftbooks))
 			stream.JumpToChunk(ArchiverChunkType.PlayerCraftbooks);
-		bytesRead = 0;
-		var craftbook = new byte[SIZEOF_CRAFTBOOKS];
-		while (bytesRead < craftbook.Length)
-			bytesRead += await stream.ReadAsync(craftbook, bytesRead, craftbook.Length - bytesRead);
+		var craftbook = await Craftbook.FromStream(stream);
 		/// Achievements
 		if (!stream.IsAtChunk(ArchiverChunkType.PlayerAchievements))
 			stream.JumpToChunk(ArchiverChunkType.PlayerAchievements);
-		bytesRead = 0;
-		var achievements = new byte[SIZEOF_ACHIEVEMENTS];
-		while (bytesRead < achievements.Length)
-			bytesRead += await stream.ReadAsync(achievements, bytesRead, achievements.Length - bytesRead);
+		var achievements = await Achievements.FromStream(stream);
 		/// Status
 		if (!stream.IsAtChunk(ArchiverChunkType.PlayerStatus))
 			stream.JumpToChunk(ArchiverChunkType.PlayerStatus);
@@ -220,9 +213,9 @@ public sealed class Player
 	// Inventory
 	public readonly Item[] Inventory = new Item[COUNTOF_INVENTORY];
 	// Craftbook
-	public readonly byte[] CraftbookArray = new byte[SIZEOF_CRAFTBOOKS];
+	public readonly Craftbook Craftbook;
 	// Achievements
-	public readonly byte[] AchievementArray = new byte[SIZEOF_ACHIEVEMENTS];
+	public readonly Achievements Achievements;
 	// Status
 	public float Health = 50.0f;
 	public readonly Effect[] Effects = new Effect[COUNTOF_EFFECTS];
@@ -241,7 +234,4 @@ public sealed class Player
 	private const byte SIZEOF_INFO       = (sizeof(uint) * 3) + Character.SIZE + 2 + sizeof(byte) + 3;  // Version(4), Planet(4), Flags(4), Character(2), UNKNOWN(2), Difficulty(1), UNKNOWN(3) == 20
 	private const byte COUNTOF_INVENTORY = 77;
 	private const byte COUNTOF_EFFECTS   =  4;
-	// Temporary
-	private const ushort SIZEOF_CRAFTBOOKS = 0x0100;
-	private const byte   SIZEOF_ACHIEVEMENTS = 0x20;
 }
