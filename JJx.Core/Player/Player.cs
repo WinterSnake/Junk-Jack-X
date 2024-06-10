@@ -81,7 +81,6 @@ public sealed class Player
 	{
 		using var writer = await ArchiverStream.Writer(fileName, ArchiverStreamType.Player);
 		await this.ToStream(writer);
-		await writer.End();
 	}
 	public async Task ToStream(ArchiverStream stream)
 	{

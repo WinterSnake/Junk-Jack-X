@@ -12,13 +12,13 @@ namespace JJx;
 public class BitConverter
 {
 	/* Constructor */
-	public BitConverter(bool littleEndian) { this._LittleEndian = littleEndian; }
+	private BitConverter(bool isLittleEndian) { this._IsLittleEndian = isLittleEndian; }
 	/* Instance Methods */
 	// Reading
 	public ushort GetUInt16(ReadOnlySpan<byte> buffer, int offset = 0)
 	{
 		if (buffer.Length < offset + 2) throw new IndexOutOfRangeException();
-		if (this._LittleEndian)
+		if (this._IsLittleEndian)
 		{
 			return (ushort)(
 				(buffer[offset + 1] << 8) |
@@ -36,7 +36,7 @@ public class BitConverter
 	public uint GetUInt32(ReadOnlySpan<byte> buffer, int offset = 0)
 	{
 		if (buffer.Length < offset + 4) throw new IndexOutOfRangeException();
-		if (this._LittleEndian)
+		if (this._IsLittleEndian)
 		{
 			return (uint)(
 				(buffer[offset + 3] << 24) |
@@ -59,7 +59,7 @@ public class BitConverter
 	{
 		if (buffer.Length < offset + 4) throw new IndexOutOfRangeException();
 		int flt;
-		if (this._LittleEndian)
+		if (this._IsLittleEndian)
 		{
 			flt = (int)(
 				(buffer[offset + 3] << 24) |
@@ -83,7 +83,7 @@ public class BitConverter
 	public void Write(ushort @value, Span<byte> buffer, int offset = 0)
 	{
 		if (buffer.Length < offset + 2) throw new IndexOutOfRangeException();
-		if (this._LittleEndian)
+		if (this._IsLittleEndian)
 		{
 			buffer[offset + 1] = (byte)((@value & 0xFF00) >> 8);
 			buffer[offset + 0] = (byte)((@value & 0x00FF) >> 0);
@@ -97,7 +97,7 @@ public class BitConverter
 	public void Write(uint @value, Span<byte> buffer, int offset = 0)
 	{
 		if (buffer.Length < offset + 4) throw new IndexOutOfRangeException();
-		if (this._LittleEndian)
+		if (this._IsLittleEndian)
 		{
 			buffer[offset + 3] = (byte)((@value & 0xFF000000) >> 24);
 			buffer[offset + 2] = (byte)((@value & 0x00FF0000) >> 16);
@@ -117,7 +117,7 @@ public class BitConverter
 		if (buffer.Length < offset + 4) throw new IndexOutOfRangeException();
 		int @int;
 		unsafe { @int = *(int*)&@value; }
-		if (this._LittleEndian)
+		if (this._IsLittleEndian)
 		{
 			buffer[offset + 3] = (byte)((@int & 0xFF000000) >> 24);
 			buffer[offset + 2] = (byte)((@int & 0x00FF0000) >> 16);
@@ -164,8 +164,8 @@ public class BitConverter
 			buffer[offset + i] = i < valueBytes.Length ? valueBytes[i] : (byte)0;
 	}
 	/* Properties */
-	private readonly bool _LittleEndian;
+	private readonly bool _IsLittleEndian;
 	/* Class Properties */
-	public static readonly JJx.BitConverter BigEndian = new BitConverter(false);
-	public static readonly JJx.BitConverter LittleEndian = new BitConverter(true);
+	public static readonly JJx.BitConverter BigEndian = new(false);
+	public static readonly JJx.BitConverter LittleEndian = new(true);
 }

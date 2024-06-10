@@ -53,6 +53,36 @@ public sealed class ArchiverStream : FileStream
 		this._Buffer = new BufferedStream(this);
 	}
 	/* Instance Methods */
+	public override void Close()
+	{
+		if (this.CanWrite)
+			this.CloseAsync().Wait();
+		base.Close();
+	}
+	public async Task CloseAsync()
+	{
+		if (this._HasClosed) return;
+		uint chunkOrigin = (uint)(
+			ArchiverStream.SIZEOF_BUFFER + ArchiverStream.SIZEOF_PADDING +  // Account for header offset
+			(this.Chunks.Count * ArchiverChunk.SIZE) -                      // Account for total chunks offset
+			this.Position                                                   // Account for bufferedstream position offset
+		);
+		// Chunk Count + UNKNOWN (SIZE=4)
+		var buffer = new byte[ArchiverStream.SIZEOF_BUFFER - 2];
+		JJx.BitConverter.LittleEndian.Write((ushort)this.Chunks.Count, buffer);
+		await this.WriteAsync(buffer, 0, buffer.Length);
+		// Chunks
+		foreach (var chunk in this.Chunks)
+		{
+			#if DEBUG
+				Console.WriteLine($"Old Position: 0x{chunk.Position:X4} | New Position: 0x{chunk.Position + chunkOrigin:X4}");
+			#endif
+			chunk.Position += chunkOrigin;
+			await chunk.ToStream(this);
+		}
+		await this._Buffer.FlushAsync();
+		this._HasClosed = true;
+	}
 	// Reading
 	public bool IsAtChunk(ArchiverChunkType type)
 	{
@@ -83,24 +113,6 @@ public sealed class ArchiverStream : FileStream
 		}
 	}
 	// Writing
-	public async Task End()
-	{
-		uint chunkOrigin = (uint)(ArchiverStream.SIZEOF_BUFFER + ArchiverStream.SIZEOF_PADDING + (this.Chunks.Count * ArchiverChunk.SIZE) - this.Position);
-		// Chunk Count + UNKNOWN (SIZE=4)
-		var buffer = new byte[ArchiverStream.SIZEOF_BUFFER - 2];
-		JJx.BitConverter.LittleEndian.Write((ushort)this.Chunks.Count, buffer);
-		await this.WriteAsync(buffer, 0, buffer.Length);
-		// Chunks
-		foreach (var chunk in this.Chunks)
-		{
-			#if DEBUG
-				Console.WriteLine($"Old Position: 0x{chunk.Position:X4} | New Position: 0x{chunk.Position + chunkOrigin:X4}");
-			#endif
-			chunk.Position += chunkOrigin;
-			await chunk.ToStream(this);
-		}
-		await this._Buffer.FlushAsync();
-	}
 	public void EndChunk()
 	{
 		if (this._ActiveChunk == null)
@@ -167,6 +179,7 @@ public sealed class ArchiverStream : FileStream
 	#nullable enable
 	private ArchiverChunk? _ActiveChunk = null;
 	private BufferedStream? _Buffer = null;
+	private bool _HasClosed = false;
 	#nullable disable
 	/* Class Properties */
 	private const byte OFFSET_MAGIC      = 0;
