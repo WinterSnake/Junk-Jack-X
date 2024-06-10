@@ -205,6 +205,25 @@ public enum ArchiverChunkType : ushort
 {
 	Padding = 0x0000,
 	// World
+	WorldInfo          = 0x0001,
+	WorldBlocks        = 0x0002,
+	WorldFog           = 0x0003,  // WorldManager.cpp line: 487
+	WorldSkyline       = 0x0004,
+	WorldChests        = 0x0005,
+	WorldForges        = 0x0006,
+	WorldStables       = 0x0007,
+	WorldLabs          = 0x0008,
+	WorldSigns         = 0x0009,
+	WorldShelves       = 0x000A,
+	WorldPlants        = 0x000B,
+	WorldFruits        = 0x000C,
+	WorldPlantDecay    = 0x000D,
+	WorldLocks         = 0x000E,
+	WorldFluid         = 0x000F,
+	WorldCircuitry     = 0x0010,
+	WorldWeather       = 0x0011,
+	WorldTime          = 0x0012,
+	WorldMobs          = 0x0013,
 	// Adventure
 	// Player
 	PlayerInfo         = 0x8000,

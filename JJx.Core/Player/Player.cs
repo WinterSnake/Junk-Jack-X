@@ -45,7 +45,6 @@ public sealed class Player
 	public Player(string name, Gameplay.Flag flags = Gameplay.Flag.None)
 	{
 		// Info
-		this.Id = Guid.NewGuid();
 		this.Name = name;
 		this.UnlockedPlanets = Planet.Terra;
 		this.Character = new Character(
@@ -75,8 +74,6 @@ public sealed class Player
 		this.Effects = effects;
 	}
 	/* Instance Methods */
-	public override string ToString()
-		=> $"{this.Name}({this.Character}): Unlocked Planets={this.UnlockedPlanets}, Gameplay=[{this.Gameplay}], Health: {this.Health}";
 	public async Task Save(string fileName)
 	{
 		using var writer = await ArchiverStream.Writer(fileName, ArchiverStreamType.Player);
@@ -206,7 +203,7 @@ public sealed class Player
 	}
 	/* Properties */
 	// Info
-	public readonly Guid Id;
+	public readonly Guid Id = Guid.NewGuid();
 	private string _Name;
 	public string Name {
 		get { return this._Name; }
