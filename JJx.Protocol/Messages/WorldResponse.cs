@@ -140,6 +140,8 @@ public sealed class WorldSkylineResponseMessage
 		for (var i = 0; i < this.Skyline.Length; ++i)
 			BitConverter.LittleEndian.Write(this.Skyline[i], buffer, i * sizeof(ushort));
 		using var compressedStream = new MemoryStream();
+		using (var writer = new BinaryWriter(compressedStream))
+			writer.Write((ushort)MessageHeader.WorldSkylineResponse);
 		using var decompressedStream = new MemoryStream(buffer);
 		using (var compressionStream = new GZipStream(compressedStream, CompressionLevel.Optimal, false))
 			decompressedStream.CopyTo(compressionStream);
@@ -148,7 +150,6 @@ public sealed class WorldSkylineResponseMessage
 	/* Static Methods */
 	public unsafe static WorldSkylineResponseMessage Deserialize(ReadOnlySpan<byte> buffer)
 	{
-		Console.WriteLine($"Skyline: {BitConverter.ToString(buffer)}");
 		using var decompressedStream = new MemoryStream();
 		fixed (byte* bufferPin = buffer)
 		{
@@ -164,4 +165,28 @@ public sealed class WorldSkylineResponseMessage
 	}
 	/* Properties */
 	public readonly ushort[] Skyline;
+}
+
+public sealed class WorldBlocksResponseMessage
+{
+	/* Constructor */
+	public WorldBlocksResponseMessage(byte[] data) { this.Data = data; }
+	/* Instance Methods */
+	public byte[] Serialize()
+	{
+		var buffer = new byte[this.Data.Length + sizeof(uint) + sizeof(ushort)];
+		BitConverter.BigEndian.Write((ushort)MessageHeader.WorldBlocksResponse, buffer);
+		BitConverter.LittleEndian.Write((uint)this.Data.Length, buffer, sizeof(ushort));
+		Array.Copy(this.Data, 0, buffer, sizeof(uint) + sizeof(ushort), this.Data.Length);
+		return buffer;
+	}
+	/* Static Methods */
+	public static WorldBlocksResponseMessage Deserialize(ReadOnlySpan<byte> buffer)
+	{
+		var bufferSize = BitConverter.LittleEndian.GetUInt32(buffer);
+		var data = buffer.Slice(sizeof(uint), (int)bufferSize).ToArray();
+		return new WorldBlocksResponseMessage(data);
+	}
+	/* Properties */
+	public readonly byte[] Data;
 }

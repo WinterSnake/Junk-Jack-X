@@ -41,6 +41,9 @@ public class Client : Connection
 	protected override void OnWorldSkyline(WorldSkylineResponseMessage worldSkyline)
 	{
 	}
+	protected override void OnWorldBlocks(WorldBlocksResponseMessage worldBlocks)
+	{
+	}
 	/* Properties */
 	public readonly Player Player;
 	public readonly byte Id;

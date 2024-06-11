@@ -73,6 +73,11 @@ public abstract class Connection
 				var worldInfoResponse = WorldInfoResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
 				this.OnWorldInfo(worldInfoResponse);
 			} break;
+			case MessageHeader.WorldBlocksResponse:
+			{
+				var worldBlocksResponse = WorldBlocksResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
+				this.OnWorldBlocks(worldBlocksResponse);
+			} break;
 			case MessageHeader.WorldSkylineResponse:
 			{
 				var worldSkylineResponse = WorldSkylineResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
@@ -94,6 +99,7 @@ public abstract class Connection
 	protected virtual void OnWorldRequest(ENetPeer peer) { }
 	protected virtual void OnWorldInfo(WorldInfoResponseMessage worldInfo) { }
 	protected virtual void OnWorldSkyline(WorldSkylineResponseMessage worldSkyline) { }
+	protected virtual void OnWorldBlocks(WorldBlocksResponseMessage worldBlocks) { }
 	/* Properties */
 	protected ENetHost _Host;
 }

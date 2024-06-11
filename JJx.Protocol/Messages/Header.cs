@@ -19,6 +19,7 @@ internal enum MessageHeader : ushort
 	LoginFailure         = Management | 0x0C,
 	// Sub-Type: World-Data
 	WorldInfoResponse    = WorldData | 0x43,
+	WorldBlocksResponse  = WorldData | 0x47,
 	WorldSkylineResponse = WorldData | 0x4C,
 }
 
