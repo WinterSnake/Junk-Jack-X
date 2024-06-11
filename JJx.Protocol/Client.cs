@@ -28,14 +28,17 @@ public class Client : Connection
 	}
 	public void RequestWorld()
 	{
+		var request = new WorldRequestMessage();
+		this.ServerPeer.Send(channelId: 0, request.Serialize(), ENetPacketFlags.Reliable);
 	}
 	// Events
-	public override void OnConnect(ENetPeer peer) => this.RequestLogin();
-	public override void OnLoginSuccess()
+	protected override void OnConnect(ENetPeer peer) => this.RequestLogin();
+	protected override void OnLoginSuccess()
 	{
 		Console.WriteLine("Login success!");
+		this.RequestWorld();
 	}
-	public override void OnLoginFailed(LoginFailureReason reason)
+	protected override void OnLoginFailed(LoginFailureReason reason)
 	{
 		Console.WriteLine($"Failed to connect to server: {reason}");
 	}

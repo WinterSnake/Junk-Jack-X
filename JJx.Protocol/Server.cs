@@ -32,7 +32,7 @@ public class Server : Connection
 		peer.Send(channelId: 0, loginResponse.Serialize(), ENetPacketFlags.Reliable);
 	}
 	// Events
-	public override void OnLoginRequest(ENetPeer peer, LoginRequestMessage info)
+	protected override void OnLoginRequest(ENetPeer peer, LoginRequestMessage info)
 	{
 		if (info.Version != this.World.Version)
 		{
@@ -40,6 +40,10 @@ public class Server : Connection
 			return;
 		}
 		this.AcceptLogin(peer);
+	}
+	protected override void OnWorldRequest(ENetPeer peer)
+	{
+
 	}
 	/* Properties */
 	public readonly World World;

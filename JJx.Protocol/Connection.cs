@@ -57,9 +57,17 @@ public abstract class Connection
 			} break;
 			case MessageHeader.LoginSuccess:
 			{
-				var @value = BitConverter.LittleEndian.GetUInt16(@event.Packet.Data, sizeof(ushort));
-				Console.WriteLine($"Login Success Value: 0x{@value:X2}");
+				#if DEBUG
+					Console.WriteLine($"Data: [0]: 0x{@event.Packet.Data[2]:X2}, [1]: 0x{@event.Packet.Data[3]:X2}");
+				#endif
 				this.OnLoginSuccess();
+			} break;
+			case MessageHeader.WorldRequest:
+			{
+				#if DEBUG
+					Console.WriteLine($"Data: [0]: 0x{@event.Packet.Data[2]:X2}, [1]: 0x{@event.Packet.Data[3]:X2}");
+				#endif
+				this.OnWorldRequest(@event.Peer);
 			} break;
 			case MessageHeader.LoginFailure:
 			{
@@ -73,11 +81,12 @@ public abstract class Connection
 		}
 	}
 	// Events
-	public virtual void OnConnect(ENetPeer peer) { }
-	public virtual void OnDisconnect(ENetPeer peer) { }
-	public virtual void OnLoginRequest(ENetPeer peer, LoginRequestMessage info) { }
-	public virtual void OnLoginSuccess() { }
-	public virtual void OnLoginFailed(LoginFailureReason reason) { }
+	protected virtual void OnConnect(ENetPeer peer) { }
+	protected virtual void OnDisconnect(ENetPeer peer) { }
+	protected virtual void OnLoginRequest(ENetPeer peer, LoginRequestMessage info) { }
+	protected virtual void OnLoginSuccess() { }
+	protected virtual void OnLoginFailed(LoginFailureReason reason) { }
+	protected virtual void OnWorldRequest(ENetPeer peer) { }
 	/* Properties */
 	protected ENetHost _Host;
 }
