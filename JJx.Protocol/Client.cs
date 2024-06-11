@@ -28,11 +28,19 @@ public class Client : Connection
 		var clientInfo = new ClientInfo(this.Id, this.Player.Name, this.Player.Version);
 		this.ServerPeer.Send(channelId: 0, clientInfo.Serialize(), ENetPacketFlags.Reliable);
 	}
+	public override void OnLoginSuccess()
+	{
+		Console.WriteLine("Login successful");
+	}
+	public override void OnLoginFailed(LoginFailureReason reason)
+	{
+		Console.WriteLine($"Failed to connect to server: {reason}");
+	}
 	/* Properties */
 	public readonly Player Player;
 	public readonly byte Id;
 	protected ENetPeer ServerPeer { get; private set; }
 	/* Class Properties */
 	private const int PEER_COUNT = 1;
-	private const byte CHANNEL_COUNT = 1;
+	private const byte CHANNEL_COUNT = 16;
 }

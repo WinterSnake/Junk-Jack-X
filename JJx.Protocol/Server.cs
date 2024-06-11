@@ -19,14 +19,28 @@ public class Server : Connection
 		this.World = world;
 	}
 	/* Instance Methods */
-	// Events
-	public override void OnClientInfo(ENetPeer peer, ClientInfo info)
+	protected void AcceptLogin(ENetPeer peer)
 	{
-		Console.WriteLine(info);
-		if (info.Version == this.World.Version)
+		var loginResponse = new LoginResponse();
+		Console.WriteLine(System.BitConverter.ToString(loginResponse.Serialize()));
+		peer.Send(channelId: 0, loginResponse.Serialize(), ENetPacketFlags.Reliable);
+		Console.WriteLine($"Accepting peer @{peer.GetRemoteEndPoint()}");
+	}
+	protected void DeclineLogin(ENetPeer peer, LoginFailureReason reason)
+	{
+		Console.WriteLine($"Declining peer @{peer.GetRemoteEndPoint()} for: {reason}");
+		var loginResponse = new LoginResponse(reason);
+		peer.Send(channelId: 0, loginResponse.Serialize(), ENetPacketFlags.Reliable);
+	}
+	// Events
+	public override void OnLoginAttempt(ENetPeer peer, ClientInfo info)
+	{
+		if (info.Version != this.World.Version)
 		{
-
+			this.DeclineLogin(peer, LoginFailureReason.IncorrectVersion);
+			return;
 		}
+		this.AcceptLogin(peer);
 	}
 	/* Properties */
 	public readonly World World;

@@ -1,6 +1,6 @@
 /*
 	Junk Jack X: Protocol
-	- Messages:Client Info
+	- [Message]Client Info
 
 	Written By: Ryan Smith
 */
@@ -25,7 +25,7 @@ public sealed class ClientInfo
 	{
 		var buffer = new byte[ClientInfo.SIZE + sizeof(ushort)];
 		// Header
-		BitConverter.BigEndian.Write((ushort)ProtocolHeader.ManagementLogin, buffer);
+		BitConverter.BigEndian.Write((ushort)ProtocolHeader.Login, buffer);
 		// Id
 		buffer[ClientInfo.OFFSET_ID + sizeof(ushort)] = this.Id;
 		// Name

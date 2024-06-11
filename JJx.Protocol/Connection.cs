@@ -13,10 +13,11 @@ namespace JJx.Protocol;
 internal enum ProtocolHeader : ushort
 {
 	// Primary Type
-	Management = (0x00 << 8),
+	Management    = (0x00 << 8),
 	// Sub-Type: Management
-	ManagementLogin = Management | (0x02 << 0),
-	ManagementAccept = Management | (0x03 << 0),
+	Login         = Management | 0x02,
+	LoginSuccess  = Management | 0x03,
+	LoginFailure  = Management | 0x0C,
 }
 
 public abstract class Connection
@@ -45,35 +46,48 @@ public abstract class Connection
 			} break;
 			case ENetEventType.Receive:
 			{
-				Console.WriteLine($"Channel: {@event.ChannelId} | Flags: {@event.Packet.Flags} | Size: {@event.Packet.Data.Length - 2}");
-				var header = (ProtocolHeader)((@event.Packet.Data[0] << 8) | (@event.Packet.Data[1] << 0));
-				switch (header)
-				{
-					case ProtocolHeader.ManagementLogin:
-					{
-						var info = ClientInfo.Deserialize(@event.Packet.Data.Slice(2));
-						this.OnClientInfo(@event.Peer, info);
-					} break;
-					case ProtocolHeader.ManagementAccept:
-					{
-						Console.WriteLine($"[0]{@event.Packet.Data[2]:X}");
-						Console.WriteLine($"[1]{@event.Packet.Data[3]:X}");
-						this.OnClientAccepted();
-					} break;
-					default:
-					{
-						Console.WriteLine($"Unknown header: {header}");
-					} break;
-				}
+				this.HandleMessage(@event);
 				@event.Packet.Destroy();
+			} break;
+		}
+	}
+	protected virtual void HandleMessage(ENetEvent @event)
+	{
+		#if DEBUG
+			Console.WriteLine($"Channel: {@event.ChannelId} | Flags: {@event.Packet.Flags}");
+		#endif
+		var header = (ProtocolHeader)((@event.Packet.Data[0] << 8) | (@event.Packet.Data[1] << 0));
+		switch (header)
+		{
+			// Management \\
+			case ProtocolHeader.Login:
+			{
+				var info = ClientInfo.Deserialize(@event.Packet.Data.Slice(2));
+				this.OnLoginAttempt(@event.Peer, info);
+			} break;
+			case ProtocolHeader.LoginSuccess:
+			{
+				var @value = BitConverter.LittleEndian.GetUInt16(@event.Packet.Data, sizeof(ushort));
+				Console.WriteLine($"Login Success Value: 0x{@value:X2}");
+				this.OnLoginSuccess();
+			} break;
+			case ProtocolHeader.LoginFailure:
+			{
+				this.OnLoginFailed((LoginFailureReason)@event.Packet.Data[2]);
+			} break;
+			// UNKNOWN \\
+			default:
+			{
+				Console.WriteLine($"Unknown header: 0x{(ushort)header:X4} | Size: {@event.Packet.Data.Length - 2}");
 			} break;
 		}
 	}
 	// Events
 	public virtual void OnConnect(ENetPeer peer) { }
 	public virtual void OnDisconnect(ENetPeer peer) { }
-	public virtual void OnClientAccepted() { }
-	public virtual void OnClientInfo(ENetPeer peer, ClientInfo info) { }
+	public virtual void OnLoginAttempt(ENetPeer peer, ClientInfo info) { }
+	public virtual void OnLoginSuccess() { }
+	public virtual void OnLoginFailed(LoginFailureReason reason) { }
 	/* Properties */
 	protected ENetHost _Host;
 }
