@@ -62,7 +62,7 @@ public sealed class World
 	private World(
 		Guid id, DateTime lastPlayed, Version version, string name, string author, (ushort, ushort) player, (ushort, ushort) spawn,
 		Planet planet, Season season, Gamemode gamemode, SizeType worldSizeType, SizeType skySizeType, ushort[] skyline,
-		uint ticks, Period period, float poissonSum, Weather weather, byte poissonSkipped,
+		TileMap tileMap, uint ticks, Period period, float poissonSum, Weather weather, byte poissonSkipped,
 		byte[] fluidLayer, byte[] circuitLayer
 	)
 	{
@@ -79,10 +79,10 @@ public sealed class World
 		this.Gamemode = gamemode;
 		this.WorldSizeType = worldSizeType;
 		this.SkySizeType = skySizeType;
-		// Layers
+		// Skyline
 		this.Skyline = skyline;
-		this.FluidLayerArray = fluidLayer;
-		this.CircuitLayerArray = circuitLayer;
+		// Blocks
+		this._TileMap = tileMap;
 		// Time
 		this.Ticks = ticks;
 		this.Time = period;
@@ -91,6 +91,8 @@ public sealed class World
 		this.Weather = weather;
 		this.PoissonSkipped = poissonSkipped;
 		// Containers
+		this.FluidLayerArray = fluidLayer;
+		this.CircuitLayerArray = circuitLayer;
 	}
 	/* Instance Methods */
 	public async Task Save(string fileName)
@@ -165,6 +167,17 @@ public sealed class World
 		/// Blocks
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldBlocks))
 			stream.JumpToChunk(ArchiverChunkType.WorldBlocks);
+		// TODO: Figure out why GZipStream reads more than asked through this single line method (try to remove memorystream requirement)
+		//var tileMap = await TileMap.FromStream(stream, size, stream.IsChunkCompressed(ArchiverChunkType.WorldBlocks));
+		bytesRead = 0;
+		TileMap tileMap;
+		var blockChunk = new byte[stream.GetChunkSize(ArchiverChunkType.WorldBlocks)];
+		using (var blockStream = new MemoryStream(blockChunk))
+		{
+			while (bytesRead < blockChunk.Length)
+				bytesRead += await stream.ReadAsync(blockChunk, bytesRead, blockChunk.Length - bytesRead);
+			tileMap = await TileMap.FromStream(blockStream, size, stream.IsChunkCompressed(ArchiverChunkType.WorldBlocks));
+		}
 		/// Fog
 		if (stream.HasChunk(ArchiverChunkType.WorldFog))
 		{
@@ -284,9 +297,9 @@ public sealed class World
 			stream.Position += sizeof(uint);
 		// -World- \\
 		return new World(
-			id, lastPlayed, version, name, author, player, spawn,
-			planet, season, gamemode, worldSizeType, skySizeType,
-			skyline, ticks, period, poissonSum, weather, poissonSkipped,
+			id, lastPlayed, version, name, author, player, spawn, planet,
+			season, gamemode, worldSizeType, skySizeType, skyline, tileMap,
+			ticks, period, poissonSum, weather, poissonSkipped,
 			fluidLayer, circuitLayer
 		);
 	}
@@ -313,6 +326,7 @@ public sealed class World
 			else this._Author = value.Substring(0, SIZEOF_AUTHOR - 1);
 		}
 	}
+	public (ushort Width, ushort Height) Size { get { return ((ushort)this._TileMap.Tiles.GetLength(0), (ushort)this._TileMap.Tiles.GetLength(1)); }}
 	public (ushort X, ushort Y) Player;
 	public (ushort X, ushort Y) Spawn;
 	public Planet Planet;
@@ -320,6 +334,11 @@ public sealed class World
 	public Gamemode Gamemode;
 	public SizeType WorldSizeType;
 	public SizeType SkySizeType;
+	// Skyline
+	public readonly ushort[] Skyline;  // TODO: Make resizeable
+	// Blocks
+	public Tile[,] Blocks { get { return this._TileMap.Tiles; }}
+	private readonly TileMap _TileMap;  // TODO: Make changeable (?)
 	// Time
 	public uint Ticks = 0;
 	public Period Time = Period.Day;
@@ -327,11 +346,10 @@ public sealed class World
 	public float PoissonSum = 0.0f;
 	public Weather Weather = Weather.None;
 	public byte PoissonSkipped = 0;
-	// Layers
-	public readonly ushort[] Skyline;
-	public readonly byte[] FluidLayerArray = new byte[SIZEOF_FLUIDLAYER];
-	public readonly byte[] CircuitLayerArray = new byte[SIZEOF_CIRCUITLAYER];
 	// Containers
+	// TEMPORARY
+	private readonly byte[] FluidLayerArray = new byte[SIZEOF_FLUIDLAYER];
+	private readonly byte[] CircuitLayerArray = new byte[SIZEOF_CIRCUITLAYER];
 	/* Class Properties */
 	private const byte SIZEOF_BUFFER        = 56;
 	private const byte OFFSET_UUID          =  0;
