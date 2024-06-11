@@ -23,10 +23,6 @@
 	Segment[0x14B]          = Sky Size              | Length:   1     (0x1) | Type: enum[uint8]        | Parent: InitSize
 	Segment[0x14C :  0x14F] = UNKNOWN               | Length:   4     (0x4) | Type: ???
 	Segment[0x150 :  0x1CF] = Padding               | Length: 128    (0x80) | Type: uint32[32] = {0}
-	:<Skyline>
-	Segment[0x1D0 : {size}] = Skyline               | Length: {world.width} | Type: uint16[{size.width}]
-	:<Blocks>
-	Segment[{pos} : {size}] = Blocks                | Length:      {header} | Type: struct Block[{size.x][{size.y}]
 	-----------------------------------------------------------------------------------------------------------------------------
 
 	Written By: Ryan Smith
@@ -66,6 +62,7 @@ public sealed class World
 	private World(
 		Guid id, DateTime lastPlayed, Version version, string name, string author, (ushort, ushort) player, (ushort, ushort) spawn,
 		Planet planet, Season season, Gamemode gamemode, SizeType worldSizeType, SizeType skySizeType, ushort[] skyline,
+		uint ticks, Period period, float poissonSum, Weather weather, byte poissonSkipped,
 		byte[] fluidLayer, byte[] circuitLayer
 	)
 	{
@@ -86,6 +83,13 @@ public sealed class World
 		this.Skyline = skyline;
 		this.FluidLayerArray = fluidLayer;
 		this.CircuitLayerArray = circuitLayer;
+		// Time
+		this.Ticks = ticks;
+		this.Time = period;
+		// Weather
+		this.PoissonSum = poissonSum;
+		this.Weather = weather;
+		this.PoissonSkipped = poissonSkipped;
 		// Containers
 	}
 	/* Instance Methods */
@@ -161,15 +165,29 @@ public sealed class World
 		/// Blocks
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldBlocks))
 			stream.JumpToChunk(ArchiverChunkType.WorldBlocks);
+		/// Fog
+		if (stream.HasChunk(ArchiverChunkType.WorldFog))
+		{
+			if (!stream.IsAtChunk(ArchiverChunkType.WorldFog))
+				stream.JumpToChunk(ArchiverChunkType.WorldFog);
+		}
 		/// Time
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldTime))
 			stream.JumpToChunk(ArchiverChunkType.WorldTime);
-		/// Fog
-		if (stream.HasChunk(ArchiverChunkType.WorldFog) && !stream.IsAtChunk(ArchiverChunkType.WorldFog))
-			stream.JumpToChunk(ArchiverChunkType.WorldFog);
+		bytesRead = 0;
+		while (bytesRead < SIZEOF_TIME)
+			bytesRead += await stream.ReadAsync(buffer, bytesRead, SIZEOF_TIME - bytesRead);
+		var ticks  = BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_TIMETICKS);
+		var period = (Period)buffer[OFFSET_TIMEPERIOD];
 		/// Weather
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldWeather))
 			stream.JumpToChunk(ArchiverChunkType.WorldWeather);
+		bytesRead = 0;
+		while (bytesRead < SIZEOF_WEATHER)
+			bytesRead += await stream.ReadAsync(buffer, bytesRead, SIZEOF_WEATHER - bytesRead);
+		var poissonSum     = BitConverter.LittleEndian.GetFloat(buffer, OFFSET_WEATHERSUM) * 10.0f;
+		var weather        = (Weather)buffer[OFFSET_WEATHERTYPE];
+		var poissonSkipped = buffer[OFFSET_WEATHERSKIP];
 		/// Chests
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldChests))
 			stream.JumpToChunk(ArchiverChunkType.WorldChests);
@@ -264,10 +282,12 @@ public sealed class World
 		/// Padding
 		if (stream.HasChunk(ArchiverChunkType.Padding))
 			stream.Position += sizeof(uint);
+		// -World- \\
 		return new World(
 			id, lastPlayed, version, name, author, player, spawn,
 			planet, season, gamemode, worldSizeType, skySizeType,
-			skyline, fluidLayer, circuitLayer
+			skyline, ticks, period, poissonSum, weather, poissonSkipped,
+			fluidLayer, circuitLayer
 		);
 	}
 	/* Properties */
@@ -300,12 +320,20 @@ public sealed class World
 	public Gamemode Gamemode;
 	public SizeType WorldSizeType;
 	public SizeType SkySizeType;
+	// Time
+	public uint Ticks = 0;
+	public Period Time = Period.Day;
+	// Weather
+	public float PoissonSum = 0.0f;
+	public Weather Weather = Weather.None;
+	public byte PoissonSkipped = 0;
 	// Layers
 	public readonly ushort[] Skyline;
 	public readonly byte[] FluidLayerArray = new byte[SIZEOF_FLUIDLAYER];
 	public readonly byte[] CircuitLayerArray = new byte[SIZEOF_CIRCUITLAYER];
 	// Containers
 	/* Class Properties */
+	private const byte SIZEOF_BUFFER        = 56;
 	private const byte OFFSET_UUID          =  0;
 	private const byte OFFSET_TIMESTAMP     = 16;
 	private const byte OFFSET_VERSION       = 20;
@@ -319,13 +347,19 @@ public sealed class World
 	private const byte OFFSET_GAMEMODE      = 33;
 	private const byte OFFSET_WORLDSIZETYPE = 34;
 	private const byte OFFSET_SKYSIZETYPE   = 35;
-	private const byte SIZEOF_BUFFER        = 56;
+	private const byte OFFSET_TIMETICKS     =  0;
+	private const byte OFFSET_TIMEPERIOD    =  4;
+	private const byte OFFSET_WEATHERSUM    =  0;
+	private const byte OFFSET_WEATHERTYPE   =  4;
+	private const byte OFFSET_WEATHERSKIP   =  5;
 	private const byte SIZEOF_UUID          = 16;
 	private const byte SIZEOF_NAME          = 32;
 	private const byte SIZEOF_AUTHOR        = 16;
 	// Author(16), World.[Width(2), Height(2)](4), Player.[X(2), Y(2)](4), Spawn.[X(2), Y(2)](4), Planet(4), Season(1), Gamemode(1), WorldSize(1), SkySize(1), UNKNOWN(4) == 40
 	private const byte SIZEOF_INFO          = SIZEOF_AUTHOR + (6 * sizeof(ushort)) + sizeof(uint) + (4 * sizeof(byte)) + 4;
 	private const byte SIZEOF_PADDING       = 128;
+	private const byte SIZEOF_TIME          = sizeof(uint) + sizeof(byte) + 3;  // Ticks(4), Period(1), UNKNOWN(3) == 8
+	private const byte SIZEOF_WEATHER       = sizeof(float) + (2 * sizeof(byte)) + 2;  // PoissonSum(4), WeatherType(1), PoissonSkipped(1), UNKNOWN(2) == 8
 	// Temporary
 	private const ushort SIZEOF_FLUIDLAYER   =  8;
 	private const byte   SIZEOF_CIRCUITLAYER = 16;
