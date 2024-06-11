@@ -44,12 +44,12 @@ public sealed class ArchiverStream : FileStream
 	private ArchiverStream(ArchiverStreamType type, List<ArchiverChunk> chunks, SafeFileHandle readerHandle): base(readerHandle, FileAccess.Read)
 	{
 		this.Type = type;
-		this.Chunks = chunks;
+		this._Chunks = chunks;
 	}
 	private ArchiverStream(ArchiverStreamType type, string filePath): base(filePath, FileMode.Create, FileAccess.Write)
 	{
 		this.Type = type;
-		this.Chunks = new List<ArchiverChunk>();
+		this._Chunks = new List<ArchiverChunk>();
 		this._Buffer = new BufferedStream(this);
 	}
 	/* Instance Methods */
@@ -63,18 +63,19 @@ public sealed class ArchiverStream : FileStream
 	{
 		if (this._HasClosed) return;
 		// Account for header offset (BUFFER + PADDING); Total chunks offset (Chunks * Chunk.SIZE); bufferedstream start position (this.Position)
-		uint chunkOrigin = (uint)(SIZEOF_BUFFER + SIZEOF_PADDING + (this.Chunks.Count * ArchiverChunk.SIZE) - this.Position);
+		uint chunkOrigin = (uint)(SIZEOF_BUFFER + SIZEOF_PADDING + (this._Chunks.Count * ArchiverChunk.SIZE) - this.Position);
 		// Chunk Count + UNKNOWN (SIZE=4)
 		var buffer = new byte[ArchiverStream.SIZEOF_BUFFER - 2];
-		BitConverter.LittleEndian.Write((ushort)this.Chunks.Count, buffer);
+		BitConverter.LittleEndian.Write((ushort)this._Chunks.Count, buffer);
 		await this.WriteAsync(buffer, 0, buffer.Length);
 		// Chunks
-		foreach (var chunk in this.Chunks)
+		foreach (var chunk in this._Chunks)
 		{
 			#if DEBUG
-				Console.WriteLine($"Old Position: 0x{chunk.Position:X4} | New Position: 0x{chunk.Position + chunkOrigin:X4}");
+				Console.WriteLine($"Old Position: 0x{chunk.Position:X4} | New Position: 0x{chunk.Position + (chunk.Type != ArchiverChunkType.Padding ? chunkOrigin : 0):X4}");
 			#endif
-			chunk.Position += chunkOrigin;
+			if (chunk.Type != ArchiverChunkType.Padding)
+				chunk.Position += chunkOrigin;
 			await chunk.ToStream(this);
 		}
 		await this._Buffer.FlushAsync();
@@ -83,28 +84,28 @@ public sealed class ArchiverStream : FileStream
 	// Reading
 	public bool HasChunk(ArchiverChunkType type)
 	{
-		foreach (var chunk in this.Chunks)
+		foreach (var chunk in this._Chunks)
 			if (chunk.Type == type)
 				return true;
 		return false;
 	}
 	public bool IsAtChunk(ArchiverChunkType type)
 	{
-		foreach (var chunk in this.Chunks)
+		foreach (var chunk in this._Chunks)
 			if (chunk.Type == type)
 				return this.Position == chunk.Position;
 		throw new ArgumentException($"Stream did not have expected {type} chunk type.");
 	}
 	public bool IsChunkCompressed(ArchiverChunkType type)
 	{
-		foreach (var chunk in this.Chunks)
+		foreach (var chunk in this._Chunks)
 			if (chunk.Type == type)
 				return chunk.Compressed;
 		throw new ArgumentException($"Stream did not have expected {type} chunk type.");
 	}
 	public uint GetChunkSize(ArchiverChunkType type)
 	{
-		foreach (var chunk in this.Chunks)
+		foreach (var chunk in this._Chunks)
 			if (chunk.Type == type)
 				return chunk.Size;
 		throw new ArgumentException($"Stream did not have expected {type} chunk type.");
@@ -112,7 +113,7 @@ public sealed class ArchiverStream : FileStream
 	public void JumpToChunk(ArchiverChunkType type)
 	{
 		if (!this.CanSeek) throw new ArgumentException("Expected a seekable stream");
-		foreach (var chunk in this.Chunks)
+		foreach (var chunk in this._Chunks)
 		{
 			if (chunk.Type == type)
 			{
@@ -129,8 +130,12 @@ public sealed class ArchiverStream : FileStream
 		if (this._ActiveChunk == null)
 			return;
 		this._ActiveChunk.Size = (uint)(this._Buffer.Position - this._ActiveChunk.Position);
-		this.Chunks.Add(this._ActiveChunk);
+		this._Chunks.Add(this._ActiveChunk);
 		this._ActiveChunk = null;
+	}
+	public void EmptyChunk(byte version = 64)
+	{
+		this._Chunks.Add(new ArchiverChunk(ArchiverChunkType.Padding, version, false, 0, 0));
 	}
 	public BufferedStream StartChunk(ArchiverChunkType type, byte version = 0, bool compressed = false)
 	{
@@ -185,7 +190,7 @@ public sealed class ArchiverStream : FileStream
 	}
 	/* Properties */
 	public readonly ArchiverStreamType Type;
-	private readonly List<ArchiverChunk> Chunks;
+	private readonly List<ArchiverChunk> _Chunks;
 	// Writing
 	#nullable enable
 	private ArchiverChunk? _ActiveChunk = null;
@@ -203,7 +208,7 @@ public sealed class ArchiverStream : FileStream
 
 public enum ArchiverChunkType : ushort
 {
-	Padding = 0x0000,
+	Padding            = 0x0000,
 	// World
 	WorldInfo          = 0x0001,
 	WorldBlocks        = 0x0002,

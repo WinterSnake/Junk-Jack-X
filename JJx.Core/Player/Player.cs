@@ -80,9 +80,9 @@ public sealed class Player
 	}
 	public async Task ToStream(ArchiverStream stream)
 	{
+		var buffer = new byte[SIZEOF_BUFFER];
 		if (stream.Type != ArchiverStreamType.Player || !stream.CanWrite)
 			throw new ArgumentException($"Expected writeable player stream, either incorrect stream type (Type:{stream.Type}) or not writeable (Writeable:{stream.CanWrite})");
-		var buffer = new byte[SIZEOF_BUFFER];
 		/// Info
 		var playerInfoChunk = stream.StartChunk(ArchiverChunkType.PlayerInfo);
 		{
@@ -146,10 +146,10 @@ public sealed class Player
 	}
 	public static async Task<Player> FromStream(ArchiverStream stream)
 	{
-		if (stream.Type != ArchiverStreamType.Player || !stream.CanRead)
-			throw new ArgumentException($"Expected readable player stream, either incorrect stream type (Type:{stream.Type}) or not readable (Readable:{stream.CanRead})");
 		var bytesRead = 0;
 		var buffer = new byte[SIZEOF_BUFFER];
+		if (stream.Type != ArchiverStreamType.Player || !stream.CanRead)
+			throw new ArgumentException($"Expected readable player stream, either incorrect stream type (Type:{stream.Type}) or not readable (Readable:{stream.CanRead})");
 		/// Info
 		if (!stream.IsAtChunk(ArchiverChunkType.PlayerInfo))
 			stream.JumpToChunk(ArchiverChunkType.PlayerInfo);
