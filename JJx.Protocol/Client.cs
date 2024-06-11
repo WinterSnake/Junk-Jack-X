@@ -1,6 +1,6 @@
 /*
 	Junk Jack X: Protocol
-	- Connection:Client
+	- [Connection]Client
 
 	Written By: Ryan Smith
 */
@@ -37,17 +37,24 @@ public class Client : Connection
 	protected override void OnLoginFailed(LoginFailureReason reason) => Console.WriteLine($"Failed to connect to server: {reason}");
 	protected override void OnWorldInfo(WorldInfoResponseMessage worldInfo)
 	{
+		this._World = new(worldInfo);
 	}
 	protected override void OnWorldSkyline(WorldSkylineResponseMessage worldSkyline)
 	{
+		this._World.Skyline = worldSkyline;
 	}
 	protected override void OnWorldBlocks(WorldBlocksResponseMessage worldBlocks)
 	{
+		this._World.AddToBlockBuffer(worldBlocks);
+		if (!this._World.IsReady)
+			return;
+		Console.WriteLine("World is finished and ready to decompress/build");
 	}
 	/* Properties */
 	public readonly Player Player;
 	public readonly byte Id;
 	protected ENetPeer ServerPeer { get; private set; }
+	private WorldBuilder _World;
 	/* Class Properties */
 	private const int PEER_COUNT = 1;
 	private const byte CHANNEL_COUNT = 16;

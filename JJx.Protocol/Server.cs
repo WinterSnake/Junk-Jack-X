@@ -1,6 +1,6 @@
 /*
 	Junk Jack X: Protocol
-	- Connection:Server
+	- [Connection]Server
 
 	Written By: Ryan Smith
 */
