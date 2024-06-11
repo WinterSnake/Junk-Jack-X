@@ -82,7 +82,7 @@ public sealed class World
 		// Skyline
 		this.Skyline = skyline;
 		// Blocks
-		this._TileMap = tileMap;
+		this.TileMap = tileMap;
 		// Time
 		this.Ticks = ticks;
 		this.Time = period;
@@ -150,7 +150,7 @@ public sealed class World
 		/// Blocks
 		var worldBlocksChunk = stream.StartChunk(ArchiverChunkType.WorldBlocks, version: 1, compressed: true);
 		{
-			await this._TileMap.ToStream(worldBlocksChunk);
+			await this.TileMap.ToStream(worldBlocksChunk);
 		}
 		stream.EndChunk();
 		/// Fog
@@ -494,7 +494,7 @@ public sealed class World
 			else this._Author = value.Substring(0, SIZEOF_AUTHOR - 1);
 		}
 	}
-	public (ushort Width, ushort Height) Size { get { return ((ushort)this._TileMap.Tiles.GetLength(0), (ushort)this._TileMap.Tiles.GetLength(1)); }}
+	public (ushort Width, ushort Height) Size { get { return ((ushort)this.TileMap.Tiles.GetLength(0), (ushort)this.TileMap.Tiles.GetLength(1)); }}
 	public (ushort X, ushort Y) Player;
 	public (ushort X, ushort Y) Spawn;
 	public Planet Planet;
@@ -505,8 +505,8 @@ public sealed class World
 	// Skyline
 	public readonly ushort[] Skyline;  // TODO: Make resizeable
 	// Blocks
-	public Tile[,] Blocks { get { return this._TileMap.Tiles; }}
-	private readonly TileMap _TileMap;  // TODO: Make changeable (?)
+	public Tile[,] Blocks { get { return this.TileMap.Tiles; }}
+	public readonly TileMap TileMap;  // TODO: Make assignable (?)
 	// Time
 	public uint Ticks = 0;
 	public Period Time = Period.Day;

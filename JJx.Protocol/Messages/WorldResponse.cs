@@ -136,21 +136,27 @@ public sealed class WorldSkylineResponseMessage
 	/* Instance Methods */
 	public byte[] Serialize()
 	{
+		using var compressedStream = new MemoryStream();
 		var buffer = new byte[this.Skyline.Length * sizeof(ushort)];
+		// Write skyline to array
 		for (var i = 0; i < this.Skyline.Length; ++i)
 			BitConverter.LittleEndian.Write(this.Skyline[i], buffer, i * sizeof(ushort));
-		using var compressedStream = new MemoryStream();
-		using (var writer = new BinaryWriter(compressedStream))
-			writer.Write((ushort)MessageHeader.WorldSkylineResponse);
+		// Compress skyline array
 		using var decompressedStream = new MemoryStream(buffer);
-		using (var compressionStream = new GZipStream(compressedStream, CompressionLevel.Optimal, false))
+		using (var compressionStream = new GZipStream(compressedStream, CompressionLevel.Optimal, true))
 			decompressedStream.CopyTo(compressionStream);
-		return compressedStream.GetBuffer();
+		// Write header
+		buffer = new byte[compressedStream.Length + sizeof(ushort)];
+		BitConverter.BigEndian.Write((ushort)MessageHeader.WorldSkylineResponse, buffer);
+		// Copy compressed skyline
+		Array.Copy(compressedStream.GetBuffer(), 0, buffer, sizeof(ushort), compressedStream.Length);
+		return buffer;
 	}
 	/* Static Methods */
 	public unsafe static WorldSkylineResponseMessage Deserialize(ReadOnlySpan<byte> buffer)
 	{
 		using var decompressedStream = new MemoryStream();
+		// Decompress skyline
 		fixed (byte* bufferPin = buffer)
 		{
 			using var compressedStream = new UnmanagedMemoryStream(bufferPin, buffer.Length);
@@ -158,6 +164,7 @@ public sealed class WorldSkylineResponseMessage
 			decompressionStream.CopyTo(decompressedStream);
 		}
 		var decompressedSkyline = decompressedStream.GetBuffer();
+		// Read skyline from array
 		var skyline = new ushort[decompressedSkyline.Length / sizeof(ushort)];
 		for (var i = 0; i < skyline.Length; ++i)
 			skyline[i] = BitConverter.LittleEndian.GetUInt16(decompressedSkyline, i * sizeof(ushort));

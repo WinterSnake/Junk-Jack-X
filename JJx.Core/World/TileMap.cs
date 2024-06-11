@@ -51,7 +51,7 @@ public sealed class TileMap
 		}
 	}
 	/* Static Methods */
-	public static async Task<TileMap> FromStream(Stream stream, (ushort width, ushort height) size, bool compressed)
+	public static async Task<TileMap> FromStream(Stream stream, (ushort width, ushort height) size, bool compressed = true)
 	{
 		Tile[,] tiles = new Tile[size.width, size.height];
 		// Decompress stream
