@@ -33,14 +33,11 @@ public class Client : Connection
 	}
 	// Events
 	protected override void OnConnect(ENetPeer peer) => this.RequestLogin();
-	protected override void OnLoginSuccess()
+	protected override void OnLoginSuccess() => this.RequestWorld();
+	protected override void OnLoginFailed(LoginFailureReason reason) => Console.WriteLine($"Failed to connect to server: {reason}");
+	protected override void OnWorldInfo(WorldInfoResponseMessage worldInfo)
 	{
-		Console.WriteLine("Login success!");
-		this.RequestWorld();
-	}
-	protected override void OnLoginFailed(LoginFailureReason reason)
-	{
-		Console.WriteLine($"Failed to connect to server: {reason}");
+		Console.WriteLine(worldInfo.Planet);
 	}
 	/* Properties */
 	public readonly Player Player;

@@ -43,9 +43,11 @@ public class Server : Connection
 	}
 	protected override void OnWorldRequest(ENetPeer peer)
 	{
-
+		Console.WriteLine("Player requested world..");
 	}
 	/* Properties */
+	public Difficulty Difficulty = Difficulty.Normal;
+	public bool IsTimeRunning = true;
 	public readonly World World;
 	/* Class Properties */
 	private const byte CHANNEL_COUNT = 16;

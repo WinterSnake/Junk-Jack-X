@@ -163,6 +163,18 @@ public class BitConverter
 		for (var i = 0; i < length; ++i)
 			buffer[offset + i] = i < valueBytes.Length ? valueBytes[i] : (byte)0;
 	}
+	// Debugging
+	public static string ToString(ReadOnlySpan<byte> buffer)
+	{
+		var stringBuffer = new StringBuilder("[");
+		for (var i = 0; i < buffer.Length; ++i)
+		{
+			stringBuffer.Append($"0x{buffer[i]:X2}");
+			if (i < buffer.Length - 1)
+				stringBuffer.Append(", ");
+		}
+		return stringBuffer.ToString() + ']';
+	}
 	/* Properties */
 	private readonly bool _IsLittleEndian;
 	/* Class Properties */

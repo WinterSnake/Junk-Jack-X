@@ -20,20 +20,14 @@ public abstract class Connection
 	}
 	#nullable disable
 	/* Instance Methods */
-	public void ProcessEvent()
+	public virtual void ProcessEvent()
 	{
 		var @event = this._Host.Service(TimeSpan.FromMilliseconds(0));
 		switch (@event.Type)
 		{
 			case ENetEventType.None: return;
-			case ENetEventType.Connect:
-			{
-				this.OnConnect(@event.Peer);
-			} break;
-			case ENetEventType.Disconnect:
-			{
-				this.OnDisconnect(@event.Peer);
-			} break;
+			case ENetEventType.Connect: this.OnConnect(@event.Peer); break;
+			case ENetEventType.Disconnect: this.OnDisconnect(@event.Peer); break;
 			case ENetEventType.Receive:
 			{
 				this.HandleMessage(@event);
@@ -58,20 +52,26 @@ public abstract class Connection
 			case MessageHeader.LoginSuccess:
 			{
 				#if DEBUG
-					Console.WriteLine($"Data: [0]: 0x{@event.Packet.Data[2]:X2}, [1]: 0x{@event.Packet.Data[3]:X2}");
+					Console.WriteLine($"LoginSuccess{{{BitConverter.ToString(@event.Packet.Data.Slice(2))}}}");
 				#endif
 				this.OnLoginSuccess();
 			} break;
 			case MessageHeader.WorldRequest:
 			{
 				#if DEBUG
-					Console.WriteLine($"Data: [0]: 0x{@event.Packet.Data[2]:X2}, [1]: 0x{@event.Packet.Data[3]:X2}");
+					Console.WriteLine($"WorldRequest{{{BitConverter.ToString(@event.Packet.Data.Slice(2))}}}");
 				#endif
 				this.OnWorldRequest(@event.Peer);
 			} break;
 			case MessageHeader.LoginFailure:
 			{
 				this.OnLoginFailed((LoginFailureReason)@event.Packet.Data[2]);
+			} break;
+			// World-Data \\
+			case MessageHeader.WorldInfoResponse:
+			{
+				var worldInfoResponse = WorldInfoResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
+				this.OnWorldInfo(worldInfoResponse);
 			} break;
 			// UNKNOWN \\
 			default:
@@ -87,6 +87,7 @@ public abstract class Connection
 	protected virtual void OnLoginSuccess() { }
 	protected virtual void OnLoginFailed(LoginFailureReason reason) { }
 	protected virtual void OnWorldRequest(ENetPeer peer) { }
+	protected virtual void OnWorldInfo(WorldInfoResponseMessage worldInfo) { }
 	/* Properties */
 	protected ENetHost _Host;
 }

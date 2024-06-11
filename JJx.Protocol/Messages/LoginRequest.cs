@@ -26,11 +26,8 @@ public sealed class LoginRequestMessage
 		var buffer = new byte[SIZE + sizeof(ushort)];
 		// Header
 		BitConverter.BigEndian.Write((ushort)MessageHeader.LoginRequest, buffer);
-		// Id
 		buffer[OFFSET_ID + sizeof(ushort)] = this.Id;
-		// Name
 		BitConverter.Write(this.Name, buffer, OFFSET_NAME + sizeof(ushort), SIZEOF_NAME);
-		// Version
 		BitConverter.LittleEndian.Write((uint)this.Version, buffer, OFFSET_VERSION + sizeof(ushort));
 		return buffer;
 	}

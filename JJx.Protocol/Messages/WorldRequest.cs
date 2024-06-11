@@ -4,9 +4,6 @@
 
 	Written By: Ryan Smith
 */
-using System;
-using System.Text;
-using JJx;
 
 namespace JJx.Protocol;
 
