@@ -220,6 +220,7 @@ public sealed class Player
 	public float Health = 50.0f;
 	public readonly Effect[] Effects = new Effect[COUNTOF_EFFECTS];
 	/* Class Properties */
+	private const byte SIZEOF_BUFFER     = 32;
 	private const byte OFFSET_UUID       =  0;
 	private const byte OFFSET_NAME       = 16;
 	private const byte OFFSET_VERSION    =  0;
@@ -228,7 +229,6 @@ public sealed class Player
 	private const byte OFFSET_CHARACTER  = 12;
 	private const byte OFFSET_DIFFICULTY = 16;
 	private const byte OFFSET_HEALTH     =  0;
-	private const byte SIZEOF_BUFFER     = 32;
 	private const byte SIZEOF_UUID       = 16;
 	private const byte SIZEOF_NAME       = 16;
 	private const byte SIZEOF_INFO       = (sizeof(uint) * 3) + Character.SIZE + 2 + sizeof(byte) + 3;  // Version(4), Planet(4), Flags(4), Character(2), UNKNOWN(2), Difficulty(1), UNKNOWN(3) == 20

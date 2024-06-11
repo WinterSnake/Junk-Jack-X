@@ -193,10 +193,10 @@ public sealed class ArchiverStream : FileStream
 	private bool _HasClosed = false;
 	#nullable disable
 	/* Class Properties */
+	private const byte SIZEOF_BUFFER     = 8;
 	private const byte OFFSET_MAGIC      = 0;
 	private const byte OFFSET_TYPE       = 4;
 	private const byte OFFSET_CHUNKCOUNT = 6;
-	private const byte SIZEOF_BUFFER     = 8;
 	private const byte SIZEOF_MAGIC      = 4;
 	private const byte SIZEOF_PADDING    = 4;
 }
