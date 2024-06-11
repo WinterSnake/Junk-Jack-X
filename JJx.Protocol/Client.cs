@@ -21,16 +21,19 @@ public class Client : Connection
 	}
 	/* Instance Methods */
 	public void Connect(IPEndPoint address) => this.ServerPeer = this._Host.Connect(address, CHANNEL_COUNT, 0);
-	// Events
-	public override void OnConnect(ENetPeer peer)
+	protected void RequestLogin()
 	{
-		// Send ClientInfo
-		var clientInfo = new ClientInfo(this.Id, this.Player.Name, this.Player.Version);
-		this.ServerPeer.Send(channelId: 0, clientInfo.Serialize(), ENetPacketFlags.Reliable);
+		var request = new LoginRequestMessage(this.Id, this.Player.Name, this.Player.Version);
+		this.ServerPeer.Send(channelId: 0, request.Serialize(), ENetPacketFlags.Reliable);
 	}
+	public void RequestWorld()
+	{
+	}
+	// Events
+	public override void OnConnect(ENetPeer peer) => this.RequestLogin();
 	public override void OnLoginSuccess()
 	{
-		Console.WriteLine("Login successful");
+		Console.WriteLine("Login success!");
 	}
 	public override void OnLoginFailed(LoginFailureReason reason)
 	{

@@ -21,19 +21,18 @@ public class Server : Connection
 	/* Instance Methods */
 	protected void AcceptLogin(ENetPeer peer)
 	{
-		var loginResponse = new LoginResponse();
-		Console.WriteLine(System.BitConverter.ToString(loginResponse.Serialize()));
-		peer.Send(channelId: 0, loginResponse.Serialize(), ENetPacketFlags.Reliable);
 		Console.WriteLine($"Accepting peer @{peer.GetRemoteEndPoint()}");
+		var loginResponse = new LoginResponseMessage();
+		peer.Send(channelId: 0, loginResponse.Serialize(), ENetPacketFlags.Reliable);
 	}
 	protected void DeclineLogin(ENetPeer peer, LoginFailureReason reason)
 	{
 		Console.WriteLine($"Declining peer @{peer.GetRemoteEndPoint()} for: {reason}");
-		var loginResponse = new LoginResponse(reason);
+		var loginResponse = new LoginResponseMessage(reason);
 		peer.Send(channelId: 0, loginResponse.Serialize(), ENetPacketFlags.Reliable);
 	}
 	// Events
-	public override void OnLoginAttempt(ENetPeer peer, ClientInfo info)
+	public override void OnLoginRequest(ENetPeer peer, LoginRequestMessage info)
 	{
 		if (info.Version != this.World.Version)
 		{

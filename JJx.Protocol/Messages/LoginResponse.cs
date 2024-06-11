@@ -1,6 +1,6 @@
 /*
 	Junk Jack X: Protocol
-	- [Message Data]Login Status
+	- [Message: Responses]Login
 
 	Written By: Ryan Smith
 */
@@ -13,11 +13,11 @@ public enum LoginFailureReason : byte
 	IncorrectVersion = 0x01,
 }
 
-public sealed class LoginResponse
+public sealed class LoginResponseMessage
 {
 	/* Constructors */
-	public LoginResponse() { }
-	public LoginResponse(LoginFailureReason reason) { this.FailureReason = reason; }
+	public LoginResponseMessage() { }
+	public LoginResponseMessage(LoginFailureReason reason) { this.FailureReason = reason; }
 	/* Instance Methods */
 	public byte[] Serialize()
 	{
@@ -25,13 +25,13 @@ public sealed class LoginResponse
 		if (this.FailureReason == null)
 		{
 			buffer = new byte[sizeof(ushort) * 2];
-			BitConverter.BigEndian.Write((ushort)ProtocolHeader.LoginSuccess, buffer);
+			BitConverter.BigEndian.Write((ushort)MessageHeader.LoginSuccess, buffer);
 			BitConverter.LittleEndian.Write((ushort)1, buffer, sizeof(ushort));
 		}
 		else
 		{
 			buffer = new byte[sizeof(ushort) + sizeof(byte)];
-			BitConverter.BigEndian.Write((ushort)ProtocolHeader.LoginFailure, buffer);
+			BitConverter.BigEndian.Write((ushort)MessageHeader.LoginFailure, buffer);
 			buffer[sizeof(ushort)] = (byte)this.FailureReason;
 		}
 		return buffer;

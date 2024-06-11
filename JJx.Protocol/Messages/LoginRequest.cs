@@ -1,6 +1,6 @@
 /*
 	Junk Jack X: Protocol
-	- [Message]Client Info
+	- [Message: Requests]Login
 
 	Written By: Ryan Smith
 */
@@ -10,24 +10,24 @@ using JJx;
 
 namespace JJx.Protocol;
 
-public sealed class ClientInfo
+public sealed class LoginRequestMessage
 {
 	/* Constructor */
-	public ClientInfo(byte id, string name, JJx.Version version)
+	public LoginRequestMessage(byte id, string name, JJx.Version version)
 	{
 		this.Id = id;
 		this.Name = name;
 		this.Version = version;
 	}
 	/* Instance Methods */
-	public override string ToString() => $"ClientInfo[Id: {this.Id:X}, Name: {this.Name}(Length={this.Name.Length}), Version: {this.Version}]";
+	public override string ToString() => $"Login Request[Id: {this.Id:X}, Name: {this.Name}(Length={this.Name.Length}), Version: {this.Version}]";
 	public byte[] Serialize()
 	{
-		var buffer = new byte[ClientInfo.SIZE + sizeof(ushort)];
+		var buffer = new byte[SIZE + sizeof(ushort)];
 		// Header
-		BitConverter.BigEndian.Write((ushort)ProtocolHeader.Login, buffer);
+		BitConverter.BigEndian.Write((ushort)MessageHeader.LoginRequest, buffer);
 		// Id
-		buffer[ClientInfo.OFFSET_ID + sizeof(ushort)] = this.Id;
+		buffer[OFFSET_ID + sizeof(ushort)] = this.Id;
 		// Name
 		BitConverter.Write(this.Name, buffer, OFFSET_NAME + sizeof(ushort), SIZEOF_NAME);
 		// Version
@@ -35,12 +35,12 @@ public sealed class ClientInfo
 		return buffer;
 	}
 	/* Static Methods */
-	public static ClientInfo Deserialize(ReadOnlySpan<byte> buffer)
+	public static LoginRequestMessage Deserialize(ReadOnlySpan<byte> buffer)
 	{
 		var id = buffer[OFFSET_ID];
 		var name = BitConverter.GetString(buffer, OFFSET_NAME);
 		var version = (JJx.Version)BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_VERSION);
-		return new ClientInfo(id, name, version);
+		return new LoginRequestMessage(id, name, version);
 	}
 	/* Properties */
 	public readonly byte Id;
