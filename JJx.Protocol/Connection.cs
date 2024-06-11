@@ -52,7 +52,7 @@ public abstract class Connection
 					case ProtocolHeader.ManagementLogin:
 					{
 						var info = ClientInfo.Deserialize(@event.Packet.Data.Slice(2));
-						this.OnClientInfo(info);
+						this.OnClientInfo(@event.Peer, info);
 					} break;
 					case ProtocolHeader.ManagementAccept:
 					{
@@ -70,10 +70,10 @@ public abstract class Connection
 		}
 	}
 	// Events
-	public abstract void OnConnect(ENetPeer peer);
-	public abstract void OnDisconnect(ENetPeer peer);
-	public virtual void OnClientAccepted() {}
-	public virtual void OnClientInfo(ClientInfo info) {}
+	public virtual void OnConnect(ENetPeer peer) { }
+	public virtual void OnDisconnect(ENetPeer peer) { }
+	public virtual void OnClientAccepted() { }
+	public virtual void OnClientInfo(ENetPeer peer, ClientInfo info) { }
 	/* Properties */
 	protected ENetHost _Host;
 }

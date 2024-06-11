@@ -16,49 +16,14 @@ internal static class Program
 	/* Static Methods */
 	private static async Task Main(string[] args)
 	{
-		Console.WriteLine("JJx: Server");
 		ManagedENet.Startup();
+		var world = await World.Load("./data/worlds/Tiny-Empty.dat");
 		var address = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12345);
-		var server = new JJx.Protocol.Server(address, 16);
+		Console.WriteLine($"JJx: Server (running @{address})");
+		var server = new JJx.Protocol.Server(world, address, 16);
 		while (true)
 		{
 			server.ProcessEvent();
 		}
-
-		/*
-		var server = new ENetHost(address, 16, 16);
-
-		while (true)
-		{
-			var @event = server.Service(TimeSpan.FromMilliseconds(0));
-			switch(@event.Type)
-			{
-				case ENetEventType.None: continue;
-				case ENetEventType.Connect:
-				{
-					Console.WriteLine($"User connected @{@event.Peer.GetRemoteEndPoint()}");
-				} break;
-				case ENetEventType.Disconnect:
-				{
-					Console.WriteLine($"User disconnected @{@event.Peer.GetRemoteEndPoint()}");
-				} break;
-				case ENetEventType.Receive:
-				{
-					Console.WriteLine("Received data from user..");
-					Console.WriteLine($"Length: {@event.Packet.Data.Length} | Type: {@event.Packet.Data[0]:X} | SubType: {@event.Packet.Data[1]:X}");
-					ushort op = (ushort)((@event.Packet.Data[0] << 8) | (@event.Packet.Data[1] << 0));
-					switch (op)
-					{
-						case 0x0002:
-						{
-							var clientInfo = ClientInfoMessage.FromBuffer(@event.Packet.Data.Slice(2));
-							Console.WriteLine(clientInfo);
-						} break;
-					}
-					@event.Packet.Destroy();
-				} break;
-			}
-		}
-		*/
 	}
 }

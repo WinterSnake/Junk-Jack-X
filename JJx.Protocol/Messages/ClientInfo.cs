@@ -23,34 +23,23 @@ public sealed class ClientInfo
 	public override string ToString() => $"ClientInfo[Id: {this.Id:X}, Name: {this.Name}(Length={this.Name.Length}), Version: {this.Version}]";
 	public byte[] Serialize()
 	{
-		var buffer = new byte[ClientInfo.SIZE + 2];
+		var buffer = new byte[ClientInfo.SIZE + sizeof(ushort)];
 		// Header
-		var headerBytes = BitConverter.GetBytes((ushort)ProtocolHeader.ManagementLogin);
-		Array.Reverse(headerBytes);
-		Array.Copy(headerBytes, 0, buffer, 0, headerBytes.Length);
+		BitConverter.BigEndian.Write((ushort)ProtocolHeader.ManagementLogin, buffer);
 		// Id
-		buffer[ClientInfo.OFFSET_ID + 2] = this.Id;
+		buffer[ClientInfo.OFFSET_ID + sizeof(ushort)] = this.Id;
 		// Name
-		var nameBytes = Encoding.ASCII.GetBytes(this.Name);
-		Array.Copy(nameBytes, 0, buffer, ClientInfo.OFFSET_NAME + 2, nameBytes.Length);
+		BitConverter.Write(this.Name, buffer, OFFSET_NAME + sizeof(ushort), SIZEOF_NAME);
 		// Version
-		var versionBytes = BitConverter.GetBytes((uint)this.Version);
-		Array.Copy(versionBytes, 0, buffer, ClientInfo.OFFSET_VERSION + 2, versionBytes.Length);
+		BitConverter.LittleEndian.Write((uint)this.Version, buffer, OFFSET_VERSION + sizeof(ushort));
 		return buffer;
 	}
 	/* Static Methods */
 	public static ClientInfo Deserialize(ReadOnlySpan<byte> buffer)
 	{
-		if (buffer.Length != ClientInfo.SIZE)
-			throw new Exception();
-		var id = buffer[ClientInfo.OFFSET_ID];
-		var name = Encoding.ASCII.GetString(
-			buffer.Slice(ClientInfo.OFFSET_NAME, ClientInfo.SIZEOF_NAME)
-				  .Slice(0, buffer.Slice(ClientInfo.OFFSET_NAME, ClientInfo.SIZEOF_NAME)
-					  			  .IndexOf((byte)0)
-			)
-		);
-		var version = (JJx.Version)(BitConverter.ToUInt32(buffer.Slice(ClientInfo.OFFSET_VERSION, 4)));
+		var id = buffer[OFFSET_ID];
+		var name = BitConverter.GetString(buffer, OFFSET_NAME);
+		var version = (JJx.Version)BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_VERSION);
 		return new ClientInfo(id, name, version);
 	}
 	/* Properties */

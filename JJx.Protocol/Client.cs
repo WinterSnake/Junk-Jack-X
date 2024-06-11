@@ -14,31 +14,24 @@ namespace JJx.Protocol;
 public class Client : Connection
 {
 	/* Constructor */
-	public Client(Player player): base(Client.PEER_COUNT, Client.CHANNEL_COUNT, null)
+	public Client(Player player): base(PEER_COUNT, CHANNEL_COUNT, null)
 	{
 		this.Player = player;
 		this.Id = (byte)Random.Shared.Next(0, 255);
 	}
 	/* Instance Methods */
-	public void Connect(IPEndPoint address)
-	{
-		this.Peer = this._Host.Connect(address, Client.CHANNEL_COUNT, 0);
-	}
+	public void Connect(IPEndPoint address) => this.ServerPeer = this._Host.Connect(address, CHANNEL_COUNT, 0);
 	// Events
 	public override void OnConnect(ENetPeer peer)
 	{
 		// Send ClientInfo
 		var clientInfo = new ClientInfo(this.Id, this.Player.Name, this.Player.Version);
-		this.Peer.Send(channelId: 0, clientInfo.Serialize(), ENetPacketFlags.Reliable);
+		this.ServerPeer.Send(channelId: 0, clientInfo.Serialize(), ENetPacketFlags.Reliable);
 	}
-	public override void OnDisconnect(ENetPeer peer)
-	{
-	}
-	public override void OnClientAccepted() => Console.WriteLine("Client accepted..");
 	/* Properties */
 	public readonly Player Player;
 	public readonly byte Id;
-	protected ENetPeer Peer { get; private set; }
+	protected ENetPeer ServerPeer { get; private set; }
 	/* Class Properties */
 	private const int PEER_COUNT = 1;
 	private const byte CHANNEL_COUNT = 1;

@@ -7,30 +7,29 @@
 using System;
 using System.Net;
 using ENet.Managed;
+using JJx;
 
 namespace JJx.Protocol;
 
 public class Server : Connection
 {
 	/* Constructor */
-	public Server(IPEndPoint address, int maxPlayers): base(maxPlayers, Server.CHANNEL_COUNT, address)
+	public Server(World world, IPEndPoint address, int maxPlayers): base(maxPlayers, CHANNEL_COUNT, address)
 	{
-
+		this.World = world;
 	}
 	/* Instance Methods */
 	// Events
-	public override void OnConnect(ENetPeer peer)
-	{
-	}
-	public override void OnDisconnect(ENetPeer peer)
-	{
-	}
-	public override void OnClientInfo(ClientInfo info)
+	public override void OnClientInfo(ENetPeer peer, ClientInfo info)
 	{
 		Console.WriteLine(info);
+		if (info.Version == this.World.Version)
+		{
+
+		}
 	}
 	/* Properties */
-	public event Action<ClientInfo> OnClientInfoEvent;
+	public readonly World World;
 	/* Class Properties */
 	private const byte CHANNEL_COUNT = 16;
 }
