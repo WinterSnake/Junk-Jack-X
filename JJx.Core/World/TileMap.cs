@@ -14,6 +14,7 @@ namespace JJx;
 public sealed class TileMap
 {
 	/* Constructors */
+	public TileMap(Tile[,] tiles) { this.Tiles = tiles; }
 	public TileMap(ushort width, ushort height)
 	{
 		this.Tiles = new Tile[width, height];
@@ -28,14 +29,27 @@ public sealed class TileMap
 			}
 		}
 	}
-	public TileMap(Tile[,] tiles)
-	{
-		this.Tiles = tiles;
-	}
 	/* Instance Methods */
 	public async Task ToStream(Stream stream, bool compressed = true)
 	{
-
+		var width = this.Tiles.GetLength(0);
+		var height = this.Tiles.GetLength(1);
+		var buffer = new byte[width * height * Tile.SIZE];
+		using (var blockStream = new MemoryStream(buffer))
+		{
+			// Copy blocks to memory stream
+			for (var x = 0; x < width; ++x)
+				for (var y = 0; y < height; ++y)
+					await this.Tiles[x, y].ToStream(blockStream);
+			// Reset position
+			blockStream.Position = 0;
+			// Copy to output (compress if flagged)
+			if (compressed)
+				using (var compressedStream = new GZipStream(stream, CompressionLevel.Optimal, true))
+					await blockStream.CopyToAsync(compressedStream);
+			else
+				await blockStream.CopyToAsync(stream);
+		}
 	}
 	/* Static Methods */
 	public static async Task<TileMap> FromStream(Stream stream, (ushort width, ushort height) size, bool compressed)

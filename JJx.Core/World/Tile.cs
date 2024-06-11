@@ -44,5 +44,5 @@ public sealed class Tile
 	/* Properties */
 	public readonly byte[] Data = new byte[SIZE];
 	/* Class Properties */
-	private const byte SIZE = 16;
+	internal const byte SIZE = 16;
 }

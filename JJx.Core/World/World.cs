@@ -91,8 +91,8 @@ public sealed class World
 		this.Weather = weather;
 		this.PoissonSkipped = poissonSkipped;
 		// Containers
-		this.FluidLayerArray = fluidLayer;
-		this.CircuitLayerArray = circuitLayer;
+		this.FluidLayer = fluidLayer;
+		this.CircuitLayer = circuitLayer;
 	}
 	/* Instance Methods */
 	public async Task Save(string fileName)
@@ -102,8 +102,176 @@ public sealed class World
 	}
 	public async Task ToStream(ArchiverStream stream)
 	{
+		var buffer = new byte[SIZEOF_BUFFER];
 		if (stream.Type != ArchiverStreamType.World || !stream.CanWrite)
 			throw new ArgumentException($"Expected writeable world stream, either incorrect stream type (Type:{stream.Type}) or not writeable (Writeable:{stream.CanWrite})");
+		/// Info
+		var worldInfoChunk = stream.StartChunk(ArchiverChunkType.WorldInfo);
+		{
+			// UUID
+			var uuid = this.Id.ToByteArray();
+			await worldInfoChunk.WriteAsync(uuid, 0, uuid.Length);
+			// {Last Played | Version | Name}
+			var epoch = new DateTimeOffset(this.LastPlayed).ToUnixTimeSeconds();
+			BitConverter.LittleEndian.Write((uint)epoch, buffer, OFFSET_TIMESTAMP - uuid.Length);
+			BitConverter.LittleEndian.Write((uint)this.Version, buffer, OFFSET_VERSION - uuid.Length);
+			BitConverter.Write(this.Name, buffer, (int)OFFSET_NAME - uuid.Length, SIZEOF_NAME);
+			await worldInfoChunk.WriteAsync(buffer, 0, buffer.Length - uuid.Length);
+			// {Author | World Size | Player Location | Spawn Location | Planet | Season | Gamemode | World GenSize | Sky GenSize | UNKNOWN}
+			BitConverter.Write(this.Author, buffer, OFFSET_AUTHOR, SIZEOF_AUTHOR);
+			BitConverter.LittleEndian.Write(this.Size.Width, buffer, OFFSET_WORLD);
+			BitConverter.LittleEndian.Write(this.Size.Height, buffer, OFFSET_WORLD + sizeof(ushort));
+			BitConverter.LittleEndian.Write(this.Player.X, buffer, OFFSET_PLAYER);
+			BitConverter.LittleEndian.Write(this.Player.Y, buffer, OFFSET_PLAYER + sizeof(ushort));
+			BitConverter.LittleEndian.Write(this.Spawn.X, buffer, OFFSET_SPAWN);
+			BitConverter.LittleEndian.Write(this.Spawn.Y, buffer, OFFSET_SPAWN + sizeof(ushort));
+			BitConverter.LittleEndian.Write((uint)this.Planet, buffer, OFFSET_PLANET);
+			buffer[OFFSET_SEASON] = (byte)this.Season;
+			buffer[OFFSET_GAMEMODE] = (byte)this.Gamemode;
+			buffer[OFFSET_WORLDSIZETYPE] = (byte)this.WorldSizeType;
+			buffer[OFFSET_SKYSIZETYPE] = (byte)this.SkySizeType;
+			BitConverter.LittleEndian.Write((ulong)0, buffer, OFFSET_SKYSIZETYPE + sizeof(byte));
+			await worldInfoChunk.WriteAsync(buffer, 0, SIZEOF_INFO);
+			buffer = new byte[SIZEOF_PADDING];
+			// Padding
+			await worldInfoChunk.WriteAsync(buffer, 0, SIZEOF_PADDING);
+		}
+		stream.EndChunk();
+		/// Skyline
+		var worldSkylineChunk = stream.StartChunk(ArchiverChunkType.WorldSkyline);
+		{
+			// TODO: iterate without resizing buffer
+			buffer = new byte[this.Skyline.Length * sizeof(ushort)];
+			for (var i = 0; i < this.Skyline.Length; ++i)
+				BitConverter.LittleEndian.Write(this.Skyline[i], buffer, i * sizeof(ushort));
+			await worldSkylineChunk.WriteAsync(buffer, 0, buffer.Length);
+		}
+		stream.EndChunk();
+		/// Blocks
+		var worldBlocksChunk = stream.StartChunk(ArchiverChunkType.WorldBlocks, version: 1, compressed: true);
+		{
+			await this._TileMap.ToStream(worldBlocksChunk);
+		}
+		stream.EndChunk();
+		/// Fog
+		if (this.FogLayer != null)
+		{
+			var worldFogChunk = stream.StartChunk(ArchiverChunkType.WorldFog, compressed: true);
+			{
+			}
+			stream.EndChunk();
+		}
+		/// Time
+		var worldTimeChunk = stream.StartChunk(ArchiverChunkType.WorldTime);
+		{
+			BitConverter.LittleEndian.Write(this.Ticks, buffer, OFFSET_TIMETICKS);
+			buffer[OFFSET_TIMEPERIOD] = (byte)this.Time;
+			BitConverter.LittleEndian.Write((ulong)0, buffer, OFFSET_TIMEPERIOD + sizeof(byte));
+			await worldTimeChunk.WriteAsync(buffer, 0, SIZEOF_TIME);
+		}
+		stream.EndChunk();
+		/// Weather
+		var worldWeatherChunk = stream.StartChunk(ArchiverChunkType.WorldWeather);
+		{
+			BitConverter.LittleEndian.Write(this.PoissonSum / 10.0f, buffer, OFFSET_WEATHERSUM);
+			buffer[OFFSET_WEATHERTYPE] = (byte)this.Weather;
+			buffer[OFFSET_WEATHERSKIP] = (byte)this.PoissonSkipped;
+			BitConverter.LittleEndian.Write((ulong)0, buffer, OFFSET_WEATHERSKIP + sizeof(byte));
+			await worldWeatherChunk.WriteAsync(buffer, 0, SIZEOF_WEATHER);
+		}
+		stream.EndChunk();
+		/// Chests
+		var worldChestsChunk = stream.StartChunk(ArchiverChunkType.WorldChests);
+		{
+			BitConverter.LittleEndian.Write((uint)0, buffer, 0);
+			await worldChestsChunk.WriteAsync(buffer, 0, sizeof(uint));
+		}
+		stream.EndChunk();
+		/// Forges
+		var worldForgesChunk = stream.StartChunk(ArchiverChunkType.WorldForges);
+		{
+			BitConverter.LittleEndian.Write((uint)0, buffer, 0);
+			await worldForgesChunk.WriteAsync(buffer, 0, sizeof(uint));
+		}
+		stream.EndChunk();
+		/// Signs
+		var worldSignsChunk = stream.StartChunk(ArchiverChunkType.WorldSigns);
+		{
+			BitConverter.LittleEndian.Write((uint)0, buffer, 0);
+			await worldSignsChunk.WriteAsync(buffer, 0, sizeof(uint));
+		}
+		stream.EndChunk();
+		/// Stables
+		var worldStablesChunk = stream.StartChunk(ArchiverChunkType.WorldStables);
+		{
+			BitConverter.LittleEndian.Write((uint)0, buffer, 0);
+			await worldStablesChunk.WriteAsync(buffer, 0, sizeof(uint));
+		}
+		stream.EndChunk();
+		/// Labs
+		var worldLabsChunk = stream.StartChunk(ArchiverChunkType.WorldLabs);
+		{
+			BitConverter.LittleEndian.Write((uint)0, buffer, 0);
+			await worldLabsChunk.WriteAsync(buffer, 0, sizeof(uint));
+		}
+		stream.EndChunk();
+		/// Shelves
+		var worldShelvesChunk = stream.StartChunk(ArchiverChunkType.WorldShelves);
+		{
+			BitConverter.LittleEndian.Write((uint)0, buffer, 0);
+			await worldShelvesChunk.WriteAsync(buffer, 0, sizeof(uint));
+		}
+		stream.EndChunk();
+		/// Plants
+		var worldPlantsChunk = stream.StartChunk(ArchiverChunkType.WorldPlants);
+		{
+			BitConverter.LittleEndian.Write((uint)0, buffer, 0);
+			await worldPlantsChunk.WriteAsync(buffer, 0, sizeof(uint));
+		}
+		stream.EndChunk();
+		/// Fruits
+		var worldFruitsChunk = stream.StartChunk(ArchiverChunkType.WorldFruits);
+		{
+			BitConverter.LittleEndian.Write((uint)0, buffer, 0);
+			await worldFruitsChunk.WriteAsync(buffer, 0, sizeof(uint));
+		}
+		stream.EndChunk();
+		/// Plant Decay
+		var worldPlantDecayChunk = stream.StartChunk(ArchiverChunkType.WorldPlantDecay);
+		{
+			BitConverter.LittleEndian.Write((uint)0, buffer, 0);
+			await worldPlantDecayChunk.WriteAsync(buffer, 0, sizeof(uint));
+		}
+		stream.EndChunk();
+		/// Locks
+		var worldLocksChunk = stream.StartChunk(ArchiverChunkType.WorldLocks);
+		{
+			BitConverter.LittleEndian.Write((uint)0, buffer, 0);
+			await worldLocksChunk.WriteAsync(buffer, 0, sizeof(uint));
+		}
+		stream.EndChunk();
+		/// Fluid
+		var worldFluidChunk = stream.StartChunk(ArchiverChunkType.WorldFluid);
+		{
+			await worldFluidChunk.WriteAsync(this.FluidLayer, 0, this.FluidLayer.Length);
+		}
+		stream.EndChunk();
+		/// Circuitry
+		var worldCircuitryChunk = stream.StartChunk(ArchiverChunkType.WorldCircuitry);
+		{
+			await worldCircuitryChunk.WriteAsync(this.CircuitLayer, 0, this.CircuitLayer.Length);
+		}
+		stream.EndChunk();
+		/// Mobs
+		var worldMobsChunk = stream.StartChunk(ArchiverChunkType.WorldMobs);
+		{
+			BitConverter.LittleEndian.Write((uint)0, buffer, 0);
+			await worldMobsChunk.WriteAsync(buffer, 0, sizeof(uint));
+		}
+		stream.EndChunk();
+		/// Padding
+		if (this.FogLayer == null)
+			stream.EmptyChunk();
 	}
 	/* Static Methods */
 	public static async Task<World> Load(string fileName)
@@ -113,10 +281,10 @@ public sealed class World
 	}
 	public static async Task<World> FromStream(ArchiverStream stream)
 	{
-		if (stream.Type != ArchiverStreamType.World || !stream.CanRead)
-			throw new ArgumentException($"Expected readable world stream, either incorrect stream type (Type:{stream.Type}) or not readable (Readable:{stream.CanRead})");
 		var bytesRead = 0;
 		var buffer = new byte[SIZEOF_BUFFER];
+		if (stream.Type != ArchiverStreamType.World || !stream.CanRead)
+			throw new ArgumentException($"Expected readable world stream, either incorrect stream type (Type:{stream.Type}) or not readable (Readable:{stream.CanRead})");
 		/// Info
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldInfo))
 			stream.JumpToChunk(ArchiverChunkType.WorldInfo);
@@ -129,7 +297,7 @@ public sealed class World
 		).LocalDateTime;
 		var version = (Version)BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_VERSION);
 		var name = BitConverter.GetString(buffer, OFFSET_NAME);
-		// {Author | World Size | Player Location | Spawn Location | Planet | Season | Gamemode | Init GenSize | Sky GenSize | Language}
+		// {Author | World Size | Player Location | Spawn Location | Planet | Season | Gamemode | World GenSize | Sky GenSize | UNKNOWN}
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_INFO)
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, SIZEOF_INFO - bytesRead);
@@ -257,13 +425,13 @@ public sealed class World
 		while (bytesRead < sizeof(uint))
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, sizeof(uint) - bytesRead);
 		var fruitCount = JJx.BitConverter.LittleEndian.GetUInt32(buffer);
-		/// PlantDecay
+		/// Plant Decay
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldPlantDecay))
 			stream.JumpToChunk(ArchiverChunkType.WorldPlantDecay);
 		bytesRead = 0;
 		while (bytesRead < sizeof(uint))
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, sizeof(uint) - bytesRead);
-		var decayCount = JJx.BitConverter.LittleEndian.GetUInt32(buffer);
+		var plantDecayCount = JJx.BitConverter.LittleEndian.GetUInt32(buffer);
 		/// Locks
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldLocks))
 			stream.JumpToChunk(ArchiverChunkType.WorldLocks);
@@ -348,8 +516,11 @@ public sealed class World
 	public byte PoissonSkipped = 0;
 	// Containers
 	// TEMPORARY
-	private readonly byte[] FluidLayerArray = new byte[SIZEOF_FLUIDLAYER];
-	private readonly byte[] CircuitLayerArray = new byte[SIZEOF_CIRCUITLAYER];
+	#nullable enable
+	private readonly byte[]? FogLayer = null;
+	#nullable disable
+	private readonly byte[] FluidLayer = new byte[SIZEOF_FLUIDLAYER];
+	private readonly byte[] CircuitLayer = new byte[SIZEOF_CIRCUITLAYER];
 	/* Class Properties */
 	private const byte SIZEOF_BUFFER        = 56;
 	private const byte OFFSET_UUID          =  0;

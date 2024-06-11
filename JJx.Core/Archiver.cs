@@ -50,7 +50,7 @@ public sealed class ArchiverStream : FileStream
 	{
 		this.Type = type;
 		this._Chunks = new List<ArchiverChunk>();
-		this._Buffer = new BufferedStream(this);
+		this._Buffer = new MemoryStream();
 	}
 	/* Instance Methods */
 	public override void Close()
@@ -63,7 +63,10 @@ public sealed class ArchiverStream : FileStream
 	{
 		if (this._HasClosed) return;
 		// Account for header offset (BUFFER + PADDING); Total chunks offset (Chunks * Chunk.SIZE); bufferedstream start position (this.Position)
-		uint chunkOrigin = (uint)(SIZEOF_BUFFER + SIZEOF_PADDING + (this._Chunks.Count * ArchiverChunk.SIZE) - this.Position);
+		uint chunkOrigin = (uint)(SIZEOF_BUFFER + SIZEOF_PADDING + (this._Chunks.Count * ArchiverChunk.SIZE));
+		#if DEBUG
+			Console.WriteLine($"Chunk Origin: 0x{chunkOrigin:X4}");
+		#endif
 		// Chunk Count + UNKNOWN (SIZE=4)
 		var buffer = new byte[ArchiverStream.SIZEOF_BUFFER - 2];
 		BitConverter.LittleEndian.Write((ushort)this._Chunks.Count, buffer);
@@ -78,7 +81,8 @@ public sealed class ArchiverStream : FileStream
 				chunk.Position += chunkOrigin;
 			await chunk.ToStream(this);
 		}
-		await this._Buffer.FlushAsync();
+		this._Buffer.Position = 0;
+		await this._Buffer.CopyToAsync(this);
 		this._HasClosed = true;
 	}
 	// Reading
@@ -137,7 +141,7 @@ public sealed class ArchiverStream : FileStream
 	{
 		this._Chunks.Add(new ArchiverChunk(ArchiverChunkType.Padding, version, false, 0, 0));
 	}
-	public BufferedStream StartChunk(ArchiverChunkType type, byte version = 0, bool compressed = false)
+	public Stream StartChunk(ArchiverChunkType type, byte version = 0, bool compressed = false)
 	{
 		if (!this.CanWrite) throw new ArgumentException("Expected a writable stream");
 		this._ActiveChunk = new ArchiverChunk(type, version, compressed, (uint)this._Buffer.Position);
@@ -194,9 +198,9 @@ public sealed class ArchiverStream : FileStream
 	// Writing
 	#nullable enable
 	private ArchiverChunk? _ActiveChunk = null;
-	private BufferedStream? _Buffer = null;
-	private bool _HasClosed = false;
+	private Stream? _Buffer = null;
 	#nullable disable
+	private bool _HasClosed = false;
 	/* Class Properties */
 	private const byte SIZEOF_BUFFER     = 8;
 	private const byte OFFSET_MAGIC      = 0;
