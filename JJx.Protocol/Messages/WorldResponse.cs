@@ -5,6 +5,8 @@
 	Written By: Ryan Smith
 */
 using System;
+using System.IO;
+using System.IO.Compression;
 
 namespace JJx.Protocol;
 
@@ -125,4 +127,41 @@ public sealed class WorldInfoResponseMessage
 	private const byte OFFSET_WORLDSIZETYPE = 30;
 	private const byte OFFSET_SKYSIZETYPE   = 31;
 	private const byte OFFSET_SIZEINBYTES   = 36;
+}
+
+public sealed class WorldSkylineResponseMessage
+{
+	/* Constructor */
+	public WorldSkylineResponseMessage(ushort[] skyline) { this.Skyline = skyline; }
+	/* Instance Methods */
+	public byte[] Serialize()
+	{
+		var buffer = new byte[this.Skyline.Length * sizeof(ushort)];
+		for (var i = 0; i < this.Skyline.Length; ++i)
+			BitConverter.LittleEndian.Write(this.Skyline[i], buffer, i * sizeof(ushort));
+		using var compressedStream = new MemoryStream();
+		using var decompressedStream = new MemoryStream(buffer);
+		using (var compressionStream = new GZipStream(compressedStream, CompressionLevel.Optimal, false))
+			decompressedStream.CopyTo(compressionStream);
+		return compressedStream.GetBuffer();
+	}
+	/* Static Methods */
+	public unsafe static WorldSkylineResponseMessage Deserialize(ReadOnlySpan<byte> buffer)
+	{
+		Console.WriteLine($"Skyline: {BitConverter.ToString(buffer)}");
+		using var decompressedStream = new MemoryStream();
+		fixed (byte* bufferPin = buffer)
+		{
+			using var compressedStream = new UnmanagedMemoryStream(bufferPin, buffer.Length);
+			using var decompressionStream = new GZipStream(compressedStream, CompressionMode.Decompress);
+			decompressionStream.CopyTo(decompressedStream);
+		}
+		var decompressedSkyline = decompressedStream.GetBuffer();
+		var skyline = new ushort[decompressedSkyline.Length / sizeof(ushort)];
+		for (var i = 0; i < skyline.Length; ++i)
+			skyline[i] = BitConverter.LittleEndian.GetUInt16(decompressedSkyline, i * sizeof(ushort));
+		return new WorldSkylineResponseMessage(skyline);
+	}
+	/* Properties */
+	public readonly ushort[] Skyline;
 }

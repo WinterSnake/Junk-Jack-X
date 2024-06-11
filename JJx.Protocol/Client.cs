@@ -37,7 +37,9 @@ public class Client : Connection
 	protected override void OnLoginFailed(LoginFailureReason reason) => Console.WriteLine($"Failed to connect to server: {reason}");
 	protected override void OnWorldInfo(WorldInfoResponseMessage worldInfo)
 	{
-		Console.WriteLine(worldInfo.Planet);
+	}
+	protected override void OnWorldSkyline(WorldSkylineResponseMessage worldSkyline)
+	{
 	}
 	/* Properties */
 	public readonly Player Player;

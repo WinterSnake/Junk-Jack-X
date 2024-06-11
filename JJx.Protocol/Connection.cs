@@ -73,6 +73,11 @@ public abstract class Connection
 				var worldInfoResponse = WorldInfoResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
 				this.OnWorldInfo(worldInfoResponse);
 			} break;
+			case MessageHeader.WorldSkylineResponse:
+			{
+				var worldSkylineResponse = WorldSkylineResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
+				this.OnWorldSkyline(worldSkylineResponse);
+			} break;
 			// UNKNOWN \\
 			default:
 			{
@@ -88,6 +93,7 @@ public abstract class Connection
 	protected virtual void OnLoginFailed(LoginFailureReason reason) { }
 	protected virtual void OnWorldRequest(ENetPeer peer) { }
 	protected virtual void OnWorldInfo(WorldInfoResponseMessage worldInfo) { }
+	protected virtual void OnWorldSkyline(WorldSkylineResponseMessage worldSkyline) { }
 	/* Properties */
 	protected ENetHost _Host;
 }
