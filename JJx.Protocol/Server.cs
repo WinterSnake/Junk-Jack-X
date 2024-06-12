@@ -69,11 +69,15 @@ public class Server : Connection
 			bytesSent += blockInternalBuffer.Length;
 		} while(bytesSent < blockBuffer.Length);
 	}
+	protected override void OnWorldProgress(ENetPeer peer, WorldProgressMessage worldProgress)
+	{
+		Console.WriteLine($"Player[{peer.GetRemoteEndPoint()}] is at {worldProgress.Percent * 100.0f}%");
+	}
 	/* Properties */
 	public Difficulty Difficulty = Difficulty.Normal;
 	public bool IsTimeRunning = true;
 	public readonly World World;
 	/* Class Properties */
 	private const byte CHANNEL_COUNT = 16;
-	private const ushort MAX_CHUNK_SIZE = 512;
+	private const ushort MAX_CHUNK_SIZE = 1024;
 }

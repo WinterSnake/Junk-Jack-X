@@ -63,6 +63,11 @@ public abstract class Connection
 				#endif
 				this.OnWorldRequest(@event.Peer);
 			} break;
+			case MessageHeader.WorldProgress:
+			{
+				var worldProgress = WorldProgressMessage.Deserialize(@event.Packet.Data.Slice(2));
+				this.OnWorldProgress(@event.Peer, worldProgress);
+			} break;
 			case MessageHeader.LoginFailure:
 			{
 				this.OnLoginFailed((LoginFailureReason)@event.Packet.Data[2]);
@@ -98,6 +103,7 @@ public abstract class Connection
 	protected virtual void OnLoginSuccess() { }
 	protected virtual void OnLoginFailed(LoginFailureReason reason) { }
 	protected virtual void OnWorldRequest(ENetPeer peer) { }
+	protected virtual void OnWorldProgress(ENetPeer peer, WorldProgressMessage worldProgress) { }
 	protected virtual void OnWorldInfo(WorldInfoResponseMessage worldInfo) { }
 	protected virtual void OnWorldSkyline(WorldSkylineResponseMessage worldSkyline) { }
 	protected virtual void OnWorldBlocks(WorldBlocksResponseMessage worldBlocks) { }

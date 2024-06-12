@@ -17,12 +17,13 @@ public sealed class WorldBuilder
 		this._BlockBuffer = new byte[info.WorldSizeBytes];
 	}
 	/* Instance Methods */
-	public void AddToBlockBuffer(WorldBlocksResponseMessage worldBlocks)
+	public float AddToBlockBuffer(WorldBlocksResponseMessage worldBlocks)
 	{
 		Array.Copy(worldBlocks.Data, 0, this._BlockBuffer, this._BlockBufferCursor, worldBlocks.Data.Length);
 		this._BlockBufferCursor += worldBlocks.Data.Length;
 		if (this._BlockBufferCursor == this._BlockBuffer.Length)
 			this.IsReady = true;
+		return (float)this._BlockBufferCursor / (float)this._BlockBuffer.Length;
 	}
 	public void Build()
 	{

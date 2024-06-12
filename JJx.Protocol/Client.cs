@@ -43,7 +43,9 @@ public class Client : Connection
 	}
 	protected override void OnWorldBlocks(WorldBlocksResponseMessage worldBlocks)
 	{
-		this._World.AddToBlockBuffer(worldBlocks);
+		var percent = this._World.AddToBlockBuffer(worldBlocks);
+		var progress = new WorldProgressMessage(percent);
+		this.ServerPeer.Send(channelId: 0, progress.Serialize(), ENetPacketFlags.Reliable);
 		if (!this._World.IsReady)
 			return;
 		Console.WriteLine("Compressed world downloaded..");
