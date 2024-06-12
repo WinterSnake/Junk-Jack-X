@@ -56,6 +56,13 @@ public abstract class Connection
 				#endif
 				this.OnLoginSuccess();
 			} break;
+			case MessageHeader.ListRequest:
+			{
+				#if DEBUG
+					Console.WriteLine($"ListRequest{{Data={BitConverter.ToString(@event.Packet.Data.Slice(2))}}}");
+				#endif
+				this.OnListRequest(@event.Peer);
+			} break;
 			case MessageHeader.WorldRequest:
 			{
 				#if DEBUG
@@ -102,6 +109,7 @@ public abstract class Connection
 	protected virtual void OnLoginRequest(ENetPeer peer, LoginRequestMessage info) { }
 	protected virtual void OnLoginSuccess() { }
 	protected virtual void OnLoginFailed(LoginFailureReason reason) { }
+	protected virtual void OnListRequest(ENetPeer peer) { }
 	protected virtual void OnWorldRequest(ENetPeer peer) { }
 	protected virtual void OnWorldProgress(ENetPeer peer, WorldProgressMessage worldProgress) { }
 	protected virtual void OnWorldInfo(WorldInfoResponseMessage worldInfo) { }

@@ -15,6 +15,7 @@ internal enum MessageHeader : ushort
 	// Sub-Type: Management
 	LoginRequest         = Management | 0x02,
 	LoginSuccess         = Management | 0x03,
+	ListRequest          = Management | 0x06,
 	WorldRequest         = Management | 0x09,
 	WorldProgress        = Management | 0x0A,
 	LoginFailure         = Management | 0x0C,

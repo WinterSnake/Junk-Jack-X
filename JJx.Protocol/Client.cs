@@ -49,6 +49,8 @@ public class Client : Connection
 		if (!this._World.IsReady)
 			return;
 		Console.WriteLine("Compressed world downloaded..");
+		var request = new ListRequestMessage();
+		this.ServerPeer.Send(channelId: 0, request.Serialize(), ENetPacketFlags.Reliable);
 	}
 	/* Properties */
 	public readonly Player Player;

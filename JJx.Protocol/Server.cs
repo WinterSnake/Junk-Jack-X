@@ -42,6 +42,10 @@ public class Server : Connection
 		}
 		this.AcceptLogin(peer);
 	}
+	protected override void OnListRequest(ENetPeer peer)
+	{
+		Console.WriteLine($"Player[{peer.GetRemoteEndPoint()}] is requesting peer list");
+	}
 	protected override void OnWorldRequest(ENetPeer peer)
 	{
 		using var blockStream = new MemoryStream();
