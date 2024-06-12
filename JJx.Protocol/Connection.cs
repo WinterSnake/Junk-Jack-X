@@ -38,7 +38,7 @@ public abstract class Connection
 	protected virtual void HandleMessage(ENetEvent @event)
 	{
 		#if DEBUG
-			Console.WriteLine($"Channel: {@event.ChannelId} | Flags: {@event.Packet.Flags} | Size: {@event.Packet.Data.Length - 2}");
+			Console.WriteLine($"Channel: {@event.ChannelId} | Flags: {@event.Packet.Flags} | Size: {@event.Packet.Data.Length} | Data: {@event.Data}");
 		#endif
 		var header = (MessageHeader)((@event.Packet.Data[0] << 8) | (@event.Packet.Data[1] << 0));
 		switch (header)
@@ -52,14 +52,14 @@ public abstract class Connection
 			case MessageHeader.LoginSuccess:
 			{
 				#if DEBUG
-					Console.WriteLine($"LoginSuccess{{{BitConverter.ToString(@event.Packet.Data.Slice(2))}}}");
+					Console.WriteLine($"LoginSuccess{{Data={BitConverter.ToString(@event.Packet.Data.Slice(2))}}}");
 				#endif
 				this.OnLoginSuccess();
 			} break;
 			case MessageHeader.WorldRequest:
 			{
 				#if DEBUG
-					Console.WriteLine($"WorldRequest{{{BitConverter.ToString(@event.Packet.Data.Slice(2))}}}");
+					Console.WriteLine($"WorldRequest{{Data={BitConverter.ToString(@event.Packet.Data.Slice(2))}}}");
 				#endif
 				this.OnWorldRequest(@event.Peer);
 			} break;
@@ -87,6 +87,7 @@ public abstract class Connection
 			default:
 			{
 				Console.WriteLine($"Unknown header: 0x{(ushort)header:X4} | Size: {@event.Packet.Data.Length - 2}");
+				Console.WriteLine($"\tPacket Data: {BitConverter.ToString(@event.Packet.Data.Slice(2))}");
 			} break;
 		}
 	}

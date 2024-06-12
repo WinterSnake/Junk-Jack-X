@@ -21,19 +21,17 @@ public class Client : Connection
 	}
 	/* Instance Methods */
 	public void Connect(IPEndPoint address) => this.ServerPeer = this._Host.Connect(address, CHANNEL_COUNT, 0);
-	protected void RequestLogin()
+	// Events
+	protected override void OnConnect(ENetPeer peer)
 	{
 		var request = new LoginRequestMessage(this.Id, this.Player.Name, this.Player.Version);
 		this.ServerPeer.Send(channelId: 0, request.Serialize(), ENetPacketFlags.Reliable);
 	}
-	public void RequestWorld()
+	protected override void OnLoginSuccess()
 	{
 		var request = new WorldRequestMessage();
 		this.ServerPeer.Send(channelId: 0, request.Serialize(), ENetPacketFlags.Reliable);
 	}
-	// Events
-	protected override void OnConnect(ENetPeer peer) => this.RequestLogin();
-	protected override void OnLoginSuccess() => this.RequestWorld();
 	protected override void OnLoginFailed(LoginFailureReason reason) => Console.WriteLine($"Failed to connect to server: {reason}");
 	protected override void OnWorldInfo(WorldInfoResponseMessage worldInfo)
 	{
@@ -48,7 +46,7 @@ public class Client : Connection
 		this._World.AddToBlockBuffer(worldBlocks);
 		if (!this._World.IsReady)
 			return;
-		Console.WriteLine("World is finished and ready to decompress/build");
+		Console.WriteLine("Compressed world downloaded..");
 	}
 	/* Properties */
 	public readonly Player Player;

@@ -4,7 +4,7 @@
 
 	Segment Breakdown:
 	----------------------------------------------------------------
-	Segment[0x0 : 0x3] = Modifier   | Length: 4 (0x4) | Type: uint32
+	Segment[0x0 : 0x3] = Data       | Length: 4 (0x4) | Type: uint32
 	Segment[0x4 : 0x5] = Id         | Length: 2 (0x2) | Type: uint16
 	Segment[0x6 : 0x7] = Count      | Length: 2 (0x2) | Type: uint16
 	Segment[0x8 : 0x9] = Durabiltiy | Length: 2 (0x2) | Type: uint16
@@ -22,20 +22,19 @@ namespace JJx;
 public sealed class Item
 {
 	/* Constructor */
-	public Item(ushort id, ushort count, ushort durability = 0, uint modifier = 0, ushort icon = 0)
+	public Item(ushort id, ushort count, ushort durability = 0, uint data = 0, ushort icon = 0)
 	{
 		this.Id = id;
 		this.Count = count;
 		this.Durability = durability;
-		this.Modifier = modifier;
+		this.Data = data;
 		this.Icon = icon;
 	}
 	/* Instance Methods */
-	public override string ToString() => $"Item(Id:{this.Id}, Count:{this.Count}, Modifier:0x{this.Modifier:X4})";
 	public async Task ToStream(Stream stream)
 	{
 		var buffer = new byte[Item.SIZE];
-		BitConverter.LittleEndian.Write(this.Modifier, buffer, OFFSET_MODIFIER);
+		BitConverter.LittleEndian.Write(this.Data, buffer, OFFSET_DATA);
 		BitConverter.LittleEndian.Write(this.Id, buffer, OFFSET_ID);
 		BitConverter.LittleEndian.Write(this.Count, buffer, OFFSET_COUNT);
 		BitConverter.LittleEndian.Write(this.Durability, buffer, OFFSET_DURABILITY);
@@ -49,22 +48,22 @@ public sealed class Item
 		var buffer = new byte[SIZE];
 		while (bytesRead < buffer.Length)
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, buffer.Length - bytesRead);
-		var modifier   = BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_MODIFIER);
+		var data       = BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_DATA);
 		var id         = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_ID);
 		var count      = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_COUNT);
 		var durability = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_DURABILITY);
 		var icon       = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_ICON);
-		return new Item(id, count, durability, modifier, icon);
+		return new Item(id, count, durability, data, icon);
 	}
 	/* Properties */
 	public ushort Id;
 	public ushort Count;
 	public ushort Durability;
-	public uint Modifier;
+	public uint Data;
 	public ushort Icon;
 	/* Class Properties */
 	private const byte SIZE              = 12;
-	private const byte OFFSET_MODIFIER   =  0;
+	private const byte OFFSET_DATA       =  0;
 	private const byte OFFSET_ID         =  4;
 	private const byte OFFSET_COUNT      =  6;
 	private const byte OFFSET_DURABILITY =  8;
