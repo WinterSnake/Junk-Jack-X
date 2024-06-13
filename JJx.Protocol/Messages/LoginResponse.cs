@@ -40,6 +40,10 @@ public sealed class LoginResponseMessage
 	/* Static Methods */
 	public static LoginResponseMessage Deserialize(ReadOnlySpan<byte> buffer)
 	{
+		// Login Failure
+		if (buffer.Length == 1)
+			return new LoginResponseMessage((LoginFailureReason)buffer[0]);
+		// Login Success
 		#if DEBUG
 			Console.WriteLine($"LoginResponse.Data={BitConverter.ToString(buffer)}");
 		#endif

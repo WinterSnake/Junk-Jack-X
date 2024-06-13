@@ -11,56 +11,118 @@ using JJx;
 
 namespace JJx.Protocol;
 
-public class Client : Connection
+public class Client : User
 {
 	/* Constructor */
-	public Client(Player player): base(PEER_COUNT, CHANNEL_COUNT, null)
+	public Client(Player player): base(player)
 	{
-		this.Player = player;
-		this.Id = (byte)Random.Shared.Next(0, 255);
+		this._Host = new ENetHost(null, PEER_COUNT, CHANNEL_COUNT);
 	}
 	/* Instance Methods */
-	public void Connect(IPEndPoint address) => this.ServerPeer = this._Host.Connect(address, CHANNEL_COUNT, 0);
+	public void Connect(IPEndPoint address) => this._Peer = this._Host.Connect(address, CHANNEL_COUNT, 0);
+	public void ProcessEvent()
+	{
+		var @event = this._Host.Service(TimeSpan.FromMilliseconds(0));
+		switch (@event.Type)
+		{
+			case ENetEventType.None: return;
+			case ENetEventType.Connect: this.OnConnect(); break;
+			case ENetEventType.Disconnect: this.OnDisconnect(); break;
+			case ENetEventType.Receive:
+			{
+				this.ProcessMessage(@event);
+				@event.Packet.Destroy();
+			} break;
+		}
+	}
+	protected void ProcessMessage(ENetEvent @event)
+	{
+		var header = (MessageHeader)((@event.Packet.Data[0] << 8) | (@event.Packet.Data[1] << 0));
+		switch (header)
+		{
+			// Management \\
+			case MessageHeader.LoginSuccess:
+			{
+				var loginResponse = LoginResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
+				this.OnLoginSuccess();
+			} break;
+			case MessageHeader.ListResponse:
+			{
+				var listResponse = ListResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
+				this.OnListResponse(listResponse);
+			} break;
+			case MessageHeader.LoginFailure:
+			{
+				var loginResponse = LoginResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
+				this.OnLoginFailure(loginResponse.FailureReason.Value);
+			} break;
+			// World-Data \\
+			case MessageHeader.WorldInfoResponse:
+			{
+				var worldInfoResponse = WorldInfoResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
+				this.OnWorldInfo(worldInfoResponse);
+			} break;
+			case MessageHeader.WorldBlocksResponse:
+			{
+				var worldBlocksResponse = WorldBlocksResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
+				this.OnWorldBlocks(worldBlocksResponse);
+			} break;
+			case MessageHeader.WorldSkylineResponse:
+			{
+				var worldSkylineResponse = WorldSkylineResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
+				this.OnWorldSkyline(worldSkylineResponse);
+			} break;
+			default:
+			{
+				Console.WriteLine($"Unknown header: 0x{(ushort)header:X4} | Size: {@event.Packet.Data.Length - 2} | Data: {BitConverter.ToString(@event.Packet.Data.Slice(2))}");
+			} break;
+		}
+	}
 	// Events
-	protected override void OnConnect(ENetPeer peer)
+	protected virtual void OnConnect()
 	{
 		var request = new LoginRequestMessage(this.Id, this.Player.Name, this.Player.Version);
-		this.ServerPeer.Send(channelId: 0, request.Serialize(), ENetPacketFlags.Reliable);
+		this._Peer.Send(channelId: 0, request.Serialize(), ENetPacketFlags.Reliable);
 	}
-	protected override void OnLoginSuccess()
+	protected virtual void OnDisconnect() { }
+	protected virtual void OnLoginSuccess()
 	{
 		var request = new WorldRequestMessage();
-		this.ServerPeer.Send(channelId: 0, request.Serialize(), ENetPacketFlags.Reliable);
+		this._Peer.Send(channelId: 0, request.Serialize(), ENetPacketFlags.Reliable);
 	}
-	protected override void OnLoginFailed(LoginFailureReason reason) => Console.WriteLine($"Failed to connect to server: {reason}");
-	protected override void OnListResponse(ListResponseMessage listResponse)
+	protected virtual void OnLoginFailure(LoginFailureReason reason)
 	{
-		Console.WriteLine($"Id: {listResponse.Id} | IsMe: {listResponse.IsConnectedPlayer}, Name: {listResponse.Name}");
+		Console.WriteLine($"Failed to connect to server: {reason}");
 	}
-	protected override void OnWorldInfo(WorldInfoResponseMessage worldInfo)
+	protected virtual void OnListResponse(ListResponseMessage listResponse)
+	{
+		Console.WriteLine($"Id: {listResponse.Id}, Name: {listResponse.Name}");
+		if (!listResponse.IsConnectedPlayer)
+			return;
+		this.Id = listResponse.Id;
+		Console.WriteLine($"My new Id: 0x{this.Id:X2}");
+	}
+	protected virtual void OnWorldInfo(WorldInfoResponseMessage worldInfo)
 	{
 		this._World = new(worldInfo);
 	}
-	protected override void OnWorldSkyline(WorldSkylineResponseMessage worldSkyline)
+	protected virtual void OnWorldSkyline(WorldSkylineResponseMessage worldSkyline)
 	{
 		this._World.Skyline = worldSkyline;
 	}
-	protected override void OnWorldBlocks(WorldBlocksResponseMessage worldBlocks)
+	protected virtual void OnWorldBlocks(WorldBlocksResponseMessage worldBlocks)
 	{
 		var percent = this._World.AddToBlockBuffer(worldBlocks);
 		var progress = new WorldProgressMessage(percent);
-		this.ServerPeer.Send(channelId: 0, progress.Serialize(), ENetPacketFlags.Reliable);
+		this._Peer.Send(channelId: 0, progress.Serialize(), ENetPacketFlags.Reliable);
 		if (!this._World.IsReady)
 			return;
 		Console.WriteLine("Compressed world downloaded..");
 		var request = new ListRequestMessage();
-		this.ServerPeer.Send(channelId: 0, request.Serialize(), ENetPacketFlags.Reliable);
-		Console.WriteLine("Sending list request..");
+		this._Peer.Send(channelId: 0, request.Serialize(), ENetPacketFlags.Reliable);
 	}
 	/* Properties */
-	public readonly Player Player;
-	public readonly byte Id;
-	protected ENetPeer ServerPeer { get; private set; }
+	protected readonly ENetHost _Host;
 	private WorldBuilder _World;
 	/* Class Properties */
 	private const int PEER_COUNT = 1;
