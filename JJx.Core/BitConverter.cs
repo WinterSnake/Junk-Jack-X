@@ -9,7 +9,7 @@ using System.Text;
 
 namespace JJx;
 
-public class BitConverter
+public sealed class BitConverter
 {
 	/* Constructor */
 	private BitConverter(bool isLittleEndian) { this._IsLittleEndian = isLittleEndian; }

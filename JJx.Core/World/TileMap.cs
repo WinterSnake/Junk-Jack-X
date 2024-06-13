@@ -22,9 +22,9 @@ public sealed class TileMap
 			for (var y = 0; y < height; ++y)
 			{
 				if (y == 0)
-					this.Tiles[x, y] = new Tile();
+					this.Tiles[x, y] = new Tile(0x0000, 0x0000);
 				else
-					this.Tiles[x, y] = new Tile();
+					this.Tiles[x, y] = new Tile(0x0000, 0x0000);
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 /*
-	Junk Jack X: World
-	- Atmosphere
+	Junk Jack X: Core
+	- [World]Atmosphere
 
 	Written By: Ryan Smith
 */
