@@ -1,12 +1,12 @@
 /*
 	Junk Jack X: Protocol
-	- World Builder
+	- [Builders]World
 
 	Written By: Ryan Smith
 */
 using System;
 
-namespace JJx.Protocol;
+namespace JJx.Protocol.Builders;
 
 public sealed class WorldBuilder
 {

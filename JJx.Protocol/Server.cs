@@ -5,6 +5,7 @@
 	Written By: Ryan Smith
 */
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using ENet.Managed;
@@ -15,10 +16,12 @@ namespace JJx.Protocol;
 public class Server
 {
 	/* Constructor */
-	public Server(World world, IPEndPoint address, int maxPlayers)
+	public Server(World world, IPEndPoint address, ushort maxPlayers)
 	{
 		this._Host = new ENetHost(address, maxPlayers, CHANNEL_COUNT);
 		this.World = world;
+		this.Users = new List<User>(maxPlayers);
+		this.MaxPlayers = maxPlayers;
 	}
 	/* Instance Methods */
 	public void ProcessEvent()
@@ -44,22 +47,22 @@ public class Server
 			// Management \\
 			case MessageHeader.LoginRequest:
 			{
-				var loginRequest = LoginRequestMessage.Deserialize(@event.Packet.Data.Slice(2));
-				this.OnLoginRequest(@event.Peer, loginRequest);
+				var request = LoginRequestMessage.Deserialize(@event.Packet.Data.Slice(2));
+				this.OnLoginRequest(@event.Peer, request);
 			} break;
 			case MessageHeader.WorldRequest:
 			{
-				var worldRequest = WorldRequestMessage.Deserialize(@event.Packet.Data.Slice(2));
+				var request = WorldRequestMessage.Deserialize(@event.Packet.Data.Slice(2));
 				this.OnWorldRequest(@event.Peer);
 			} break;
 			case MessageHeader.WorldProgress:
 			{
-				var worldProgress = WorldProgressMessage.Deserialize(@event.Packet.Data.Slice(2));
-				this.OnWorldProgress(@event.Peer, worldProgress);
+				var status = WorldProgressMessage.Deserialize(@event.Packet.Data.Slice(2));
+				this.OnWorldProgress(@event.Peer, status);
 			} break;
 			case MessageHeader.ListRequest:
 			{
-				var listRequest = ListRequestMessage.Deserialize(@event.Packet.Data.Slice(2));
+				var request = ListRequestMessage.Deserialize(@event.Packet.Data.Slice(2));
 				this.OnListRequest(@event.Peer);
 			} break;
 			default:
@@ -68,21 +71,51 @@ public class Server
 			} break;
 		}
 	}
+	private User GetUserFromPeer(ENetPeer peer)
+	{
+		for (var i = 0; i < this.Users.Count; ++i)
+			if (this.Users[i].Peer == peer)
+				return this.Users[i];
+		throw new ArgumentException($"Unknown peer {peer.GetRemoteEndPoint()} in users list");
+	}
 	// Events
 	protected virtual void OnConnect(ENetPeer peer) { }
-	protected virtual void OnDisconnect(ENetPeer peer) { }
+	protected virtual void OnDisconnect(ENetPeer peer)
+	{
+		// Remove peer from user list
+		for (var i = 0; i < this.Users.Count; ++i)
+			if (this.Users[i].Peer == peer)
+				this.Users.Remove(this.Users[i]);
+	}
 	protected virtual void OnLoginRequest(ENetPeer peer, LoginRequestMessage info)
 	{
 		LoginResponseMessage response;
 		if (info.Version != this.World.Version)
 			response = new LoginResponseMessage(LoginFailureReason.IncorrectVersion);
+		else if (this.Users.Count >= this.MaxPlayers)
+			response = new LoginResponseMessage(LoginFailureReason.ServerFull);
 		else
+		{
+			// Get user Id
+			byte userId = 0;
+			for (var i = 0; i < this.Users.Count; ++i)
+				if (this.Users[i].Id != userId++)
+					break;
+			Console.WriteLine($"Request Id: 0x{info.Id:X2} | New user Id: 0x{userId:X2}, Name: \"{info.Name}\"");
+			var user = new User(peer, userId, info.Name);
+			this.Users.Add(user);
 			response = new LoginResponseMessage();
+		}
 		peer.Send(channelId: 0, response.Serialize(), ENetPacketFlags.Reliable);
 	}
 	protected virtual void OnListRequest(ENetPeer peer)
 	{
-		Console.WriteLine($"Player[{peer.GetRemoteEndPoint()}] is requesting peer list");
+		foreach (var user in this.Users)
+		{
+			var response = new ListResponseMessage(user.Id, user.Peer == peer, user.Player.Name);
+			Console.WriteLine($"Id: 0x{response.Id:X2}, IsRequestingPeer: {response.IsConnectedPlayer}, Name: \"{response.Name}\"");
+			peer.Send(channelId: 0, response.Serialize(), ENetPacketFlags.Reliable);
+		}
 	}
 	protected virtual void OnWorldRequest(ENetPeer peer)
 	{
@@ -113,14 +146,18 @@ public class Server
 	}
 	protected virtual void OnWorldProgress(ENetPeer peer, WorldProgressMessage worldProgress)
 	{
-		Console.WriteLine($"Player[{peer.GetRemoteEndPoint()}] is at {worldProgress.Percent * 100.0f}%");
+		var user = this.GetUserFromPeer(peer);
+		user.DownloadProgress = worldProgress.Percent;
+		Console.WriteLine($"Player[{user.Peer.GetRemoteEndPoint()}] is at {user.DownloadProgress * 100.0f}%");
 	}
 	/* Properties */
-	protected readonly ENetHost _Host;
-	public Difficulty Difficulty = Difficulty.Normal;
-	public bool IsTimeRunning = true;
+	public readonly ushort MaxPlayers;
 	public readonly World World;
+	public bool IsTimeRunning = true;
+	public Difficulty Difficulty = Difficulty.Normal;
+	protected readonly ENetHost _Host;
+	protected readonly List<User> Users;
 	/* Class Properties */
 	private const byte CHANNEL_COUNT = 16;
-	private const ushort MAX_CHUNK_SIZE = 1024;
+	private const ushort MAX_CHUNK_SIZE = 512;
 }

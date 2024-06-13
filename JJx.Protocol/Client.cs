@@ -8,6 +8,7 @@ using System;
 using System.Net;
 using ENet.Managed;
 using JJx;
+using JJx.Protocol.Builders;
 
 namespace JJx.Protocol;
 
@@ -19,7 +20,7 @@ public class Client : User
 		this._Host = new ENetHost(null, PEER_COUNT, CHANNEL_COUNT);
 	}
 	/* Instance Methods */
-	public void Connect(IPEndPoint address) => this._Peer = this._Host.Connect(address, CHANNEL_COUNT, 0);
+	public void Connect(IPEndPoint address) => this.Peer = this._Host.Connect(address, CHANNEL_COUNT, 0);
 	public void ProcessEvent()
 	{
 		var @event = this._Host.Service(TimeSpan.FromMilliseconds(0));
@@ -43,34 +44,34 @@ public class Client : User
 			// Management \\
 			case MessageHeader.LoginSuccess:
 			{
-				var loginResponse = LoginResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
+				var response = LoginResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
 				this.OnLoginSuccess();
 			} break;
 			case MessageHeader.ListResponse:
 			{
-				var listResponse = ListResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
-				this.OnListResponse(listResponse);
+				var response = ListResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
+				this.OnListResponse(response);
 			} break;
 			case MessageHeader.LoginFailure:
 			{
-				var loginResponse = LoginResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
-				this.OnLoginFailure(loginResponse.FailureReason.Value);
+				var response = LoginResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
+				this.OnLoginFailure(response.FailureReason.Value);
 			} break;
 			// World-Data \\
 			case MessageHeader.WorldInfoResponse:
 			{
-				var worldInfoResponse = WorldInfoResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
-				this.OnWorldInfo(worldInfoResponse);
+				var response = WorldInfoResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
+				this.OnWorldInfo(response);
 			} break;
 			case MessageHeader.WorldBlocksResponse:
 			{
-				var worldBlocksResponse = WorldBlocksResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
-				this.OnWorldBlocks(worldBlocksResponse);
+				var response = WorldBlocksResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
+				this.OnWorldBlocks(response);
 			} break;
 			case MessageHeader.WorldSkylineResponse:
 			{
-				var worldSkylineResponse = WorldSkylineResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
-				this.OnWorldSkyline(worldSkylineResponse);
+				var response = WorldSkylineResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
+				this.OnWorldSkyline(response);
 			} break;
 			default:
 			{
@@ -82,13 +83,13 @@ public class Client : User
 	protected virtual void OnConnect()
 	{
 		var request = new LoginRequestMessage(this.Id, this.Player.Name, this.Player.Version);
-		this._Peer.Send(channelId: 0, request.Serialize(), ENetPacketFlags.Reliable);
+		this.Peer.Send(channelId: 0, request.Serialize(), ENetPacketFlags.Reliable);
 	}
 	protected virtual void OnDisconnect() { }
 	protected virtual void OnLoginSuccess()
 	{
 		var request = new WorldRequestMessage();
-		this._Peer.Send(channelId: 0, request.Serialize(), ENetPacketFlags.Reliable);
+		this.Peer.Send(channelId: 0, request.Serialize(), ENetPacketFlags.Reliable);
 	}
 	protected virtual void OnLoginFailure(LoginFailureReason reason)
 	{
@@ -114,12 +115,12 @@ public class Client : User
 	{
 		var percent = this._World.AddToBlockBuffer(worldBlocks);
 		var progress = new WorldProgressMessage(percent);
-		this._Peer.Send(channelId: 0, progress.Serialize(), ENetPacketFlags.Reliable);
+		this.Peer.Send(channelId: 0, progress.Serialize(), ENetPacketFlags.Reliable);
 		if (!this._World.IsReady)
 			return;
 		Console.WriteLine("Compressed world downloaded..");
 		var request = new ListRequestMessage();
-		this._Peer.Send(channelId: 0, request.Serialize(), ENetPacketFlags.Reliable);
+		this.Peer.Send(channelId: 0, request.Serialize(), ENetPacketFlags.Reliable);
 	}
 	/* Properties */
 	protected readonly ENetHost _Host;

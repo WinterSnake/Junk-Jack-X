@@ -1,6 +1,6 @@
 /*
 	Junk Jack X: Protocol
-	- Message Headers
+	- [Message]Headers
 
 	Written By: Ryan Smith
 */
