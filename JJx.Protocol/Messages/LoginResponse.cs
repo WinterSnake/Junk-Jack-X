@@ -4,6 +4,7 @@
 
 	Written By: Ryan Smith
 */
+using System;
 
 namespace JJx.Protocol;
 
@@ -35,6 +36,14 @@ public sealed class LoginResponseMessage
 			buffer[sizeof(ushort)] = (byte)this.FailureReason;
 		}
 		return buffer;
+	}
+	/* Static Methods */
+	public static LoginResponseMessage Deserialize(ReadOnlySpan<byte> buffer)
+	{
+		#if DEBUG
+			Console.WriteLine($"LoginResponse.Data={BitConverter.ToString(buffer)}");
+		#endif
+		return new LoginResponseMessage();
 	}
 	/* Properties */
 	public readonly LoginFailureReason? FailureReason = null;

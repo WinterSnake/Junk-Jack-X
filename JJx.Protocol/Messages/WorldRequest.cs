@@ -20,6 +20,13 @@ public sealed class WorldRequestMessage
 		BitConverter.LittleEndian.Write((ushort)0, buffer, sizeof(ushort));
 		return buffer;
 	}
+	public static WorldRequestMessage Deserialize(ReadOnlySpan<byte> buffer)
+	{
+		#if DEBUG
+			Console.WriteLine($"WorldRequest.Data={BitConverter.ToString(buffer)}");
+		#endif
+		return new WorldRequestMessage();
+	}
 	/* Class Properties */
 	private const byte SIZE = sizeof(ushort);
 }

@@ -20,27 +20,15 @@ public class Server : Connection
 		this.World = world;
 	}
 	/* Instance Methods */
-	protected void AcceptLogin(ENetPeer peer)
-	{
-		Console.WriteLine($"Accepting peer @{peer.GetRemoteEndPoint()}");
-		var loginResponse = new LoginResponseMessage();
-		peer.Send(channelId: 0, loginResponse.Serialize(), ENetPacketFlags.Reliable);
-	}
-	protected void DeclineLogin(ENetPeer peer, LoginFailureReason reason)
-	{
-		Console.WriteLine($"Declining peer @{peer.GetRemoteEndPoint()} for: {reason}");
-		var loginResponse = new LoginResponseMessage(reason);
-		peer.Send(channelId: 0, loginResponse.Serialize(), ENetPacketFlags.Reliable);
-	}
 	// Events
 	protected override void OnLoginRequest(ENetPeer peer, LoginRequestMessage info)
 	{
+		LoginResponseMessage response;
 		if (info.Version != this.World.Version)
-		{
-			this.DeclineLogin(peer, LoginFailureReason.IncorrectVersion);
-			return;
-		}
-		this.AcceptLogin(peer);
+			response = new LoginResponseMessage(LoginFailureReason.IncorrectVersion);
+		else
+			response = new LoginResponseMessage();
+		peer.Send(channelId: 0, response.Serialize(), ENetPacketFlags.Reliable);
 	}
 	protected override void OnListRequest(ENetPeer peer)
 	{

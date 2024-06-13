@@ -51,23 +51,22 @@ public abstract class Connection
 			} break;
 			case MessageHeader.LoginSuccess:
 			{
-				#if DEBUG
-					Console.WriteLine($"LoginSuccess{{Data={BitConverter.ToString(@event.Packet.Data.Slice(2))}}}");
-				#endif
+				var loginResponse = LoginResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
 				this.OnLoginSuccess();
 			} break;
 			case MessageHeader.ListRequest:
 			{
-				#if DEBUG
-					Console.WriteLine($"ListRequest{{Data={BitConverter.ToString(@event.Packet.Data.Slice(2))}}}");
-				#endif
+				var listRequest = ListRequestMessage.Deserialize(@event.Packet.Data.Slice(2));
 				this.OnListRequest(@event.Peer);
+			} break;
+			case MessageHeader.ListResponse:
+			{
+				var listResponse = ListResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
+				this.OnListResponse(listResponse);
 			} break;
 			case MessageHeader.WorldRequest:
 			{
-				#if DEBUG
-					Console.WriteLine($"WorldRequest{{Data={BitConverter.ToString(@event.Packet.Data.Slice(2))}}}");
-				#endif
+				var worldRequest = WorldRequestMessage.Deserialize(@event.Packet.Data.Slice(2));
 				this.OnWorldRequest(@event.Peer);
 			} break;
 			case MessageHeader.WorldProgress:
@@ -77,6 +76,7 @@ public abstract class Connection
 			} break;
 			case MessageHeader.LoginFailure:
 			{
+				var loginResponse = LoginResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
 				this.OnLoginFailed((LoginFailureReason)@event.Packet.Data[2]);
 			} break;
 			// World-Data \\
@@ -110,6 +110,7 @@ public abstract class Connection
 	protected virtual void OnLoginSuccess() { }
 	protected virtual void OnLoginFailed(LoginFailureReason reason) { }
 	protected virtual void OnListRequest(ENetPeer peer) { }
+	protected virtual void OnListResponse(ListResponseMessage message) { }
 	protected virtual void OnWorldRequest(ENetPeer peer) { }
 	protected virtual void OnWorldProgress(ENetPeer peer, WorldProgressMessage worldProgress) { }
 	protected virtual void OnWorldInfo(WorldInfoResponseMessage worldInfo) { }

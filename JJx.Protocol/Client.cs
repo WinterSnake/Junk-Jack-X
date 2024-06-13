@@ -33,6 +33,10 @@ public class Client : Connection
 		this.ServerPeer.Send(channelId: 0, request.Serialize(), ENetPacketFlags.Reliable);
 	}
 	protected override void OnLoginFailed(LoginFailureReason reason) => Console.WriteLine($"Failed to connect to server: {reason}");
+	protected override void OnListResponse(ListResponseMessage listResponse)
+	{
+		Console.WriteLine($"Id: {listResponse.Id} | IsMe: {listResponse.IsConnectedPlayer}, Name: {listResponse.Name}");
+	}
 	protected override void OnWorldInfo(WorldInfoResponseMessage worldInfo)
 	{
 		this._World = new(worldInfo);
@@ -51,6 +55,7 @@ public class Client : Connection
 		Console.WriteLine("Compressed world downloaded..");
 		var request = new ListRequestMessage();
 		this.ServerPeer.Send(channelId: 0, request.Serialize(), ENetPacketFlags.Reliable);
+		Console.WriteLine("Sending list request..");
 	}
 	/* Properties */
 	public readonly Player Player;
