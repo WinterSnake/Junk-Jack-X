@@ -49,7 +49,7 @@ public sealed class World
 		Guid id, DateTime lastPlayed, Version version, string name, string author, (ushort, ushort) player, (ushort, ushort) spawn,
 		Planet planet, Season season, Gamemode gamemode, SizeType worldSizeType, SizeType skySizeType, ushort[] skyline,
 		TileMap tileMap, uint ticks, Period period, float poissonSum, Weather weather, byte poissonSkipped,
-		Chest[] chests, Forge[] forges, Sign[] signs, Lab[] labs, Shelf[] shelves,
+		Chest[] chests, Forge[] forges, Sign[] signs, Lab[] labs, Shelf[] shelves, Lock[] locks,
 		byte[] fluidLayer, byte[] circuitLayer
 	)
 	{
@@ -83,6 +83,7 @@ public sealed class World
 		this.Signs   = new List<Sign>(signs);
 		this.Labs    = new List<Lab>(labs);
 		this.Shelves = new List<Shelf>(shelves);
+		this.Locks   = new List<Lock>(locks);
 		// TEMPORARY
 		this.FluidLayer = fluidLayer;
 		this.CircuitLayer = circuitLayer;
@@ -249,8 +250,10 @@ public sealed class World
 		/// Locks
 		var worldLocksChunk = stream.StartChunk(ArchiverChunkType.WorldLocks);
 		{
-			BitConverter.LittleEndian.Write((uint)0, buffer, 0);
+			BitConverter.LittleEndian.Write((uint)this.Locks.Count, buffer, 0);
 			await worldLocksChunk.WriteAsync(buffer, 0, sizeof(uint));
+			foreach (var @lock in this.Locks)
+				await @lock.ToStream(worldLocksChunk);
 		}
 		stream.EndChunk();
 		/// Fluid
@@ -457,6 +460,9 @@ public sealed class World
 		while (bytesRead < sizeof(uint))
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, sizeof(uint) - bytesRead);
 		var lockCount = JJx.BitConverter.LittleEndian.GetUInt32(buffer);
+		var locks = new Lock[lockCount];
+		for (var i = 0; i < locks.Length; ++i)
+			locks[i] = await Lock.FromStream(stream);
 		/// Fluid
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldFluid))
 			stream.JumpToChunk(ArchiverChunkType.WorldFluid);
@@ -486,7 +492,7 @@ public sealed class World
 			id, lastPlayed, version, name, author, player, spawn, planet,
 			season, gamemode, worldSizeType, skySizeType, skyline, tileMap,
 			ticks, period, poissonSum, weather, poissonSkipped,
-			chests, forges, signs, labs, shelves,
+			chests, forges, signs, labs, shelves, locks,
 			fluidLayer, circuitLayer
 		);
 	}
@@ -539,6 +545,7 @@ public sealed class World
 	public readonly List<Sign>  Signs   = new List<Sign>();
 	public readonly List<Lab>   Labs    = new List<Lab>();
 	public readonly List<Shelf> Shelves = new List<Shelf>();
+	public readonly List<Lock>  Locks   = new List<Lock>();
 	// TEMPORARY
 	#nullable enable
 	private readonly byte[]? FogLayer = null;
