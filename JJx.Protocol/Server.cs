@@ -16,12 +16,12 @@ namespace JJx.Protocol;
 public class Server
 {
 	/* Constructor */
-	public Server(World world, IPEndPoint address, ushort maxPlayers)
+	public Server(World world, IPEndPoint address, byte maxPlayers = 16)
 	{
 		this._Host = new ENetHost(address, maxPlayers, CHANNEL_COUNT);
 		this.World = world;
-		this.Users = new List<User>(maxPlayers);
 		this.MaxPlayers = maxPlayers;
+		this.Users = new List<User>(maxPlayers);
 	}
 	/* Instance Methods */
 	public void ProcessEvent()
@@ -42,6 +42,9 @@ public class Server
 	protected void ProcessMessage(ENetEvent @event)
 	{
 		var header = (MessageHeader)((@event.Packet.Data[0] << 8) | (@event.Packet.Data[1] << 0));
+		#if DEBUG
+			Console.WriteLine($"Peer: {@event.Peer.GetRemoteEndPoint()} | Channel: {@event.ChannelId} | Flags: {@event.Packet.Flags} | Data: {@event.Data} | Size: {@event.Packet.Data.Length - 2} | Data={BitConverter.ToString(@event.Packet.Data.Slice(2))}");
+		#endif
 		switch (header)
 		{
 			// Management \\
@@ -113,7 +116,6 @@ public class Server
 		foreach (var user in this.Users)
 		{
 			var response = new ListResponseMessage(user.Id, user.Peer == peer, user.Player.Name);
-			Console.WriteLine($"Id: 0x{response.Id:X2}, IsRequestingPeer: {response.IsConnectedPlayer}, Name: \"{response.Name}\"");
 			peer.Send(channelId: 0, response.Serialize(), ENetPacketFlags.Reliable);
 		}
 	}
@@ -148,10 +150,10 @@ public class Server
 	{
 		var user = this.GetUserFromPeer(peer);
 		user.DownloadProgress = worldProgress.Percent;
-		Console.WriteLine($"Player[{user.Peer.GetRemoteEndPoint()}] is at {user.DownloadProgress * 100.0f}%");
 	}
+	// Events: Gameplay
 	/* Properties */
-	public readonly ushort MaxPlayers;
+	public readonly byte MaxPlayers;
 	public readonly World World;
 	public bool IsTimeRunning = true;
 	public Difficulty Difficulty = Difficulty.Normal;
@@ -159,5 +161,5 @@ public class Server
 	protected readonly List<User> Users;
 	/* Class Properties */
 	private const byte CHANNEL_COUNT = 16;
-	private const ushort MAX_CHUNK_SIZE = 512;
+	private const ushort MAX_CHUNK_SIZE = 1024;
 }

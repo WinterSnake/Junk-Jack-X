@@ -88,6 +88,9 @@ public sealed class WorldInfoResponseMessage
 		var worldSizeType = (SizeType)buffer[OFFSET_WORLDSIZETYPE];
 		var skySizeType = (SizeType)buffer[OFFSET_SKYSIZETYPE];
 		// UNKNOWN (Start: 32, Length: 4)
+		#if DEBUG
+			Console.WriteLine($"WorldInfo(UNKNOWN)={BitConverter.ToString(buffer.Slice(32, 4))}");
+		#endif
 		var sizeInBytes = BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_SIZEINBYTES);
 		return new WorldInfoResponseMessage(
 			size, spawn, player, ticks, period, isRunning, weather, theme, difficulty,

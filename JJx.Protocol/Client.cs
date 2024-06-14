@@ -39,6 +39,9 @@ public class Client : User
 	protected void ProcessMessage(ENetEvent @event)
 	{
 		var header = (MessageHeader)((@event.Packet.Data[0] << 8) | (@event.Packet.Data[1] << 0));
+		#if DEBUG
+			Console.WriteLine($"Peer: {@event.Peer.GetRemoteEndPoint()} | Channel: {@event.ChannelId} | Flags: {@event.Packet.Flags} | Data: {@event.Data} | Size: {@event.Packet.Data.Length - 2} | Data={BitConverter.ToString(@event.Packet.Data.Slice(2))}");
+		#endif
 		switch (header)
 		{
 			// Management \\
@@ -62,6 +65,11 @@ public class Client : User
 			{
 				var response = WorldInfoResponseMessage.Deserialize(@event.Packet.Data.Slice(2));
 				this.OnWorldInfo(response);
+			} break;
+			case MessageHeader.WorldTime:
+			{
+				var status = WorldTimeMessage.Deserialize(@event.Packet.Data.Slice(2));
+				this.OnWorldTime(status);
 			} break;
 			case MessageHeader.WorldBlocksResponse:
 			{
@@ -118,9 +126,13 @@ public class Client : User
 		this.Peer.Send(channelId: 0, progress.Serialize(), ENetPacketFlags.Reliable);
 		if (!this._World.IsReady)
 			return;
-		Console.WriteLine("Compressed world downloaded..");
 		var request = new ListRequestMessage();
 		this.Peer.Send(channelId: 0, request.Serialize(), ENetPacketFlags.Reliable);
+	}
+	// Events: Gameplay
+	protected virtual void OnWorldTime(WorldTimeMessage worldTime)
+	{
+		Console.WriteLine($"Time: {worldTime.Time}, Ticks: {worldTime.Ticks}");
 	}
 	/* Properties */
 	protected readonly ENetHost _Host;
