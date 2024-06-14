@@ -49,7 +49,7 @@ public sealed class World
 		Guid id, DateTime lastPlayed, Version version, string name, string author, (ushort, ushort) player, (ushort, ushort) spawn,
 		Planet planet, Season season, Gamemode gamemode, SizeType worldSizeType, SizeType skySizeType, ushort[] skyline,
 		TileMap tileMap, uint ticks, Period period, float poissonSum, Weather weather, byte poissonSkipped,
-		Chest[] chests, Forge[] forges, Sign[] signs, byte[] fluidLayer, byte[] circuitLayer
+		Chest[] chests, Forge[] forges, Sign[] signs, Lab[] labs, byte[] fluidLayer, byte[] circuitLayer
 	)
 	{
 		// Info
@@ -80,6 +80,7 @@ public sealed class World
 		this.Chests = new List<Chest>(chests);
 		this.Forges = new List<Forge>(forges);
 		this.Signs  = new List<Sign>(signs);
+		this.Labs   = new List<Lab>(labs);
 		// TEMPORARY
 		this.FluidLayer = fluidLayer;
 		this.CircuitLayer = circuitLayer;
@@ -207,8 +208,10 @@ public sealed class World
 		/// Labs
 		var worldLabsChunk = stream.StartChunk(ArchiverChunkType.WorldLabs);
 		{
-			BitConverter.LittleEndian.Write((uint)0, buffer, 0);
+			BitConverter.LittleEndian.Write((uint)this.Labs.Count, buffer, 0);
 			await worldLabsChunk.WriteAsync(buffer, 0, sizeof(uint));
+			foreach (var lab in this.Labs)
+				await lab.ToStream(worldLabsChunk);
 		}
 		stream.EndChunk();
 		/// Shelves
@@ -409,6 +412,9 @@ public sealed class World
 		while (bytesRead < sizeof(uint))
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, sizeof(uint) - bytesRead);
 		var labCount = JJx.BitConverter.LittleEndian.GetUInt32(buffer);
+		var labs = new Lab[labCount];
+		for (var i = 0; i < labs.Length; ++i)
+			labs[i] = await Lab.FromStream(stream);
 		/// Shelves
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldShelves))
 			stream.JumpToChunk(ArchiverChunkType.WorldShelves);
@@ -473,7 +479,7 @@ public sealed class World
 			id, lastPlayed, version, name, author, player, spawn, planet,
 			season, gamemode, worldSizeType, skySizeType, skyline, tileMap,
 			ticks, period, poissonSum, weather, poissonSkipped,
-			chests, forges, signs,
+			chests, forges, signs, labs,
 			fluidLayer, circuitLayer
 		);
 	}
@@ -524,6 +530,7 @@ public sealed class World
 	public readonly List<Chest> Chests = new List<Chest>();
 	public readonly List<Forge> Forges = new List<Forge>();
 	public readonly List<Sign>  Signs  = new List<Sign>();
+	public readonly List<Lab>   Labs   = new List<Lab>();
 	// TEMPORARY
 	#nullable enable
 	private readonly byte[]? FogLayer = null;
