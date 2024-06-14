@@ -232,7 +232,7 @@ public enum ArchiverChunkType : ushort
 	WorldCircuitry     = 0x0010,
 	WorldWeather       = 0x0011,
 	WorldTime          = 0x0012,
-	WorldMobs          = 0x0013,
+	WorldEntities      = 0x0013,
 	// Adventure
 	// Player
 	PlayerInfo         = 0x8000,

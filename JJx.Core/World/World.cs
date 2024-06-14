@@ -50,7 +50,7 @@ public sealed class World
 		Planet planet, Season season, Gamemode gamemode, SizeType worldSizeType, SizeType skySizeType, ushort[] skyline,
 		TileMap tileMap, uint ticks, Period period, float poissonSum, Weather weather, byte poissonSkipped,
 		Chest[] chests, Forge[] forges, Sign[] signs, Lab[] labs, Shelf[] shelves, Lock[] locks,
-		byte[] fluidLayer, byte[] circuitLayer
+		byte[] fluidLayer, byte[] circuitLayer, Entity[] entities
 	)
 	{
 		// Info
@@ -78,12 +78,13 @@ public sealed class World
 		this.Weather = weather;
 		this.PoissonSkipped = poissonSkipped;
 		// Containers
-		this.Chests  = new List<Chest>(chests);
-		this.Forges  = new List<Forge>(forges);
-		this.Signs   = new List<Sign>(signs);
-		this.Labs    = new List<Lab>(labs);
-		this.Shelves = new List<Shelf>(shelves);
-		this.Locks   = new List<Lock>(locks);
+		this.Chests   = new List<Chest>(chests);
+		this.Forges   = new List<Forge>(forges);
+		this.Signs    = new List<Sign>(signs);
+		this.Labs     = new List<Lab>(labs);
+		this.Shelves  = new List<Shelf>(shelves);
+		this.Locks    = new List<Lock>(locks);
+		this.Entities = new List<Entity>(entities);
 		// TEMPORARY
 		this.FluidLayer = fluidLayer;
 		this.CircuitLayer = circuitLayer;
@@ -268,11 +269,13 @@ public sealed class World
 			await worldCircuitryChunk.WriteAsync(this.CircuitLayer, 0, this.CircuitLayer.Length);
 		}
 		stream.EndChunk();
-		/// Mobs
-		var worldMobsChunk = stream.StartChunk(ArchiverChunkType.WorldMobs);
+		/// Entities
+		var worldEntitiesChunk = stream.StartChunk(ArchiverChunkType.WorldEntities);
 		{
-			BitConverter.LittleEndian.Write((uint)0, buffer, 0);
-			await worldMobsChunk.WriteAsync(buffer, 0, sizeof(uint));
+			BitConverter.LittleEndian.Write((uint)this.Entities.Count, buffer, 0);
+			await worldEntitiesChunk.WriteAsync(buffer, 0, sizeof(uint));
+			foreach (var entity in this.Entities)
+				await entity.ToStream(worldEntitiesChunk);
 		}
 		stream.EndChunk();
 		/// Padding
@@ -477,13 +480,16 @@ public sealed class World
 		var circuitLayer = new byte[stream.GetChunkSize(ArchiverChunkType.WorldCircuitry)];
 		while (bytesRead < circuitLayer.Length)
 			bytesRead += await stream.ReadAsync(circuitLayer, bytesRead, circuitLayer.Length - bytesRead);
-		/// Mobs
-		if (!stream.IsAtChunk(ArchiverChunkType.WorldMobs))
-			stream.JumpToChunk(ArchiverChunkType.WorldMobs);
+		/// Entities
+		if (!stream.IsAtChunk(ArchiverChunkType.WorldEntities))
+			stream.JumpToChunk(ArchiverChunkType.WorldEntities);
 		bytesRead = 0;
 		while (bytesRead < sizeof(uint))
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, sizeof(uint) - bytesRead);
-		var mobCount = JJx.BitConverter.LittleEndian.GetUInt32(buffer);
+		var entityCount = JJx.BitConverter.LittleEndian.GetUInt32(buffer);
+		var entities = new Entity[entityCount];
+		for (var i = 0; i < entities.Length; ++i)
+			entities[i] = await Entity.FromStream(stream);
 		/// Padding
 		if (stream.HasChunk(ArchiverChunkType.Padding))
 			stream.Position += sizeof(uint);
@@ -493,7 +499,7 @@ public sealed class World
 			season, gamemode, worldSizeType, skySizeType, skyline, tileMap,
 			ticks, period, poissonSum, weather, poissonSkipped,
 			chests, forges, signs, labs, shelves, locks,
-			fluidLayer, circuitLayer
+			fluidLayer, circuitLayer, entities
 		);
 	}
 	/* Properties */
@@ -540,12 +546,13 @@ public sealed class World
 	public Weather Weather = Weather.None;
 	public byte PoissonSkipped = 0;
 	// Containers
-	public readonly List<Chest> Chests  = new List<Chest>();
-	public readonly List<Forge> Forges  = new List<Forge>();
-	public readonly List<Sign>  Signs   = new List<Sign>();
-	public readonly List<Lab>   Labs    = new List<Lab>();
-	public readonly List<Shelf> Shelves = new List<Shelf>();
-	public readonly List<Lock>  Locks   = new List<Lock>();
+	public readonly List<Chest>  Chests   = new List<Chest>();
+	public readonly List<Forge>  Forges   = new List<Forge>();
+	public readonly List<Sign>   Signs    = new List<Sign>();
+	public readonly List<Lab>    Labs     = new List<Lab>();
+	public readonly List<Shelf>  Shelves  = new List<Shelf>();
+	public readonly List<Lock>   Locks    = new List<Lock>();
+	public readonly List<Entity> Entities = new List<Entity>();
 	// TEMPORARY
 	#nullable enable
 	private readonly byte[]? FogLayer = null;
