@@ -157,6 +157,11 @@ public sealed class BitConverter
 	}
 	public static void Write(string @value, Span<byte> buffer, int offset = 0, int length = 0)
 	{
+		if (String.IsNullOrEmpty(@value))
+		{
+			buffer[offset] = 0;
+			return;
+		}
 		length = length == 0 ? @value.Length + 1 : length;
 		if (buffer.Length < offset + length) throw new IndexOutOfRangeException();
 		var valueBytes = Encoding.ASCII.GetBytes(@value);

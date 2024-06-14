@@ -49,7 +49,7 @@ public sealed class World
 		Guid id, DateTime lastPlayed, Version version, string name, string author, (ushort, ushort) player, (ushort, ushort) spawn,
 		Planet planet, Season season, Gamemode gamemode, SizeType worldSizeType, SizeType skySizeType, ushort[] skyline,
 		TileMap tileMap, uint ticks, Period period, float poissonSum, Weather weather, byte poissonSkipped,
-		Chest[] chests, Forge[] forges, byte[] fluidLayer, byte[] circuitLayer
+		Chest[] chests, Forge[] forges, Sign[] signs, byte[] fluidLayer, byte[] circuitLayer
 	)
 	{
 		// Info
@@ -79,6 +79,7 @@ public sealed class World
 		// Containers
 		this.Chests = new List<Chest>(chests);
 		this.Forges = new List<Forge>(forges);
+		this.Signs  = new List<Sign>(signs);
 		// TEMPORARY
 		this.FluidLayer = fluidLayer;
 		this.CircuitLayer = circuitLayer;
@@ -190,8 +191,10 @@ public sealed class World
 		/// Signs
 		var worldSignsChunk = stream.StartChunk(ArchiverChunkType.WorldSigns);
 		{
-			BitConverter.LittleEndian.Write((uint)0, buffer, 0);
+			BitConverter.LittleEndian.Write((uint)this.Signs.Count, buffer, 0);
 			await worldSignsChunk.WriteAsync(buffer, 0, sizeof(uint));
+			foreach (var sign in this.Signs)
+				await sign.ToStream(worldSignsChunk);
 		}
 		stream.EndChunk();
 		/// Stables
@@ -389,6 +392,9 @@ public sealed class World
 		while (bytesRead < sizeof(uint))
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, sizeof(uint) - bytesRead);
 		var signCount = JJx.BitConverter.LittleEndian.GetUInt32(buffer);
+		var signs = new Sign[signCount];
+		for (var i = 0; i < signs.Length; ++i)
+			signs[i] = await Sign.FromStream(stream);
 		/// Stables
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldStables))
 			stream.JumpToChunk(ArchiverChunkType.WorldStables);
@@ -467,7 +473,7 @@ public sealed class World
 			id, lastPlayed, version, name, author, player, spawn, planet,
 			season, gamemode, worldSizeType, skySizeType, skyline, tileMap,
 			ticks, period, poissonSum, weather, poissonSkipped,
-			chests, forges,
+			chests, forges, signs,
 			fluidLayer, circuitLayer
 		);
 	}
@@ -517,6 +523,7 @@ public sealed class World
 	// Containers
 	public readonly List<Chest> Chests = new List<Chest>();
 	public readonly List<Forge> Forges = new List<Forge>();
+	public readonly List<Sign>  Signs  = new List<Sign>();
 	// TEMPORARY
 	#nullable enable
 	private readonly byte[]? FogLayer = null;
