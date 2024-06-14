@@ -49,8 +49,8 @@ public sealed class World
 		Guid id, DateTime lastPlayed, Version version, string name, string author, (ushort, ushort) player, (ushort, ushort) spawn,
 		Planet planet, Season season, Gamemode gamemode, SizeType worldSizeType, SizeType skySizeType, ushort[] skyline,
 		TileMap tileMap, uint ticks, Period period, float poissonSum, Weather weather, byte poissonSkipped,
-		Chest[] chests, Forge[] forges, Sign[] signs, Lab[] labs, Shelf[] shelves, Lock[] locks,
-		byte[] fluidLayer, byte[] circuitLayer, Entity[] entities
+		Chest[] chests, Forge[] forges, Sign[] signs, Lab[] labs, Shelf[] shelves, Fruit[] fruits, Decay[] decay,
+		Lock[] locks, byte[] fluidLayer, byte[] circuitLayer, Entity[] entities
 	)
 	{
 		// Info
@@ -83,6 +83,8 @@ public sealed class World
 		this.Signs    = new List<Sign>(signs);
 		this.Labs     = new List<Lab>(labs);
 		this.Shelves  = new List<Shelf>(shelves);
+		this.Fruits   = new List<Fruit>(fruits);
+		this.Decay    = new List<Decay>(decay);
 		this.Locks    = new List<Lock>(locks);
 		this.Entities = new List<Entity>(entities);
 		// TEMPORARY
@@ -237,15 +239,19 @@ public sealed class World
 		/// Fruits
 		var worldFruitsChunk = stream.StartChunk(ArchiverChunkType.WorldFruits);
 		{
-			BitConverter.LittleEndian.Write((uint)0, buffer, 0);
+			BitConverter.LittleEndian.Write((uint)this.Fruits.Count, buffer, 0);
 			await worldFruitsChunk.WriteAsync(buffer, 0, sizeof(uint));
+			foreach (var fruit in this.Fruits)
+				await fruit.ToStream(worldFruitsChunk);
 		}
 		stream.EndChunk();
 		/// Plant Decay
 		var worldPlantDecayChunk = stream.StartChunk(ArchiverChunkType.WorldPlantDecay);
 		{
-			BitConverter.LittleEndian.Write((uint)0, buffer, 0);
+			BitConverter.LittleEndian.Write((uint)this.Decay.Count, buffer, 0);
 			await worldPlantDecayChunk.WriteAsync(buffer, 0, sizeof(uint));
+			foreach (var decay in this.Decay)
+				await decay.ToStream(worldPlantDecayChunk);
 		}
 		stream.EndChunk();
 		/// Locks
@@ -442,6 +448,7 @@ public sealed class World
 		while (bytesRead < sizeof(uint))
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, sizeof(uint) - bytesRead);
 		var plantCount = JJx.BitConverter.LittleEndian.GetUInt32(buffer);
+		Console.WriteLine($"Plants: {plantCount}");
 		/// Fruits
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldFruits))
 			stream.JumpToChunk(ArchiverChunkType.WorldFruits);
@@ -449,6 +456,9 @@ public sealed class World
 		while (bytesRead < sizeof(uint))
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, sizeof(uint) - bytesRead);
 		var fruitCount = JJx.BitConverter.LittleEndian.GetUInt32(buffer);
+		var fruits = new Fruit[fruitCount];
+		for (var i = 0; i < fruits.Length; ++i)
+			fruits[i] = await Fruit.FromStream(stream);
 		/// Plant Decay
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldPlantDecay))
 			stream.JumpToChunk(ArchiverChunkType.WorldPlantDecay);
@@ -456,6 +466,9 @@ public sealed class World
 		while (bytesRead < sizeof(uint))
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, sizeof(uint) - bytesRead);
 		var plantDecayCount = JJx.BitConverter.LittleEndian.GetUInt32(buffer);
+		var plantDecay = new Decay[plantDecayCount];
+		for (var i = 0; i < plantDecay.Length; ++i)
+			plantDecay[i] = await JJx.Decay.FromStream(stream);
 		/// Locks
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldLocks))
 			stream.JumpToChunk(ArchiverChunkType.WorldLocks);
@@ -498,7 +511,7 @@ public sealed class World
 			id, lastPlayed, version, name, author, player, spawn, planet,
 			season, gamemode, worldSizeType, skySizeType, skyline, tileMap,
 			ticks, period, poissonSum, weather, poissonSkipped,
-			chests, forges, signs, labs, shelves, locks,
+			chests, forges, signs, labs, shelves, fruits, plantDecay, locks,
 			fluidLayer, circuitLayer, entities
 		);
 	}
@@ -551,6 +564,8 @@ public sealed class World
 	public readonly List<Sign>   Signs    = new List<Sign>();
 	public readonly List<Lab>    Labs     = new List<Lab>();
 	public readonly List<Shelf>  Shelves  = new List<Shelf>();
+	public readonly List<Fruit>  Fruits   = new List<Fruit>();
+	public readonly List<Decay>  Decay    = new List<Decay>();
 	public readonly List<Lock>   Locks    = new List<Lock>();
 	public readonly List<Entity> Entities = new List<Entity>();
 	// TEMPORARY
