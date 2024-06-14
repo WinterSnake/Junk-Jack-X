@@ -1,6 +1,6 @@
 /*
 	Junk Jack X: Core
-	- [World: Containers]Lab
+	- [World: Containers]Shelf
 
 	Segment Breakdown:
 	-----------------------------------------------------------------
@@ -18,16 +18,16 @@ using System.Threading.Tasks;
 
 namespace JJx;
 
-public sealed class Lab
+public sealed class Shelf
 {
 	/* Constructors */
-	public Lab(ushort x, ushort y)
+	public Shelf(ushort x, ushort y)
 	{
 		this.Position = (x, y);
 		for (var i = 0; i < this.Items.Length; ++i)
 			this.Items[i] = new Item(0xFFFF, 0);
 	}
-	private Lab((ushort, ushort) position, Item[] items)
+	private Shelf((ushort, ushort) position, Item[] items)
 	{
 		this.Position = position;
 		this.Items = items;
@@ -43,7 +43,7 @@ public sealed class Lab
 			await item.ToStream(stream);
 	}
 	/* Static Methods */
-	public static async Task<Lab> FromStream(Stream stream)
+	public static async Task<Shelf> FromStream(Stream stream)
 	{
 		var bytesRead = 0;
 		var buffer = new byte[SIZE];
@@ -57,7 +57,7 @@ public sealed class Lab
 		var items = new Item[SIZEOF_ITEMS];
 		for (var i = 0; i < items.Length; ++i)
 			items[i] = await Item.FromStream(stream);
-		return new Lab(position, items);
+		return new Shelf(position, items);
 	}
 	/* Properties */
 	public (ushort X, ushort Y) Position;
@@ -65,5 +65,5 @@ public sealed class Lab
 	/* Class Properties */
 	private const byte SIZE            = 4;
 	private const byte OFFSET_POSITION = 0;
-	private const byte SIZEOF_ITEMS    = 5;
+	private const byte SIZEOF_ITEMS    = 4;
 }
