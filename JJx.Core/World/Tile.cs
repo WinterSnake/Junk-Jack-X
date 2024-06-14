@@ -79,7 +79,7 @@ public sealed class Tile
 	public ushort ForegroundId;
 	public ushort BackgroundId;
 	private readonly ushort[] _DecorationIds = new ushort[DECORATION_COUNT];
-	public readonly byte[] Data;
+	public readonly byte[] Data = new byte[SIZE];
 	/* Class Properties */
 	public const byte DECORATION_COUNT   =  4;
 	internal const byte SIZE             = 16;

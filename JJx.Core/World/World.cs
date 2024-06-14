@@ -28,6 +28,7 @@
 	Written By: Ryan Smith
 */
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -44,26 +45,11 @@ public enum Gamemode : byte
 public sealed class World
 {
 	/* Constructors */
-	public World(
-		string name, SizeType worldSize, SizeType skySize, Gamemode gamemode,
-		string author = "author", Season season = Season.None, Planet planet = Planet.Terra
-	)
-	{
-		this.Name = name;
-		this.Author = author;
-		this.Player = (0, 1);
-		this.Spawn  = (0, 1);
-		this.Planet = planet;
-		this.Season = season;
-		this.Gamemode = gamemode;
-		this.WorldSizeType = worldSize;
-		this.SkySizeType = skySize;
-	}
 	private World(
 		Guid id, DateTime lastPlayed, Version version, string name, string author, (ushort, ushort) player, (ushort, ushort) spawn,
 		Planet planet, Season season, Gamemode gamemode, SizeType worldSizeType, SizeType skySizeType, ushort[] skyline,
 		TileMap tileMap, uint ticks, Period period, float poissonSum, Weather weather, byte poissonSkipped,
-		byte[] fluidLayer, byte[] circuitLayer
+		Chest[] chests, byte[] fluidLayer, byte[] circuitLayer
 	)
 	{
 		// Info
@@ -91,6 +77,8 @@ public sealed class World
 		this.Weather = weather;
 		this.PoissonSkipped = poissonSkipped;
 		// Containers
+		this.Chests = new List<Chest>(chests);
+		// TEMPORARY
 		this.FluidLayer = fluidLayer;
 		this.CircuitLayer = circuitLayer;
 	}
@@ -183,8 +171,10 @@ public sealed class World
 		/// Chests
 		var worldChestsChunk = stream.StartChunk(ArchiverChunkType.WorldChests);
 		{
-			BitConverter.LittleEndian.Write((uint)0, buffer, 0);
+			BitConverter.LittleEndian.Write((uint)this.Chests.Count, buffer, 0);
 			await worldChestsChunk.WriteAsync(buffer, 0, sizeof(uint));
+			foreach (var chest in this.Chests)
+				await chest.ToStream(worldChestsChunk);
 		}
 		stream.EndChunk();
 		/// Forges
@@ -376,6 +366,10 @@ public sealed class World
 		while (bytesRead < sizeof(uint))
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, sizeof(uint) - bytesRead);
 		var chestCount = JJx.BitConverter.LittleEndian.GetUInt32(buffer);
+		var chests = new Chest[chestCount];
+		Console.WriteLine($"Chest Count: {chests.Length}");
+		for (var i = 0; i < chests.Length; ++i)
+			chests[i] = await Chest.FromStream(stream);
 		/// Forges
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldForges))
 			stream.JumpToChunk(ArchiverChunkType.WorldForges);
@@ -468,6 +462,7 @@ public sealed class World
 			id, lastPlayed, version, name, author, player, spawn, planet,
 			season, gamemode, worldSizeType, skySizeType, skyline, tileMap,
 			ticks, period, poissonSum, weather, poissonSkipped,
+			chests,
 			fluidLayer, circuitLayer
 		);
 	}
@@ -515,6 +510,7 @@ public sealed class World
 	public Weather Weather = Weather.None;
 	public byte PoissonSkipped = 0;
 	// Containers
+	public readonly List<Chest> Chests = new List<Chest>();
 	// TEMPORARY
 	#nullable enable
 	private readonly byte[]? FogLayer = null;
