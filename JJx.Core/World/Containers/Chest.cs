@@ -8,7 +8,7 @@
 	Segment[0x4 : 0x7] = Y Position | Length: 4 (0x4) | Type: uint32
 	Segment[0x8 : 0xB] = Item Count | Length: 4 (0x4) | Type: uint32
 	----------------------------------------------------------------
-	Size: 12 (0xC)
+	Size: 12 (0xC) + {Item[]}
 
 	Written By: Ryan Smith
 */
@@ -22,9 +22,9 @@ namespace JJx;
 public sealed class Chest
 {
 	/* Constructors */
-	public Chest((uint, uint) position)
+	public Chest(uint x, uint y)
 	{
-		this.Position = position;
+		this.Position = (x, y);
 	}
 	private Chest((uint, uint) position, Item[] items)
 	{

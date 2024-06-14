@@ -49,7 +49,7 @@ public sealed class World
 		Guid id, DateTime lastPlayed, Version version, string name, string author, (ushort, ushort) player, (ushort, ushort) spawn,
 		Planet planet, Season season, Gamemode gamemode, SizeType worldSizeType, SizeType skySizeType, ushort[] skyline,
 		TileMap tileMap, uint ticks, Period period, float poissonSum, Weather weather, byte poissonSkipped,
-		Chest[] chests, byte[] fluidLayer, byte[] circuitLayer
+		Chest[] chests, Forge[] forges, byte[] fluidLayer, byte[] circuitLayer
 	)
 	{
 		// Info
@@ -78,6 +78,7 @@ public sealed class World
 		this.PoissonSkipped = poissonSkipped;
 		// Containers
 		this.Chests = new List<Chest>(chests);
+		this.Forges = new List<Forge>(forges);
 		// TEMPORARY
 		this.FluidLayer = fluidLayer;
 		this.CircuitLayer = circuitLayer;
@@ -180,8 +181,10 @@ public sealed class World
 		/// Forges
 		var worldForgesChunk = stream.StartChunk(ArchiverChunkType.WorldForges);
 		{
-			BitConverter.LittleEndian.Write((uint)0, buffer, 0);
+			BitConverter.LittleEndian.Write((uint)this.Forges.Count, buffer, 0);
 			await worldForgesChunk.WriteAsync(buffer, 0, sizeof(uint));
+			foreach (var forge in this.Forges)
+				await forge.ToStream(worldForgesChunk);
 		}
 		stream.EndChunk();
 		/// Signs
@@ -367,7 +370,6 @@ public sealed class World
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, sizeof(uint) - bytesRead);
 		var chestCount = JJx.BitConverter.LittleEndian.GetUInt32(buffer);
 		var chests = new Chest[chestCount];
-		Console.WriteLine($"Chest Count: {chests.Length}");
 		for (var i = 0; i < chests.Length; ++i)
 			chests[i] = await Chest.FromStream(stream);
 		/// Forges
@@ -377,6 +379,9 @@ public sealed class World
 		while (bytesRead < sizeof(uint))
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, sizeof(uint) - bytesRead);
 		var forgeCount = JJx.BitConverter.LittleEndian.GetUInt32(buffer);
+		var forges = new Forge[forgeCount];
+		for (var i = 0; i < forges.Length; ++i)
+			forges[i] = await Forge.FromStream(stream);
 		/// Signs
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldSigns))
 			stream.JumpToChunk(ArchiverChunkType.WorldSigns);
@@ -462,7 +467,7 @@ public sealed class World
 			id, lastPlayed, version, name, author, player, spawn, planet,
 			season, gamemode, worldSizeType, skySizeType, skyline, tileMap,
 			ticks, period, poissonSum, weather, poissonSkipped,
-			chests,
+			chests, forges,
 			fluidLayer, circuitLayer
 		);
 	}
@@ -511,6 +516,7 @@ public sealed class World
 	public byte PoissonSkipped = 0;
 	// Containers
 	public readonly List<Chest> Chests = new List<Chest>();
+	public readonly List<Forge> Forges = new List<Forge>();
 	// TEMPORARY
 	#nullable enable
 	private readonly byte[]? FogLayer = null;
