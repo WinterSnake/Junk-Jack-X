@@ -46,7 +46,7 @@ public enum ArchiverChunkType : ushort
 	// Adventure
 	// Player
 	PlayerInfo         = 0x8000,
-	PlayerInventory    = 0x8001,
+	PlayerItems        = 0x8001,
 	PlayerCraftbooks   = 0x8002,
 	PlayerAchievements = 0x8003,
 	PlayerStatus       = 0x8004,

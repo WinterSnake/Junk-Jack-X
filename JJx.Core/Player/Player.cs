@@ -3,33 +3,33 @@
 	- Player
 
 	Segment Breakdown:
-	-----------------------------------------------------------------------------------------------------------------------------
+	--------------------------------------------------------------------------------------------------------------------
 	:<Info>
-	Segment[0x48  : 0x57]  = UUID                   | Length: 16  (0x10)  | Type: uuid
-	Segment[0x58  : 0x67]  = Name                   | Length: 16  (0x10)  | Type: char*
-	Segment[0x68  : 0x6B]  = Game Version           | Length:  4   (0x4)  | Type: enum[uint32]      | Parent: Version
-	Segment[0x6C  : 0x6F]  = Theme\Unlocked Planets | Length:  4   (0x4)  | Type: enum flag[uint32] | Parent: Planet
-	Segment[0x70  : 0x73]  = Gameplay Flags         | Length:  4   (0x4)  | Type: enum flag[uint32] | Parent: Gameplay.Flag
-	Segment[0x74]          = Hair Color             | Length:  1   (0x1)  | Type: bitfield          | Parent: Character
-	Segment[0x75]          = Gender/Skin/Hair       | Length:  1   (0x1)  | Type: bitfield          | Parent: Character
-	Segment[0x76  :  0x77] = UNKNOWN                | Length:  2   (0x2)  | Type: ???
-	Segment[0x78]          = Gameplay Difficulty    | Length:  1   (0x1)  | Type: enum[uint8]       | Parent: Difficulty
-	Segment[0x79  :  0x7B] = UNKNOWN                | Length:  3   (0x3)  | Type: ???
+	Segment[0x48  : 0x57]  = UUID                | Length: 16   (0x10) | Type: uuid
+	Segment[0x58  : 0x67]  = Name                | Length: 16   (0x10) | Type: char*
+	Segment[0x68  : 0x6B]  = Game Version        | Length:  4    (0x4) | Type: enum[uint32]      | Parent: Version
+	Segment[0x6C  : 0x6F]  = Unlocked Planets    | Length:  4    (0x4) | Type: enum flag[uint32] | Parent: Planet
+	Segment[0x70  : 0x73]  = Gameplay Flags      | Length:  4    (0x4) | Type: enum flag[uint32] | Parent: Gameplay.Flag
+	Segment[0x74]          = Hair Color          | Length:  1    (0x1) | Type: bitfield          | Parent: Character
+	Segment[0x75]          = Gender/Skin/Hair    | Length:  1    (0x1) | Type: bitfield          | Parent: Character
+	Segment[0x76  :  0x77] = UNKNOWN             | Length:  2    (0x2) | Type: ???
+	Segment[0x78]          = Gameplay Difficulty | Length:  1    (0x1) | Type: enum[uint8]       | Parent: Difficulty
+	Segment[0x79  :  0x7B] = UNKNOWN             | Length:  3    (0x3) | Type: ???
 	:<Inventory>
-	Segment[0x7C  :  0xF3] = Hotbar: Survival       | Length: 120  (0x78) | Type: struct Item[10]   | Parent: Item
-	Segment[0xF4  : 0x16B] = Hotbar: Creative       | Length: 120  (0x78) | Type: struct Item[10]   | Parent: Item
-	Segment[0x16C : 0x16B] = Crafting Slots         | Length: 108  (0x6C) | Type: struct Item[9]    | Parent: Item
-	Segment[0x1D8 : 0x387] = Inventory              | Length: 432 (0x1B0) | Type: struct Item[36]   | Parent: Item
-	Segment[0x388 : 0x3C3] = Actual Armor Slots     | Length:  60  (0x3C) | Type: struct Item[5]    | Parent: Item
-	Segment[0x3C4 : 0x3FF] = Visual Armor Slots     | Length:  60  (0x3C) | Type: struct Item[5]    | Parent: Item
-	Segment[0x400 : 0x40B] = Craft Slot             | Length:  12   (0xC) | Type: struct Item       | Parent: Item
-	Segment[0x40C : 0x417] = Arrow Slot             | Length:  12   (0xC) | Type: struct Item       | Parent: Item
+	Segment[0x7C  :  0xF3] = Hotbar: Survival    | Length: 120  (0x78) | Type: struct Item[10]   | Parent: Item
+	Segment[0xF4  : 0x16B] = Hotbar: Creative    | Length: 120  (0x78) | Type: struct Item[10]   | Parent: Item
+	Segment[0x16C : 0x16B] = Crafting Slots      | Length: 108  (0x6C) | Type: struct Item[9]    | Parent: Item
+	Segment[0x1D8 : 0x387] = Inventory           | Length: 432 (0x1B0) | Type: struct Item[36]   | Parent: Item
+	Segment[0x388 : 0x3C3] = Actual Armor Slots  | Length:  60  (0x3C) | Type: struct Item[5]    | Parent: Item
+	Segment[0x3C4 : 0x3FF] = Visual Armor Slots  | Length:  60  (0x3C) | Type: struct Item[5]    | Parent: Item
+	Segment[0x400 : 0x40B] = Craft Slot          | Length:  12   (0xC) | Type: struct Item       | Parent: Item
+	Segment[0x40C : 0x417] = Arrow Slot          | Length:  12   (0xC) | Type: struct Item       | Parent: Item
 	:<Craftbooks>
 	:<Achievements>
 	:<Status>
-	Segment[0x548 : 0x53B] = Health                 | Length:   4   (0x4) | Type: float32
-	Segment[0x53C : 0x54C] = Effects                | Length:  16  (0x10) | Type: struct Effect[4]  | Parent: Effect
-	-----------------------------------------------------------------------------------------------------------------------------
+	Segment[0x548 : 0x53B] = Health              | Length:   4   (0x4) | Type: float32
+	Segment[0x53C : 0x54C] = Effects             | Length:  16  (0x10) | Type: struct Effect[4]  | Parent: Effect
+	--------------------------------------------------------------------------------------------------------------------
 
 	Written By: Ryan Smith
 */
@@ -54,11 +54,14 @@ public sealed class Player
 			(HairColor)Random.Shared.Next(Enum.GetValues(typeof(HairColor)).Length) // Hair: Color
 		);
 		this.Gameplay = new Gameplay(Difficulty.Normal, flags);
-		// Inventory
-		for (var i = 0; i < this.Inventory.Length; ++i)
-			this.Inventory[i] = new Item(0xFFFF, 0x0000);
+		// Items
+		for (var i = 0; i < this.Items.Length; ++i)
+			this.Items[i] = new Item(0xFFFF, 0x0000);
 	}
-	private Player(Guid id, string name, Version version, Planet planet, Character character, Gameplay gameplay, Item[] inventory, Craftbook craftbooks, Achievements achievements, float health, Effect[] effects)
+	private Player(
+		Guid id, string name, Version version, Planet planet, Character character, Gameplay gameplay,
+		Item[] items, Craftbook craftbooks, Achievements achievements, float health, Effect[] effects
+	)
 	{
 		this.Id = id;
 		this._Name = name;
@@ -66,7 +69,7 @@ public sealed class Player
 		this.UnlockedPlanets = planet;
 		this.Character = character;
 		this.Gameplay = gameplay;
-		this.Inventory = inventory;
+		this.Items = items;
 		this.Craftbook = craftbooks;
 		this.Achievements = achievements;
 		this.Health = health;
@@ -109,11 +112,11 @@ public sealed class Player
 			await playerInfoChunk.WriteAsync(buffer, 0, SIZEOF_INFO);
 		}
 		stream.EndChunk();
-		/// Inventory
-		var playerInventoryChunk = stream.StartChunk(ArchiverChunkType.PlayerInventory);
+		/// Items
+		var playerItemsChunk = stream.StartChunk(ArchiverChunkType.PlayerItems);
 		{
-			foreach (var item in this.Inventory)
-				await item.ToStream(playerInventoryChunk);
+			foreach (var item in this.Items)
+				await item.ToStream(playerItemsChunk);
 		}
 		stream.EndChunk();
 		/// Craftbooks
@@ -168,12 +171,12 @@ public sealed class Player
 		var flags      = (Gameplay.Flag)BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_FLAGS);
 		var character  = Character.Unpack(buffer, OFFSET_CHARACTER);
 		var difficulty = (Difficulty)buffer[OFFSET_DIFFICULTY];
-		/// Inventory
-		if (!stream.IsAtChunk(ArchiverChunkType.PlayerInventory))
-			stream.JumpToChunk(ArchiverChunkType.PlayerInventory);
-		var inventory = new Item[COUNTOF_INVENTORY];
-		for (var i = 0; i < inventory.Length; ++i)
-			inventory[i] = await Item.FromStream(stream);
+		/// Items
+		if (!stream.IsAtChunk(ArchiverChunkType.PlayerItems))
+			stream.JumpToChunk(ArchiverChunkType.PlayerItems);
+		var items = new Item[COUNTOF_INVENTORY];
+		for (var i = 0; i < items.Length; ++i)
+			items[i] = await Item.FromStream(stream);
 		/// Craftbook
 		if (!stream.IsAtChunk(ArchiverChunkType.PlayerCraftbooks))
 			stream.JumpToChunk(ArchiverChunkType.PlayerCraftbooks);
@@ -192,7 +195,7 @@ public sealed class Player
 		var effects = new Effect[COUNTOF_EFFECTS];
 		for (var i = 0; i < effects.Length; ++i)
 			effects[i] = await Effect.FromStream(stream);
-		return new Player(id, name, version, planet, character, new Gameplay(difficulty, flags), inventory, craftbook, achievements, health, effects);
+		return new Player(id, name, version, planet, character, new Gameplay(difficulty, flags), items, craftbook, achievements, health, effects);
 	}
 	/* Properties */
 	// Info
@@ -211,7 +214,7 @@ public sealed class Player
 	public Character Character;
 	public Gameplay Gameplay;
 	// Inventory
-	public readonly Item[] Inventory = new Item[COUNTOF_INVENTORY];
+	public readonly Item[] Items = new Item[COUNTOF_INVENTORY];
 	// Craftbook
 	public readonly Craftbook Craftbook;
 	// Achievements
