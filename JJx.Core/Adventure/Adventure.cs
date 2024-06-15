@@ -22,6 +22,7 @@
 	Segment[0x14A]          = World Size           | Length:   1  (0x1) | Type: enum[uint8]      | Parent: InitSize
 	Segment[0x14B]          = Sky Size             | Length:   1  (0x1) | Type: enum[uint8]      | Parent: InitSize
 	Segment[0x14C :  0x14F] = UNKNOWN              | Length:   4  (0x4) | Type: ???
+	Segment[0x150 :  0x1CF] = Padding              | Length: 128 (0x80) | Type: uint32[32] = {0}
 	-----------------------------------------------------------------------------------------------------------------------------
 
 	Written By: Ryan Smith
@@ -89,6 +90,9 @@ public sealed class Adventure
 			// -UNKNOWN(4)-\\
 			BitConverter.LittleEndian.Write((uint)0, buffer, OFFSET_SKYSIZETYPE + sizeof(byte));
 			await adventureInfoChunk.WriteAsync(buffer, 0, SIZEOF_INFO);
+			// Padding
+			buffer = new byte[SIZEOF_PADDING];
+			await adventureInfoChunk.WriteAsync(buffer, 0, SIZEOF_PADDING);
 		}
 		stream.EndChunk();
 		/// Portals
@@ -139,6 +143,8 @@ public sealed class Adventure
 		var worldSizeType = (SizeType)buffer[OFFSET_WORLDSIZETYPE];
 		var skySizeType   = (SizeType)buffer[OFFSET_SKYSIZETYPE];
 		// -UNKNOWN(4)-\\
+		// Padding
+		stream.Position += SIZEOF_PADDING;
 		/// Portals
 		if (!stream.IsAtChunk(ArchiverChunkType.AdventurePortals))
 			stream.JumpToChunk(ArchiverChunkType.AdventurePortals);
@@ -201,4 +207,5 @@ public sealed class Adventure
 	private const byte SIZEOF_AUTHOR        = 16;
 	// Author(16), World.[Width(2), Height(2)](4), Player.[X(2), Y(2)](4), Spawn.[X(2), Y(2)](4), Planet(4), Season(1), Gamemode(1), WorldSize(1), SkySize(1), UNKNOWN(4) == 40
 	private const byte SIZEOF_INFO          = SIZEOF_AUTHOR + (6 * sizeof(ushort)) + sizeof(uint) + (4 * sizeof(byte)) + 4;
+	private const byte SIZEOF_PADDING       = sizeof(uint) * 32;
 }
