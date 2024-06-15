@@ -22,7 +22,12 @@ public sealed class FogLayer
 	/* Instance Methods */
 	public async Task ToStream(Stream stream, bool compressed = true)
 	{
-		await stream.WriteAsync(this.Data, 0, this.Data.Length);
+		using var fogStream = new MemoryStream(this.Data);
+		if (compressed)
+			using (var compressedStream = new GZipStream(stream, CompressionLevel.Optimal, true))
+				await fogStream.CopyToAsync(compressedStream);
+		else
+			await fogStream.CopyToAsync(stream);
 	}
 	/* Static Methods */
 	public static async Task<FogLayer> FromStream(Stream stream, bool compressed = true)
