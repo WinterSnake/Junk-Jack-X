@@ -46,8 +46,8 @@ public sealed class Adventure
 		this.Id = id;
 		this.LastPlayed = lastPlayed;
 		this.Version = version;
-		this.Name = name;
-		this.Author = author;
+		this._Name = name;
+		this._Author = author;
 		this.Size = size;
 		this.Planet = planet;
 		this.Gamemode = gamemode;

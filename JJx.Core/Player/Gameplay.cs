@@ -25,8 +25,6 @@ public sealed class Gameplay
 		this.Difficulty = difficulty;
 		this.Flags = flags;
 	}
-	/* Instance Methods */
-	public override string ToString() => $"Difficulty={this.Difficulty};Flags={this.Flags}";
 	/* Properties */
 	public Flag Flags;
 	public Difficulty Difficulty;

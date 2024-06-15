@@ -176,7 +176,7 @@ public sealed class Player
 		/// Items
 		if (!stream.IsAtChunk(ArchiverChunkType.PlayerItems))
 			stream.JumpToChunk(ArchiverChunkType.PlayerItems);
-		var items = new Item[COUNTOF_INVENTORY];
+		var items = new Item[SIZEOF_ITEMS];
 		for (var i = 0; i < items.Length; ++i)
 			items[i] = await Item.FromStream(stream);
 		/// Craftbook
@@ -194,7 +194,7 @@ public sealed class Player
 		while (bytesRead < sizeof(float))
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, sizeof(float) - bytesRead);
 		var health = BitConverter.LittleEndian.GetFloat(buffer) * 10.0f;
-		var effects = new Effect[COUNTOF_EFFECTS];
+		var effects = new Effect[SIZEOF_EFFECTS];
 		for (var i = 0; i < effects.Length; ++i)
 			effects[i] = await Effect.FromStream(stream);
 		return new Player(id, name, version, planet, character, new Gameplay(difficulty, flags), items, craftbook, achievements, health, effects);
@@ -216,9 +216,9 @@ public sealed class Player
 	public Character Character;
 	public Gameplay Gameplay;
 	// Inventory
-	public readonly Item[] Items = new Item[COUNTOF_INVENTORY];
-	public ArraySegment<Item> SurvivalHotbar { get { return new ArraySegment<Item>(this.Items, OFFSET_SURVIVAL_HOTBAR, SIZEOF_SURVIVAL_HOTBAR); }}
-	public ArraySegment<Item> CreativeHotbar { get { return new ArraySegment<Item>(this.Items, OFFSET_CREATIVE_HOTBAR, SIZEOF_CREATIVE_HOTBAR); }}
+	public readonly Item[] Items = new Item[SIZEOF_ITEMS];
+	public ArraySegment<Item> SurvivalHotbar { get { return new ArraySegment<Item>(this.Items, OFFSET_SURVIVAL_HOTBAR, SIZEOF_HOTBAR); }}
+	public ArraySegment<Item> CreativeHotbar { get { return new ArraySegment<Item>(this.Items, OFFSET_CREATIVE_HOTBAR, SIZEOF_HOTBAR); }}
 	public ArraySegment<Item> CraftingSlots  { get { return new ArraySegment<Item>(this.Items, OFFSET_CRAFTING, SIZEOF_CRAFTING); }}
 	public ArraySegment<Item> Inventory      { get { return new ArraySegment<Item>(this.Items, OFFSET_INVENTORY, SIZEOF_INVENTORY); }}
 	public ArraySegment<Item> ArmorActual    { get { return new ArraySegment<Item>(this.Items, OFFSET_ARMOR_ACTIVE,  SIZEOF_ARMOR); }}
@@ -231,9 +231,14 @@ public sealed class Player
 	public readonly Achievements Achievements;
 	// Status
 	public float Health = 50.0f;
-	public readonly Effect[] Effects = new Effect[COUNTOF_EFFECTS];
+	public readonly Effect[] Effects = new Effect[SIZEOF_EFFECTS];
 	/* Class Properties */
 	private const byte SIZEOF_BUFFER     = 32;
+	private const byte SIZEOF_UUID       = 16;
+	private const byte SIZEOF_NAME       = 16;
+	private const byte SIZEOF_INFO       = (sizeof(uint) * 3) + Character.SIZE + 2 + sizeof(byte) + 3;  // Version(4), Planet(4), Flags(4), Character(2), UNKNOWN(2), Difficulty(1), UNKNOWN(3) == 20
+	private const byte SIZEOF_ITEMS      = 77;
+	private const byte SIZEOF_EFFECTS    =  4;
 	private const byte OFFSET_UUID       =  0;
 	private const byte OFFSET_NAME       = 16;
 	private const byte OFFSET_VERSION    =  0;
@@ -242,16 +247,10 @@ public sealed class Player
 	private const byte OFFSET_CHARACTER  = 12;
 	private const byte OFFSET_DIFFICULTY = 16;
 	private const byte OFFSET_HEALTH     =  0;
-	private const byte SIZEOF_UUID       = 16;
-	private const byte SIZEOF_NAME       = 16;
-	private const byte SIZEOF_INFO       = (sizeof(uint) * 3) + Character.SIZE + 2 + sizeof(byte) + 3;  // Version(4), Planet(4), Flags(4), Character(2), UNKNOWN(2), Difficulty(1), UNKNOWN(3) == 20
-	private const byte COUNTOF_INVENTORY = 77;
-	private const byte COUNTOF_EFFECTS   =  4;
 	// Items
 	public const byte OFFSET_SURVIVAL_HOTBAR =  0;
-	public const byte SIZEOF_SURVIVAL_HOTBAR = 10;
 	public const byte OFFSET_CREATIVE_HOTBAR = 10;
-	public const byte SIZEOF_CREATIVE_HOTBAR = 10;
+	public const byte SIZEOF_HOTBAR          = 10;
 	public const byte OFFSET_CRAFTING        = 20;
 	public const byte SIZEOF_CRAFTING        =  9;
 	public const byte OFFSET_INVENTORY       = 29;

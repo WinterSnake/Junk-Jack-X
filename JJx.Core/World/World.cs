@@ -579,6 +579,14 @@ public sealed class World
 	private readonly byte[] CircuitLayer = new byte[SIZEOF_CIRCUITLAYER];
 	/* Class Properties */
 	private const byte SIZEOF_BUFFER        = 56;
+	private const byte SIZEOF_UUID          = 16;
+	private const byte SIZEOF_NAME          = 32;
+	private const byte SIZEOF_AUTHOR        = 16;
+	// Author(16), World.[Width(2), Height(2)](4), Player.[X(2), Y(2)](4), Spawn.[X(2), Y(2)](4), Planet(4), Season(1), Gamemode(1), WorldSize(1), SkySize(1), UNKNOWN(4) == 40
+	private const byte SIZEOF_INFO          = SIZEOF_AUTHOR + (6 * sizeof(ushort)) + sizeof(uint) + (4 * sizeof(byte)) + 4;
+	private const byte SIZEOF_PADDING       = sizeof(uint) * 32;
+	private const byte SIZEOF_TIME          = sizeof(uint) + sizeof(byte) + 3;  // Ticks(4), Period(1), UNKNOWN(3) == 8
+	private const byte SIZEOF_WEATHER       = sizeof(float) + (2 * sizeof(byte)) + 2;  // PoissonSum(4), WeatherType(1), PoissonSkipped(1), UNKNOWN(2) == 8
 	private const byte OFFSET_UUID          =  0;
 	private const byte OFFSET_TIMESTAMP     = 16;
 	private const byte OFFSET_VERSION       = 20;
@@ -597,14 +605,6 @@ public sealed class World
 	private const byte OFFSET_WEATHERSUM    =  0;
 	private const byte OFFSET_WEATHERTYPE   =  4;
 	private const byte OFFSET_WEATHERSKIP   =  5;
-	private const byte SIZEOF_UUID          = 16;
-	private const byte SIZEOF_NAME          = 32;
-	private const byte SIZEOF_AUTHOR        = 16;
-	// Author(16), World.[Width(2), Height(2)](4), Player.[X(2), Y(2)](4), Spawn.[X(2), Y(2)](4), Planet(4), Season(1), Gamemode(1), WorldSize(1), SkySize(1), UNKNOWN(4) == 40
-	private const byte SIZEOF_INFO          = SIZEOF_AUTHOR + (6 * sizeof(ushort)) + sizeof(uint) + (4 * sizeof(byte)) + 4;
-	private const byte SIZEOF_PADDING       = sizeof(uint) * 32;
-	private const byte SIZEOF_TIME          = sizeof(uint) + sizeof(byte) + 3;  // Ticks(4), Period(1), UNKNOWN(3) == 8
-	private const byte SIZEOF_WEATHER       = sizeof(float) + (2 * sizeof(byte)) + 2;  // PoissonSum(4), WeatherType(1), PoissonSkipped(1), UNKNOWN(2) == 8
 	// Temporary
 	private const ushort SIZEOF_FLUIDLAYER   =  8;
 	private const byte   SIZEOF_CIRCUITLAYER = 16;

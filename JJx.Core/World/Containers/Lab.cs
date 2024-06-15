@@ -62,6 +62,6 @@ public sealed class Lab
 	public readonly Item[] Items = new Item[SIZEOF_ITEMS];
 	/* Class Properties */
 	private const byte SIZE            = 4;
-	private const byte OFFSET_POSITION = 0;
 	private const byte SIZEOF_ITEMS    = 5;
+	private const byte OFFSET_POSITION = 0;
 }

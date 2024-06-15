@@ -62,6 +62,6 @@ public sealed class Shelf
 	public readonly Item[] Items = new Item[SIZEOF_ITEMS];
 	/* Class Properties */
 	private const byte SIZE            = 4;
-	private const byte OFFSET_POSITION = 0;
 	private const byte SIZEOF_ITEMS    = 4;
+	private const byte OFFSET_POSITION = 0;
 }

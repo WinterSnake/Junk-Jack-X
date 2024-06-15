@@ -27,12 +27,11 @@ public sealed class Tile
 		this.ForegroundId = foregroundId;
 		this.BackgroundId = backgroundId;
 	}
-	private Tile(ushort foregroundId, ushort backgroundId, ushort[] decorationIds, byte[] data)
+	private Tile(ushort foregroundId, ushort backgroundId, ushort[] decorationIds)
 	{
 		this.ForegroundId = foregroundId;
 		this.BackgroundId = backgroundId;
 		this._DecorationIds = decorationIds;
-		this.Data = data;
 	}
 	/* Instance Methods */
 	public (ushort Id, bool IsBackground) GetDecoration(int index)
@@ -57,7 +56,6 @@ public sealed class Tile
 		for (var i = 0; i < this._DecorationIds.Length; ++i)
 			BitConverter.LittleEndian.Write(this._DecorationIds[i], buffer, OFFSET_DECORATION + i * sizeof(ushort));
 		// -UNKNOWN(4)- \\
-		Array.Copy(this.Data, 0xC, buffer, 0xC, 4);
 		await stream.WriteAsync(buffer, 0, buffer.Length);
 	}
 	/* Static Methods */
@@ -73,13 +71,12 @@ public sealed class Tile
 		for (var i = 0; i < decorationIds.Length; ++i)
 			decorationIds[i] = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_DECORATION + i * sizeof(ushort));
 		// -UNKNOWN(4)- \\
-		return new Tile(foregroundId, backgroundId, decorationIds, buffer);
+		return new Tile(foregroundId, backgroundId, decorationIds);
 	}
 	/* Properties */
 	public ushort ForegroundId;
 	public ushort BackgroundId;
 	private readonly ushort[] _DecorationIds = new ushort[DECORATION_COUNT];
-	public readonly byte[] Data = new byte[SIZE];
 	/* Class Properties */
 	public const byte DECORATION_COUNT   =  4;
 	internal const byte SIZE             = 16;
