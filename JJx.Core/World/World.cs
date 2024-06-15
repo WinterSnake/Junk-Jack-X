@@ -128,10 +128,10 @@ public sealed class World
 			buffer[OFFSET_WORLDSIZETYPE] = (byte)this.WorldSizeType;
 			buffer[OFFSET_SKYSIZETYPE] = (byte)this.SkySizeType;
 			// -UNKNOWN(4)-\\
-			BitConverter.LittleEndian.Write((ulong)0, buffer, OFFSET_SKYSIZETYPE + sizeof(byte));
+			BitConverter.LittleEndian.Write((uint)0, buffer, OFFSET_SKYSIZETYPE + sizeof(byte));
 			await worldInfoChunk.WriteAsync(buffer, 0, SIZEOF_INFO);
-			buffer = new byte[SIZEOF_PADDING];
 			// Padding
+			buffer = new byte[SIZEOF_PADDING];
 			await worldInfoChunk.WriteAsync(buffer, 0, SIZEOF_PADDING);
 		}
 		stream.EndChunk();

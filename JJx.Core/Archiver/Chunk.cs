@@ -44,6 +44,7 @@ public enum ArchiverChunkType : ushort
 	WorldTime          = 0x0012,
 	WorldEntities      = 0x0013,
 	// Adventure
+	AdventurePortals   = 0x0014,
 	// Player
 	PlayerInfo         = 0x8000,
 	PlayerItems        = 0x8001,
