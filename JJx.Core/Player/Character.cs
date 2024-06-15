@@ -2,13 +2,6 @@
 	Junk Jack X: Core
 	- [Player]Character
 
-	Segment Breakdown:
-	---------------------------------------------------------------------------------------------
-	Segment[0x0] = Hair.Color: data >> 4
-	Segment[0x1] = Tone: (data & 0xE0) >> 5 | Gender: (data & 0x10) >> 4 | Hair.Style: data & 0xF
-	---------------------------------------------------------------------------------------------
-	Size: 2 (0x2)
-
 	Written By: Ryan Smith
 */
 using System;
@@ -46,29 +39,18 @@ public sealed class Character
 		this.HairColor = hairColor;
 	}
 	/* Instance Methods */
-	public override string ToString()
-	{
-		var gender = this.Gender ? "Female" : "Male";
-		return $"Gender={gender};Race={this.SkinTone};Hair[Style={this.HairStyle};Color={this.HairColor}]";
-	}
-	public void Pack(Span<byte> bytes, int offset = 0)
-	{
-		if (bytes.Length + offset < SIZE) throw new IndexOutOfRangeException();
-		bytes[offset + 0] = (byte)((byte)this.HairColor << 4);
-		bytes[offset + 1] = (byte)((((this._SkinTone << 1) | Convert.ToByte(this.Gender)) << 4) | this._HairStyle);
-	}
+	public ushort Pack() => (ushort)((this._SkinTone << 13) | (Convert.ToByte(this.Gender) << 12) | (this._HairStyle << 8) | ((byte)this.HairColor << 4));
 	/* Static Methods */
-	public static Character Unpack(ReadOnlySpan<byte> buffer, int offset = 0)
+	public static Character Unpack(ushort @value)
 	{
-		if (buffer.Length < offset + SIZE) throw new IndexOutOfRangeException();
-		var gender = ((buffer[offset + 1] & 0x10) >> 4) == 1;
-		var tone   = (byte)((buffer[offset + 1] & 0xE0) >> 5);
-		var style  = (byte)(buffer[offset + 1] & 0xF);
-		var color  = (HairColor)(buffer[offset + 0] >> 4);
+		byte tone       = (byte)     ((@value & TONE_FLAG)   >> 13);
+		bool gender     =            ((@value & GENDER_FLAG) >> 12) == 1;
+		byte style      = (byte)     ((@value & STYLE_FLAG)  >>  8);
+		HairColor color = (HairColor)((@value & COLOR_FLAG)  >>  4);
 		return new Character(gender, tone, style, color);
 	}
 	/* Properties */
-	public bool Gender;  // Male: 0 | Female: 1
+	public bool Gender;  // Male: false | Female: true
 	private byte _SkinTone;
 	public byte SkinTone {
 		get { return this._SkinTone; }
@@ -81,7 +63,10 @@ public sealed class Character
 	}
 	public HairColor HairColor;
 	/* Class Properties */
-	internal const byte SIZE           =    2;
-	public   const byte MAX_SKINTONES  =  0x4;  // Maximum skin tones in game (5) [0-4]
-	public   const byte MAX_HAIRSTYLES =  0xD;  // Maximum hair styles in game (14) [0-D]
+	public const byte MAX_SKINTONES  = 0x4;  // Maximum skin tones in game (5) [0-4]
+	public const byte MAX_HAIRSTYLES = 0xD;  // Maximum hair styles in game (14) [0-D]
+	private const ushort GENDER_FLAG = 0x1000;
+	private const ushort TONE_FLAG   = 0xE000;
+	private const ushort STYLE_FLAG  = 0x0F00;
+	private const ushort COLOR_FLAG  = 0x00F0;
 }

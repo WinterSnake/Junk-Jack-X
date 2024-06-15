@@ -102,9 +102,9 @@ public sealed class Player
 			// Gameplay Flags
 			BitConverter.LittleEndian.Write((uint)this.Gameplay.Flags, buffer, OFFSET_FLAGS);
 			// Character
-			this.Character.Pack(buffer, OFFSET_CHARACTER);
+			BitConverter.LittleEndian.Write(this.Character.Pack(), buffer, OFFSET_CHARACTER);
 			// -UNKNOWN(2)- \\
-			BitConverter.LittleEndian.Write((ushort)0, buffer, OFFSET_CHARACTER + Character.SIZE);
+			BitConverter.LittleEndian.Write((ushort)0, buffer, OFFSET_CHARACTER + sizeof(ushort));
 			// Difficulty
 			buffer[OFFSET_DIFFICULTY] = (byte)this.Gameplay.Difficulty;
 			// -UNKNOWN(3)- \\
@@ -166,10 +166,11 @@ public sealed class Player
 		bytesRead = 0;
 		while (bytesRead < SIZEOF_INFO)
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, SIZEOF_INFO - bytesRead);
-		var version    = (Version)BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_VERSION);
-		var planet     = (Planet)BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_PLANET);
-		var flags      = (Gameplay.Flag)BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_FLAGS);
-		var character  = Character.Unpack(buffer, OFFSET_CHARACTER);
+		var version        = (Version)BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_VERSION);
+		var planet         = (Planet)BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_PLANET);
+		var flags          = (Gameplay.Flag)BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_FLAGS);
+		var characterValue = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_CHARACTER);
+		var character      = Character.Unpack(characterValue);
 		// -UNKNOWN(2)- \\
 		var difficulty = (Difficulty)buffer[OFFSET_DIFFICULTY];
 		// -UNKNOWN(3)- \\
@@ -236,7 +237,7 @@ public sealed class Player
 	private const byte SIZEOF_BUFFER     = 32;
 	private const byte SIZEOF_UUID       = 16;
 	private const byte SIZEOF_NAME       = 16;
-	private const byte SIZEOF_INFO       = (sizeof(uint) * 3) + Character.SIZE + 2 + sizeof(byte) + 3;  // Version(4), Planet(4), Flags(4), Character(2), UNKNOWN(2), Difficulty(1), UNKNOWN(3) == 20
+	private const byte SIZEOF_INFO       = (sizeof(uint) * 3) + sizeof(ushort) + 2 + sizeof(byte) + 3;  // Version(4), Planet(4), Flags(4), Character(2), UNKNOWN(2), Difficulty(1), UNKNOWN(3) == 20
 	private const byte SIZEOF_ITEMS      = 77;
 	private const byte SIZEOF_EFFECTS    =  4;
 	private const byte OFFSET_UUID       =  0;
