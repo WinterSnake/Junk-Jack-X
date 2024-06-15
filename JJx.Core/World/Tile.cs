@@ -19,42 +19,30 @@ using System.Threading.Tasks;
 
 namespace JJx;
 
-public sealed class Tile
+public sealed partial class Tile
 {
 	/* Constructors */
 	public Tile(ushort foregroundId, ushort backgroundId)
 	{
-		this.ForegroundId = foregroundId;
-		this.BackgroundId = backgroundId;
+		this.Foreground = Tile.Block.Unpack(foregroundId);
+		this.Background = Tile.Block.Unpack(backgroundId);
+		for (var i = 0; i < this.Decorations.Length; ++i)
+			this.Decorations[i] = new(0x0000);
 	}
-	private Tile(ushort foregroundId, ushort backgroundId, ushort[] decorationIds)
+	private Tile(Block foreground, Block background, Decoration[] decorations)
 	{
-		this.ForegroundId = foregroundId;
-		this.BackgroundId = backgroundId;
-		this._DecorationIds = decorationIds;
+		this.Foreground = foreground;
+		this.Background = background;
+		this.Decorations = decorations;
 	}
 	/* Instance Methods */
-	public (ushort Id, bool IsBackground) GetDecoration(int index)
-	{
-		if (index > this._DecorationIds.Length - 1) throw new ArgumentOutOfRangeException();
-		var id = this._DecorationIds[index];
-		var isBackground = id > FOREGROUND_FLAG ? true : false;
-		return (isBackground ? (ushort)(id & FOREGROUND_FLAG) : id, isBackground);
-	}
-	public void SetDecoration(int index, ushort id, bool background)
-	{
-		if (index > this._DecorationIds.Length - 1) throw new ArgumentOutOfRangeException();
-		if (background)
-			id |= (FOREGROUND_FLAG + 1);
-		this._DecorationIds[index] = id;
-	}
 	public async Task ToStream(Stream stream)
 	{
 		var buffer = new byte[SIZE];
-		BitConverter.LittleEndian.Write((ushort)(this.ForegroundId | (FOREGROUND_FLAG + 1)), buffer, OFFSET_FOREGROUND);
-		BitConverter.LittleEndian.Write(this.BackgroundId, buffer, OFFSET_BACKGROUND);
-		for (var i = 0; i < this._DecorationIds.Length; ++i)
-			BitConverter.LittleEndian.Write(this._DecorationIds[i], buffer, OFFSET_DECORATION + i * sizeof(ushort));
+		BitConverter.LittleEndian.Write((ushort)(this.Foreground.Pack() | FOREGROUND_FLAG), buffer, OFFSET_FOREGROUND);
+		BitConverter.LittleEndian.Write(this.Background.Pack(), buffer, OFFSET_BACKGROUND);
+		for (var i = 0; i < this.Decorations.Length; ++i)
+			BitConverter.LittleEndian.Write(this.Decorations[i].Pack(), buffer, OFFSET_DECORATION + i * sizeof(ushort));
 		// -UNKNOWN(4)- \\
 		await stream.WriteAsync(buffer, 0, buffer.Length);
 	}
@@ -65,23 +53,28 @@ public sealed class Tile
 		var buffer = new byte[SIZE];
 		while (bytesRead < buffer.Length)
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, buffer.Length - bytesRead);
-		var foregroundId = (ushort)(BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_FOREGROUND) & FOREGROUND_FLAG);
+		var foregroundId = (ushort)(BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_FOREGROUND) ^ FOREGROUND_FLAG);
+		var foreground = Tile.Block.Unpack(foregroundId);
 		var backgroundId = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_BACKGROUND);
-		var decorationIds = new ushort[DECORATION_COUNT];
-		for (var i = 0; i < decorationIds.Length; ++i)
-			decorationIds[i] = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_DECORATION + i * sizeof(ushort));
+		var background = Tile.Block.Unpack(backgroundId);
+		var decorations = new Tile.Decoration[SIZEOF_DECORATION];
+		for (var i = 0; i < decorations.Length; ++i)
+		{
+			var decorationId = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_DECORATION + i * sizeof(ushort));
+			decorations[i] = Tile.Decoration.Unpack(decorationId);
+		}
 		// -UNKNOWN(4)- \\
-		return new Tile(foregroundId, backgroundId, decorationIds);
+		return new(foreground, background, decorations);
 	}
 	/* Properties */
-	public ushort ForegroundId;
-	public ushort BackgroundId;
-	private readonly ushort[] _DecorationIds = new ushort[DECORATION_COUNT];
+	public Tile.Block Foreground;
+	public Tile.Block Background;
+	public Tile.Decoration[] Decorations = new Decoration[SIZEOF_DECORATION];
 	/* Class Properties */
-	public const byte DECORATION_COUNT   =  4;
 	internal const byte SIZE             = 16;
+	private const byte SIZEOF_DECORATION =  4;
 	private const byte OFFSET_FOREGROUND =  0;
 	private const byte OFFSET_BACKGROUND =  2;
 	private const byte OFFSET_DECORATION =  4;
-	private const ushort FOREGROUND_FLAG = 0x7FFF;
+	private const ushort FOREGROUND_FLAG = 0x8000;
 }
