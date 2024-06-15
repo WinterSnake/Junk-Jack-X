@@ -8,12 +8,14 @@
 	Segment[0x4 : 0x5] = Id         | Length: 2 (0x2) | Type: uint16
 	Segment[0x6 : 0x7] = Count      | Length: 2 (0x2) | Type: uint16
 	Segment[0x8 : 0x9] = Durabiltiy | Length: 2 (0x2) | Type: uint16
-	Segment[0xA : 0xB] = Icon       | Length: 2 (0x2) | Type: uint16
+	Segment[0xA]       = Icon       | Length: 1 (0x1) | Type: uint8
+	Segment[0xB]       = UNKNOWN    | Length: 1 (0x1) | Type: uint8
 	----------------------------------------------------------------
 	Length: 12 (0xC)
 
 	Written By: Ryan Smith
 */
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -22,13 +24,17 @@ namespace JJx;
 public sealed class Item
 {
 	/* Constructor */
-	public Item(ushort id, ushort count, ushort durability = 0, uint data = 0, ushort icon = 0)
+	public Item(ushort id, ushort count, ushort durability = 0, uint data = 0, byte icon = 0)
 	{
 		this.Id = id;
 		this.Count = count;
 		this.Durability = durability;
 		this.Data = data;
 		this.Icon = icon;
+	}
+	public Item(ushort id, ushort count, ushort durability, uint data, byte icon, byte unknown): this(id, count, durability, data, icon)
+	{
+		this.Unknown = unknown;
 	}
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
@@ -38,7 +44,8 @@ public sealed class Item
 		BitConverter.LittleEndian.Write(this.Id, buffer, OFFSET_ID);
 		BitConverter.LittleEndian.Write(this.Count, buffer, OFFSET_COUNT);
 		BitConverter.LittleEndian.Write(this.Durability, buffer, OFFSET_DURABILITY);
-		BitConverter.LittleEndian.Write(this.Icon, buffer, OFFSET_ICON);
+		buffer[OFFSET_ICON] = this.Icon;
+		buffer[OFFSET_UNKNOWN] = this.Unknown;
 		await stream.WriteAsync(buffer, 0, buffer.Length);
 	}
 	/* Static Methods */
@@ -52,15 +59,18 @@ public sealed class Item
 		var id         = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_ID);
 		var count      = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_COUNT);
 		var durability = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_DURABILITY);
-		var icon       = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_ICON);
-		return new Item(id, count, durability, data, icon);
+		var icon       = buffer[OFFSET_ICON];
+		var unknown    = buffer[OFFSET_UNKNOWN];
+		// -UNKNOWN(1)- \\
+		return new Item(id, count, durability, data, icon, unknown);
 	}
 	/* Properties */
 	public ushort Id;
 	public ushort Count;
 	public ushort Durability;
 	public uint Data;
-	public ushort Icon;
+	public byte Icon;
+	public byte Unknown;
 	/* Class Properties */
 	private const byte SIZE              = 12;
 	private const byte OFFSET_DATA       =  0;
@@ -68,4 +78,5 @@ public sealed class Item
 	private const byte OFFSET_COUNT      =  6;
 	private const byte OFFSET_DURABILITY =  8;
 	private const byte OFFSET_ICON       = 10;
+	private const byte OFFSET_UNKNOWN    = 11;
 }
