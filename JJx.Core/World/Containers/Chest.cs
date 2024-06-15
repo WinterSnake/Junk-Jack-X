@@ -55,7 +55,6 @@ public sealed class Chest
 			BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_POSITION + sizeof(uint))
 		);
 		var itemCount = BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_ITEMS);
-		Console.WriteLine($"Position: {position}, Item Count: {itemCount}");
 		var items = new Item[itemCount];
 		for (var i = 0; i < items.Length; ++i)
 			items[i] = await Item.FromStream(stream);

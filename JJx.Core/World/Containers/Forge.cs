@@ -55,7 +55,6 @@ public sealed class Forge
 			BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_POSITION + sizeof(ushort))
 		);
 		// -UNKNOWN(10)- \\
-		// Items
 		var items = new Item[SIZEOF_ITEMS];
 		for (var i = 0; i < items.Length; ++i)
 			items[i] = await Item.FromStream(stream);

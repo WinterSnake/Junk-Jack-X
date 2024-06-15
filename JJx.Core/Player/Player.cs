@@ -212,7 +212,7 @@ public sealed class Player
 		}
 	}
 	public readonly Version Version = Version.Latest;
-	public Planet UnlockedPlanets;
+	public Planet UnlockedPlanets = Planet.Terra;
 	public Character Character;
 	public Gameplay Gameplay;
 	// Inventory
@@ -221,7 +221,6 @@ public sealed class Player
 	public ArraySegment<Item> CreativeHotbar { get { return new ArraySegment<Item>(this.Items, OFFSET_CREATIVE_HOTBAR, SIZEOF_CREATIVE_HOTBAR); }}
 	public ArraySegment<Item> CraftingSlots  { get { return new ArraySegment<Item>(this.Items, OFFSET_CRAFTING, SIZEOF_CRAFTING); }}
 	public ArraySegment<Item> Inventory      { get { return new ArraySegment<Item>(this.Items, OFFSET_INVENTORY, SIZEOF_INVENTORY); }}
-	// Order: Helm, Chestpiece, Leggings, Feet, Special
 	public ArraySegment<Item> ArmorActual    { get { return new ArraySegment<Item>(this.Items, OFFSET_ARMOR_ACTIVE,  SIZEOF_ARMOR); }}
 	public ArraySegment<Item> ArmorVisual    { get { return new ArraySegment<Item>(this.Items, OFFSET_ARMOR_VISUAL,  SIZEOF_ARMOR); }}
 	public Item CraftSlot                    { get { return Items[OFFSET_CRAFT]; }}
@@ -259,7 +258,7 @@ public sealed class Player
 	public const byte SIZEOF_INVENTORY       = 36;
 	public const byte OFFSET_ARMOR_ACTIVE    = 65;
 	public const byte OFFSET_ARMOR_VISUAL    = 70;
-	public const byte SIZEOF_ARMOR           =  5;
+	public const byte SIZEOF_ARMOR           =  5;  // Order: Helm, Chestpiece, Leggings, Feet, Pet
 	public const byte OFFSET_CRAFT           = 75;
 	public const byte OFFSET_ARROW           = 76;
 }

@@ -3,27 +3,27 @@
 	- World
 
 	Segment Breakdown:
-	----------------------------------------------------------------------------------------------------------------------
+	---------------------------------------------------------------------------------------------------------------------
 	:<Info>
 	Segment[0xF0  :   0xFF] = UUID                 | Length:  16 (0x10) | Type: uuid
-	Segment[0x100 :  0x103] = Last Played Datetime | Length:   4  (0x4) | Type: DateTime[uint32]
-	Segment[0x104 :  0x107] = Game Version         | Length:   4  (0x4) | Type: uint32             | Parent: JJx.Version
+	Segment[0x100 :  0x103] = Last Played Datetime | Length:   4  (0x4) | Type: uint             | Parent: DateTime
+	Segment[0x104 :  0x107] = Game Version         | Length:   4  (0x4) | Type: enum[uint32]     | Parent: JJx.Version
 	Segment[0x108 :  0x127] = Name                 | Length:  32 (0x20) | Type: char*
 	Segment[0x128 :  0x137] = Author               | Length:  16 (0x10) | Type: char*
-	Segment[0x138 :  0x139] = World.Width          | Length:   2  (0x2) | Type: uint16             | Parent: Blocks.Width
-	Segment[0x13A :  0x13B] = World.Height         | Length:   2  (0x2) | Type: uint16             | Parent: Blocks.Height
-	Segment[0x13C :  0x13D] = Player.X             | Length:   2  (0x2) | Type: uint16             | Parent: Player.X
-	Segment[0x13E :  0x13F] = Player.Y             | Length:   2  (0x2) | Type: uint16             | Parent: Player.Y
-	Segment[0x140 :  0x141] = Spawn.X              | Length:   2  (0x2) | Type: uint16             | Parent: Spawn.X
-	Segment[0x142 :  0x143] = Spawn.Y              | Length:   2  (0x2) | Type: uint16             | Parent: Spawn.Y
-	Segment[0x144 :  0x147] = Planet               | Length:   4  (0x4) | Type: enum flag[uint32]
-	Segment[0x148]          = Season               | Length:   1  (0x1) | Type: enum[uint8]        | Parent: Season
-	Segment[0x149]          = Gamemode             | Length:   1  (0x1) | Type: enum[uint8]        | Parent: Gamemode
-	Segment[0x14A]          = World Size           | Length:   1  (0x1) | Type: enum[uint8]        | Parent: InitSize
-	Segment[0x14B]          = Sky Size             | Length:   1  (0x1) | Type: enum[uint8]        | Parent: InitSize
+	Segment[0x138 :  0x139] = World.Width          | Length:   2  (0x2) | Type: uint16
+	Segment[0x13A :  0x13B] = World.Height         | Length:   2  (0x2) | Type: uint16t
+	Segment[0x13C :  0x13D] = Player.X             | Length:   2  (0x2) | Type: uint16
+	Segment[0x13E :  0x13F] = Player.Y             | Length:   2  (0x2) | Type: uint16
+	Segment[0x140 :  0x141] = Spawn.X              | Length:   2  (0x2) | Type: uint16
+	Segment[0x142 :  0x143] = Spawn.Y              | Length:   2  (0x2) | Type: uint16
+	Segment[0x144 :  0x147] = Planet               | Length:   4  (0x4) | Type: enum[uint32]     | Parent: Planet
+	Segment[0x148]          = Season               | Length:   1  (0x1) | Type: enum[uint8]      | Parent: Season
+	Segment[0x149]          = Gamemode             | Length:   1  (0x1) | Type: enum[uint8]      | Parent: Gamemode
+	Segment[0x14A]          = World Size           | Length:   1  (0x1) | Type: enum[uint8]      | Parent: InitSize
+	Segment[0x14B]          = Sky Size             | Length:   1  (0x1) | Type: enum[uint8]      | Parent: InitSize
 	Segment[0x14C :  0x14F] = UNKNOWN              | Length:   4  (0x4) | Type: ???
 	Segment[0x150 :  0x1CF] = Padding              | Length: 128 (0x80) | Type: uint32[32] = {0}
-	----------------------------------------------------------------------------------------------------------------------
+	---------------------------------------------------------------------------------------------------------------------
 
 	Written By: Ryan Smith
 */

@@ -37,7 +37,6 @@ public sealed class Decay
 		var buffer = new byte[SIZE];
 		while (bytesRead < buffer.Length)
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, buffer.Length - bytesRead);
-		// Position
 		var position = (
 			BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_POSITION),
 			BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_POSITION + sizeof(ushort))

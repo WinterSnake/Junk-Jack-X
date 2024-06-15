@@ -52,7 +52,6 @@ public sealed class Lab
 			BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_POSITION),
 			BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_POSITION + sizeof(ushort))
 		);
-		// Items
 		var items = new Item[SIZEOF_ITEMS];
 		for (var i = 0; i < items.Length; ++i)
 			items[i] = await Item.FromStream(stream);
