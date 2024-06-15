@@ -16,10 +16,11 @@ public static class ItemRenderer
 	}
 	public static Rectangle GetItemSource(Item item)
 	{
-		var x = ((item.Id / (Texture.Height / 16)) + item.Icon) * 16;
-		var y = (item.Id % (Texture.Height / 16)) * 16;
-		return new Rectangle(x, y, 16, 16);
+		var x = ((item.Id / (Texture.Height / ITEM_DRAW_SIZE)) + item.Icon) * ITEM_DRAW_SIZE;
+		var y = (item.Id % (Texture.Height / ITEM_DRAW_SIZE)) * ITEM_DRAW_SIZE;
+		return new Rectangle(x, y, ITEM_DRAW_SIZE, ITEM_DRAW_SIZE);
 	}
 	/* Class Properties */
 	public static Texture2D Texture { get; private set; }
+	private const byte ITEM_DRAW_SIZE = 16;
 }

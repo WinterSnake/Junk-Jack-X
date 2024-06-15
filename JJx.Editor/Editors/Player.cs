@@ -20,9 +20,9 @@ public sealed class PlayerEditor : EditorBase
 	public override void Draw()
 	{
 		// Draw Inventory
-		for (var i = 0; i < 36; ++i)
+		for (var i = 0; i < this._Player.Inventory.Count; ++i)
 		{
-			var item = this._Player.Items[i + 29];
+			var item = this._Player.Inventory[i];
 			if (item.Id == 0xFFFF)
 				continue;
 			var x = 128 + ((i / 6) * ITEM_DRAW_SIZE);
