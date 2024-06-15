@@ -56,7 +56,7 @@ public sealed class Tile
 		BitConverter.LittleEndian.Write(this.BackgroundId, buffer, OFFSET_BACKGROUND);
 		for (var i = 0; i < this._DecorationIds.Length; ++i)
 			BitConverter.LittleEndian.Write(this._DecorationIds[i], buffer, OFFSET_DECORATION + i * sizeof(ushort));
-		// UNKNOWN(4)
+		// -UNKNOWN(4)- \\
 		Array.Copy(this.Data, 0xC, buffer, 0xC, 4);
 		await stream.WriteAsync(buffer, 0, buffer.Length);
 	}
@@ -72,7 +72,7 @@ public sealed class Tile
 		var decorationIds = new ushort[DECORATION_COUNT];
 		for (var i = 0; i < decorationIds.Length; ++i)
 			decorationIds[i] = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_DECORATION + i * sizeof(ushort));
-		// UNKNOWN(4)
+		// -UNKNOWN(4)- \\
 		return new Tile(foregroundId, backgroundId, decorationIds, buffer);
 	}
 	/* Properties */

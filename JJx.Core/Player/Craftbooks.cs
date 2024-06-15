@@ -1,6 +1,13 @@
 /*
 	Junk Jack X: Core
 	- [Player]Craftbook
+
+	Segment Breakdown:
+	-----------------------------------------------------------
+	-----------------------------------------------------------
+	Size: 
+
+	Written By: Ryan Smith
 */
 using System.IO;
 using System.Threading.Tasks;

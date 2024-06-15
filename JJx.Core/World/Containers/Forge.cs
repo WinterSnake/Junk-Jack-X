@@ -38,7 +38,7 @@ public sealed class Forge
 		var buffer = new byte[SIZE];
 		BitConverter.LittleEndian.Write(this.Position.X, buffer, OFFSET_POSITION);
 		BitConverter.LittleEndian.Write(this.Position.Y, buffer, OFFSET_POSITION + sizeof(ushort));
-		// UNKNOWN(10)
+		// -UNKNOWN(10)- \\
 		await stream.WriteAsync(buffer, 0, buffer.Length);
 		foreach (var item in this.Items)
 			await item.ToStream(stream);
@@ -54,7 +54,7 @@ public sealed class Forge
 			BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_POSITION),
 			BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_POSITION + sizeof(ushort))
 		);
-		// UNKNOWN(10)
+		// -UNKNOWN(10)- \\
 		// Items
 		var items = new Item[SIZEOF_ITEMS];
 		for (var i = 0; i < items.Length; ++i)

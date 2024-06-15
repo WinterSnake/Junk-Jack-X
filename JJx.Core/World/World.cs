@@ -127,6 +127,7 @@ public sealed class World
 			buffer[OFFSET_GAMEMODE] = (byte)this.Gamemode;
 			buffer[OFFSET_WORLDSIZETYPE] = (byte)this.WorldSizeType;
 			buffer[OFFSET_SKYSIZETYPE] = (byte)this.SkySizeType;
+			// -UNKNOWN(4)-\\
 			BitConverter.LittleEndian.Write((ulong)0, buffer, OFFSET_SKYSIZETYPE + sizeof(byte));
 			await worldInfoChunk.WriteAsync(buffer, 0, SIZEOF_INFO);
 			buffer = new byte[SIZEOF_PADDING];
@@ -334,6 +335,7 @@ public sealed class World
 		var gamemode      = (Gamemode)buffer[OFFSET_GAMEMODE];
 		var worldSizeType = (SizeType)buffer[OFFSET_WORLDSIZETYPE];
 		var skySizeType   = (SizeType)buffer[OFFSET_SKYSIZETYPE];
+		// -UNKNOWN(4)-\\
 		// Padding
 		stream.Position += SIZEOF_PADDING;
 		/// Skyline

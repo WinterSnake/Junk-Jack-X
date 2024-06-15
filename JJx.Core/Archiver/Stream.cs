@@ -57,9 +57,10 @@ public sealed class ArchiverStream : FileStream
 		#if DEBUG
 			Console.WriteLine($"Chunk Origin: 0x{chunkOrigin:X4}");
 		#endif
-		// Chunk Count + UNKNOWN (SIZE=4)
+		// Chunk Count
 		var buffer = new byte[ArchiverStream.SIZEOF_BUFFER - 2];
 		BitConverter.LittleEndian.Write((ushort)this._Chunks.Count, buffer);
+		// -UNKNOWN(4)-\\
 		await this.WriteAsync(buffer, 0, buffer.Length);
 		// Chunks
 		foreach (var chunk in this._Chunks)
@@ -149,8 +150,9 @@ public sealed class ArchiverStream : FileStream
 		var magic = BitConverter.GetString(buffer, OFFSET_MAGIC, length: SIZEOF_MAGIC);
 		var type = (ArchiverStreamType)BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_TYPE);
 		var chunkCount = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_CHUNKCOUNT);
-		// Chunks
+		// -UNKNOWN(4)-\\
 		reader.Seek(SIZEOF_PADDING, SeekOrigin.Current);
+		// Chunks
 		var chunks = new List<ArchiverChunk>(chunkCount);
 		for (var i = 0; i < chunks.Capacity; ++i)
 		{

@@ -32,10 +32,6 @@ public sealed class Item
 		this.Data = data;
 		this.Icon = icon;
 	}
-	public Item(ushort id, ushort count, ushort durability, uint data, byte icon, byte unknown): this(id, count, durability, data, icon)
-	{
-		this.Unknown = unknown;
-	}
 	/* Instance Methods */
 	public async Task ToStream(Stream stream)
 	{
@@ -45,7 +41,7 @@ public sealed class Item
 		BitConverter.LittleEndian.Write(this.Count, buffer, OFFSET_COUNT);
 		BitConverter.LittleEndian.Write(this.Durability, buffer, OFFSET_DURABILITY);
 		buffer[OFFSET_ICON] = this.Icon;
-		buffer[OFFSET_UNKNOWN] = this.Unknown;
+		// -UNKNOWN(1)- \\
 		await stream.WriteAsync(buffer, 0, buffer.Length);
 	}
 	/* Static Methods */
@@ -60,9 +56,8 @@ public sealed class Item
 		var count      = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_COUNT);
 		var durability = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_DURABILITY);
 		var icon       = buffer[OFFSET_ICON];
-		var unknown    = buffer[OFFSET_UNKNOWN];
 		// -UNKNOWN(1)- \\
-		return new Item(id, count, durability, data, icon, unknown);
+		return new Item(id, count, durability, data, icon);
 	}
 	/* Properties */
 	public ushort Id;
@@ -70,7 +65,6 @@ public sealed class Item
 	public ushort Durability;
 	public uint Data;
 	public byte Icon;
-	public byte Unknown;
 	/* Class Properties */
 	private const byte SIZE              = 12;
 	private const byte OFFSET_DATA       =  0;

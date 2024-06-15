@@ -7,6 +7,7 @@
 	Segment[0x0 : 0x1] = Id    | Length: 2 (0x2) | Type: uint16
 	Segment[0x2 : 0x3] = Ticks | Length: 2 (0x2) | Type: uint16
 	-----------------------------------------------------------
+	Size: 4 (0x4)
 
 	Written By: Ryan Smith
 */
