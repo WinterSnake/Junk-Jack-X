@@ -45,12 +45,13 @@ public enum Gamemode : byte
 public sealed class World
 {
 	/* Constructors */
+	#nullable enable
 	private World(
 		Guid id, DateTime lastPlayed, Version version, string name, string author, (ushort, ushort) player, (ushort, ushort) spawn,
 		Planet planet, Season season, Gamemode gamemode, SizeType worldSizeType, SizeType skySizeType, ushort[] skyline,
-		TileMap tileMap, uint ticks, Period period, float poissonSum, Weather weather, byte poissonSkipped,
+		TileMap tileMap, FogLayer? fog, uint ticks, Period period, float poissonSum, Weather weather, byte poissonSkipped,
 		Chest[] chests, Forge[] forges, Sign[] signs, Lab[] labs, Shelf[] shelves, Fruit[] fruits, Decay[] decay,
-		Lock[] locks, byte[] fluidLayer, byte[] circuitLayer, Entity[] entities
+		Lock[] locks, FluidLayer fluidLayer, CircuitLayer circuitLayer, Entity[] entities
 	)
 	{
 		// Info
@@ -70,6 +71,8 @@ public sealed class World
 		this.Skyline = skyline;
 		// Blocks
 		this.TileMap = tileMap;
+		// Fog
+		this.Fog = fog;
 		// Time
 		this.Ticks = ticks;
 		this.Time = period;
@@ -86,11 +89,12 @@ public sealed class World
 		this.Fruits   = new List<Fruit>(fruits);
 		this.Decay    = new List<Decay>(decay);
 		this.Locks    = new List<Lock>(locks);
+		this.Fluids   = fluidLayer;
+		this.Circuits = circuitLayer;
 		this.Entities = new List<Entity>(entities);
 		// TEMPORARY
-		this.FluidLayer = fluidLayer;
-		this.CircuitLayer = circuitLayer;
 	}
+	#nullable disable
 	/* Instance Methods */
 	public async Task Save(string fileName)
 	{
@@ -152,10 +156,11 @@ public sealed class World
 		}
 		stream.EndChunk();
 		/// Fog
-		if (this.FogLayer != null)
+		if (this.Fog != null)
 		{
 			var worldFogChunk = stream.StartChunk(ArchiverChunkType.WorldFog, compressed: true);
 			{
+				await this.Fog.ToStream(worldFogChunk);
 			}
 			stream.EndChunk();
 		}
@@ -164,7 +169,7 @@ public sealed class World
 		{
 			BitConverter.LittleEndian.Write(this.Ticks, buffer, OFFSET_TIMETICKS);
 			buffer[OFFSET_TIMEPERIOD] = (byte)this.Time;
-			BitConverter.LittleEndian.Write((ulong)0, buffer, OFFSET_TIMEPERIOD + sizeof(byte));
+			BitConverter.LittleEndian.Write((uint)0, buffer, OFFSET_TIMEPERIOD + sizeof(byte));
 			await worldTimeChunk.WriteAsync(buffer, 0, SIZEOF_TIME);
 		}
 		stream.EndChunk();
@@ -174,7 +179,7 @@ public sealed class World
 			BitConverter.LittleEndian.Write(this.PoissonSum / 10.0f, buffer, OFFSET_WEATHERSUM);
 			buffer[OFFSET_WEATHERTYPE] = (byte)this.Weather;
 			buffer[OFFSET_WEATHERSKIP] = (byte)this.PoissonSkipped;
-			BitConverter.LittleEndian.Write((ulong)0, buffer, OFFSET_WEATHERSKIP + sizeof(byte));
+			BitConverter.LittleEndian.Write((uint)0, buffer, OFFSET_WEATHERSKIP + sizeof(byte));
 			await worldWeatherChunk.WriteAsync(buffer, 0, SIZEOF_WEATHER);
 		}
 		stream.EndChunk();
@@ -267,13 +272,13 @@ public sealed class World
 		/// Fluid
 		var worldFluidChunk = stream.StartChunk(ArchiverChunkType.WorldFluid);
 		{
-			await worldFluidChunk.WriteAsync(this.FluidLayer, 0, this.FluidLayer.Length);
+			await this.Fluids.ToStream(worldFluidChunk);
 		}
 		stream.EndChunk();
 		/// Circuitry
 		var worldCircuitryChunk = stream.StartChunk(ArchiverChunkType.WorldCircuitry);
 		{
-			await worldCircuitryChunk.WriteAsync(this.CircuitLayer, 0, this.CircuitLayer.Length);
+			await this.Circuits.ToStream(worldFluidChunk);
 		}
 		stream.EndChunk();
 		/// Entities
@@ -286,7 +291,7 @@ public sealed class World
 		}
 		stream.EndChunk();
 		/// Padding
-		if (this.FogLayer == null)
+		if (this.Fog == null)
 			stream.EmptyChunk();
 	}
 	/* Static Methods */
@@ -295,6 +300,7 @@ public sealed class World
 		using var reader = await ArchiverStream.Reader(fileName);
 		return await World.FromStream(reader);
 	}
+	#nullable enable
 	public static async Task<World> FromStream(ArchiverStream stream)
 	{
 		var bytesRead = 0;
@@ -364,10 +370,19 @@ public sealed class World
 			tileMap = await TileMap.FromStream(blockStream, size, stream.IsChunkCompressed(ArchiverChunkType.WorldBlocks));
 		}
 		/// Fog
+		bytesRead = 0;
+		FogLayer? fog = null;
 		if (stream.HasChunk(ArchiverChunkType.WorldFog))
 		{
 			if (!stream.IsAtChunk(ArchiverChunkType.WorldFog))
 				stream.JumpToChunk(ArchiverChunkType.WorldFog);
+			var fogChunk = new byte[stream.GetChunkSize(ArchiverChunkType.WorldFog)];
+			using (var fogStream = new MemoryStream(fogChunk))
+			{
+				while (bytesRead < fogChunk.Length)
+					bytesRead += await stream.ReadAsync(fogChunk, bytesRead, fogChunk.Length - bytesRead);
+				fog = await FogLayer.FromStream(fogStream, stream.IsChunkCompressed(ArchiverChunkType.WorldFog));
+			}
 		}
 		/// Time
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldTime))
@@ -485,17 +500,11 @@ public sealed class World
 		/// Fluid
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldFluid))
 			stream.JumpToChunk(ArchiverChunkType.WorldFluid);
-		bytesRead = 0;
-		var fluidLayer = new byte[stream.GetChunkSize(ArchiverChunkType.WorldFluid)];
-		while (bytesRead < fluidLayer.Length)
-			bytesRead += await stream.ReadAsync(fluidLayer, bytesRead, fluidLayer.Length - bytesRead);
+		var fluidLayer = await FluidLayer.FromStream(stream);
 		/// Circuitry
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldCircuitry))
 			stream.JumpToChunk(ArchiverChunkType.WorldCircuitry);
-		bytesRead = 0;
-		var circuitLayer = new byte[stream.GetChunkSize(ArchiverChunkType.WorldCircuitry)];
-		while (bytesRead < circuitLayer.Length)
-			bytesRead += await stream.ReadAsync(circuitLayer, bytesRead, circuitLayer.Length - bytesRead);
+		var circuitLayer = await CircuitLayer.FromStream(stream);
 		/// Entities
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldEntities))
 			stream.JumpToChunk(ArchiverChunkType.WorldEntities);
@@ -513,11 +522,12 @@ public sealed class World
 		return new World(
 			id, lastPlayed, version, name, author, player, spawn, planet,
 			season, gamemode, worldSizeType, skySizeType, skyline, tileMap,
-			ticks, period, poissonSum, weather, poissonSkipped,
+			fog, ticks, period, poissonSum, weather, poissonSkipped,
 			chests, forges, signs, labs, shelves, fruits, plantDecay,
 			locks, fluidLayer, circuitLayer, entities
 		);
 	}
+	#nullable disable
 	/* Properties */
 	// Info
 	public readonly Guid Id = Guid.NewGuid();
@@ -554,6 +564,10 @@ public sealed class World
 	// Blocks
 	public Tile[,] Blocks { get { return this.TileMap.Tiles; }}
 	public readonly TileMap TileMap;  // TODO: Make assignable (?)
+	// Fog
+	#nullable enable
+	public FogLayer? Fog = null;
+	#nullable disable
 	// Time
 	public uint Ticks = 0;
 	public Period Time = Period.Day;
@@ -570,13 +584,9 @@ public sealed class World
 	public readonly List<Fruit>  Fruits   = new List<Fruit>();
 	public readonly List<Decay>  Decay    = new List<Decay>();
 	public readonly List<Lock>   Locks    = new List<Lock>();
+	public readonly FluidLayer   Fluids   = new FluidLayer();
+	public readonly CircuitLayer Circuits = new CircuitLayer();
 	public readonly List<Entity> Entities = new List<Entity>();
-	// TEMPORARY
-	#nullable enable
-	private readonly byte[]? FogLayer = null;
-	#nullable disable
-	private readonly byte[] FluidLayer = new byte[SIZEOF_FLUIDLAYER];
-	private readonly byte[] CircuitLayer = new byte[SIZEOF_CIRCUITLAYER];
 	/* Class Properties */
 	private const byte SIZEOF_BUFFER        = 56;
 	private const byte SIZEOF_UUID          = 16;
@@ -605,7 +615,4 @@ public sealed class World
 	private const byte OFFSET_WEATHERSUM    =  0;
 	private const byte OFFSET_WEATHERTYPE   =  4;
 	private const byte OFFSET_WEATHERSKIP   =  5;
-	// Temporary
-	private const ushort SIZEOF_FLUIDLAYER   =  8;
-	private const byte   SIZEOF_CIRCUITLAYER = 16;
 }
