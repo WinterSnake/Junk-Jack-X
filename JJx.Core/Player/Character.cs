@@ -11,7 +11,7 @@ namespace JJx;
 public enum HairColor : byte
 {
 	White       = 0x0,
-	Grey        = 0x1,
+	Gray        = 0x1,
 	Black       = 0x2,
 	Brown       = 0x3,
 	DarkBrown   = 0x4,
