@@ -50,8 +50,8 @@ public sealed class World
 		Guid id, DateTime lastPlayed, Version version, string name, string author, (ushort, ushort) player, (ushort, ushort) spawn,
 		Planet planet, Season season, Gamemode gamemode, SizeType worldSizeType, SizeType skySizeType, ushort[] skyline,
 		TileMap tileMap, FogLayer? fog, uint ticks, Period period, float poissonSum, Weather weather, byte poissonSkipped,
-		Chest[] chests, Forge[] forges, Sign[] signs, Lab[] labs, Shelf[] shelves, Fruit[] fruits, Decay[] decay,
-		Lock[] locks, FluidLayer fluidLayer, CircuitLayer circuitLayer, Entity[] entities
+		Chest[] chests, Forge[] forges, Sign[] signs, Stable[] stables, Lab[] labs, Shelf[] shelves, Fruit[] fruits,
+		Decay[] decay, Lock[] locks, FluidLayer fluidLayer, CircuitLayer circuitLayer, Entity[] entities
 	)
 	{
 		// Info
@@ -84,6 +84,7 @@ public sealed class World
 		this.Chests   = new List<Chest>(chests);
 		this.Forges   = new List<Forge>(forges);
 		this.Signs    = new List<Sign>(signs);
+		this.Stables  = new List<Stable>(stables);
 		this.Labs     = new List<Lab>(labs);
 		this.Shelves  = new List<Shelf>(shelves);
 		this.Fruits   = new List<Fruit>(fruits);
@@ -213,8 +214,10 @@ public sealed class World
 		/// Stables
 		var worldStablesChunk = stream.StartChunk(ArchiverChunkType.WorldStables);
 		{
-			BitConverter.LittleEndian.Write((uint)0, buffer, 0);
+			BitConverter.LittleEndian.Write((uint)this.Stables.Count, buffer, 0);
 			await worldStablesChunk.WriteAsync(buffer, 0, sizeof(uint));
+			foreach (var stable in this.Stables)
+				await stable.ToStream(worldStablesChunk);
 		}
 		stream.EndChunk();
 		/// Labs
@@ -438,7 +441,9 @@ public sealed class World
 		while (bytesRead < sizeof(uint))
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, sizeof(uint) - bytesRead);
 		var stableCount = JJx.BitConverter.LittleEndian.GetUInt32(buffer);
-		Console.WriteLine($"[TODO]Stables: {stableCount}");
+		var stables = new Stable[stableCount];
+		for (var i = 0; i < stables.Length; ++i)
+			stables[i] = await Stable.FromStream(stream);
 		/// Labs
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldLabs))
 			stream.JumpToChunk(ArchiverChunkType.WorldLabs);
@@ -466,7 +471,6 @@ public sealed class World
 		while (bytesRead < sizeof(uint))
 			bytesRead += await stream.ReadAsync(buffer, bytesRead, sizeof(uint) - bytesRead);
 		var plantCount = JJx.BitConverter.LittleEndian.GetUInt32(buffer);
-		Console.WriteLine($"[TODO]Plants: {plantCount}");
 		/// Fruits
 		if (!stream.IsAtChunk(ArchiverChunkType.WorldFruits))
 			stream.JumpToChunk(ArchiverChunkType.WorldFruits);
@@ -523,8 +527,8 @@ public sealed class World
 			id, lastPlayed, version, name, author, player, spawn, planet,
 			season, gamemode, worldSizeType, skySizeType, skyline, tileMap,
 			fog, ticks, period, poissonSum, weather, poissonSkipped,
-			chests, forges, signs, labs, shelves, fruits, plantDecay,
-			locks, fluidLayer, circuitLayer, entities
+			chests, forges, signs, stables, labs, shelves, fruits,
+			plantDecay, locks, fluidLayer, circuitLayer, entities
 		);
 	}
 	#nullable disable
@@ -579,6 +583,7 @@ public sealed class World
 	public readonly List<Chest>  Chests   = new List<Chest>();
 	public readonly List<Forge>  Forges   = new List<Forge>();
 	public readonly List<Sign>   Signs    = new List<Sign>();
+	public readonly List<Stable> Stables  = new List<Stable>();
 	public readonly List<Lab>    Labs     = new List<Lab>();
 	public readonly List<Shelf>  Shelves  = new List<Shelf>();
 	public readonly List<Fruit>  Fruits   = new List<Fruit>();

@@ -22,9 +22,11 @@ namespace JJx;
 public sealed class Chest
 {
 	/* Constructors */
-	public Chest(uint x, uint y)
+	public Chest(uint x, uint y, int slotCount)
 	{
 		this.Position = (x, y);
+		for (var i = 0; i < slotCount; ++i)
+			this.Items.Add(new Item(0xFFFF, 0));
 	}
 	private Chest((uint, uint) position, Item[] items)
 	{
