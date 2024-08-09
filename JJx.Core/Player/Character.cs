@@ -39,14 +39,19 @@ public sealed class Character
 		this.HairColor = hairColor;
 	}
 	/* Instance Methods */
-	public ushort Pack() => (ushort)((this._SkinTone << 13) | (Convert.ToByte(this.Gender) << 12) | (this._HairStyle << 8) | ((byte)this.HairColor << 4));
+	internal ushort Pack() => (ushort)(
+		(this._SkinTone << TONE_SHIFT) |
+		(Convert.ToByte(this.Gender) << GENDER_SHIFT) |
+		(this._HairStyle << STYLE_SHIFT) |
+		((byte)this.HairColor << COLOR_SHIFT)
+	);
 	/* Static Methods */
-	public static Character Unpack(ushort @value)
+	internal static Character Unpack(ushort @value)
 	{
-		byte tone       = (byte)     ((@value & TONE_FLAG)   >> 13);
-		bool gender     =            ((@value & GENDER_FLAG) >> 12) == 1;
-		byte style      = (byte)     ((@value & STYLE_FLAG)  >>  8);
-		HairColor color = (HairColor)((@value & COLOR_FLAG)  >>  4);
+		byte tone       =      (byte)((@value & TONE_FLAG)   >> TONE_SHIFT);
+		bool gender     =            ((@value & GENDER_FLAG) >> GENDER_SHIFT) == 1;
+		byte style      =      (byte)((@value & STYLE_FLAG)  >> STYLE_SHIFT);
+		HairColor color = (HairColor)((@value & COLOR_FLAG)  >> COLOR_SHIFT);
 		return new Character(gender, tone, style, color);
 	}
 	/* Properties */
@@ -65,8 +70,12 @@ public sealed class Character
 	/* Class Properties */
 	public const byte MAX_SKINTONES  = 0x4;  // Maximum skin tones in game (5) [0-4]
 	public const byte MAX_HAIRSTYLES = 0xD;  // Maximum hair styles in game (14) [0-D]
-	private const ushort GENDER_FLAG = 0x1000;
-	private const ushort TONE_FLAG   = 0xE000;
-	private const ushort STYLE_FLAG  = 0x0F00;
-	private const ushort COLOR_FLAG  = 0x00F0;
+	private const ushort GENDER_FLAG  = 0x1000;
+	private const ushort TONE_FLAG    = 0xE000;
+	private const ushort STYLE_FLAG   = 0x0F00;
+	private const ushort COLOR_FLAG   = 0x00F0;
+	private const byte   TONE_SHIFT   = 13;
+	private const byte   GENDER_SHIFT = 12;
+	private const byte   STYLE_SHIFT  =  8;
+	private const byte   COLOR_SHIFT  =  4;
 }

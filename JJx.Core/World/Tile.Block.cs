@@ -20,9 +20,9 @@ public partial class Tile
 			this.Icon = icon;
 		}
 		/* Instance Methods */
-		public ushort Pack() => (ushort)((this.Icon << 12) | this.Id);
+		internal ushort Pack() => (ushort)((this.Icon << 12) | this.Id);
 		/* Static Methods */
-		public static Block Unpack(ushort id)
+		internal static Block Unpack(ushort id)
 		{
 			var icon = id & ICON_FLAG;
 			if (icon > 0)

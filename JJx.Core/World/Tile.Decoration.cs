@@ -21,7 +21,7 @@ public partial class Tile
 			this.IsBackground = isBackground;
 		}
 		/* Instance Methods */
-		public ushort Pack()
+		internal ushort Pack()
 		{
 			var id = (ushort)((this.Icon << 12) | this.Id);
 			if (this.IsBackground)
@@ -29,7 +29,7 @@ public partial class Tile
 			return id;
 		}
 		/* Static Methods */
-		public static Decoration Unpack(ushort id)
+		internal static Decoration Unpack(ushort id)
 		{
 			var isBackground = id >= BACKGROUND_FLAG;
 			if (isBackground)
