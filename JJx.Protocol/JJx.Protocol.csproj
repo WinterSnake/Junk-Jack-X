@@ -1,12 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="../JJx.Core/JJx.Core.csproj" />
-	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="ENet.Managed" Version="4.2.6" />
 	</ItemGroup>
 </Project>

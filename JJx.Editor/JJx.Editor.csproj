@@ -7,6 +7,6 @@
 		<ProjectReference Include="../JJx.Core/JJx.Core.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-	  <PackageReference Include="Raylib-cs" Version="6.0.0" />
+		<PackageReference Include="Raylib-cs" Version="6.1.1" />
 	</ItemGroup>
 </Project>
