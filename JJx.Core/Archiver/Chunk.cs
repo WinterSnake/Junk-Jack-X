@@ -77,7 +77,7 @@ internal struct ArchiverChunk
 internal sealed class ArchiverChunkConverter : JJxConverter<ArchiverChunk>
 {
 	/* Instance Methods */
-	public override ArchiverChunk Deserialize(JJxReader reader)
+	public override ArchiverChunk Read(JJxReader reader)
 	{
 		var chunkType = (ArchiverChunkType)reader.GetUInt16();
 		var version = reader.GetUInt8();

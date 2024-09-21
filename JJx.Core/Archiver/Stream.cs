@@ -58,7 +58,7 @@ public sealed class ArchiverStream : FileStream
 			Console.WriteLine($"Magic: {magic} | Type: {type} | Chunks: {chunkCount}");
 		#endif
 		// --UNKNOWN(4)-- \\
-		var unknownData = reader.GetBytes(SIZEOF_UNKNOWN);
+		reader.GetBytes(SIZEOF_UNKNOWN);
 		// Chunks
 		var chunks = new ArchiverChunk[chunkCount];
 		for (var i = 0; i < chunks.Length; ++i)

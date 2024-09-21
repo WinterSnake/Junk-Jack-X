@@ -11,5 +11,5 @@ namespace JJx.Serialization;
 internal sealed class GuidConverter : JJxConverter<Guid>
 {
 	/* Instance Methods */
-	public override Guid Deserialize(JJxReader reader) => new Guid(reader.GetBytes(16));
+	public override Guid Read(JJxReader reader) => new Guid(reader.GetBytes(16));
 }

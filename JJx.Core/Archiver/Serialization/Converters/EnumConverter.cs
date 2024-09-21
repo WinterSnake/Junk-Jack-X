@@ -20,10 +20,11 @@ internal sealed class EnumConverterFactory : JJxConverterFactory
 	}
 }
 
+// TODO: Cache
 internal sealed class EnumConverter<T> : JJxConverter<T> where T : Enum
 {
 	/* Instance Methods */
-	public override T Deserialize(JJxReader reader)
+	public override T Read(JJxReader reader)
 	{
 		var typeCode = Type.GetTypeCode(typeof(T));
 		switch (typeCode)

@@ -84,6 +84,7 @@ public sealed class Player
 		Debug.Assert(stream.Position == playerItemsChunk.Position, $"ArchiverStream::Reader not aligned with PlayerItemsChunk || Current: {stream.Position:X8} ; Expected: {playerItemsChunk.Position:X8}");
 		if (stream.Position != playerItemsChunk.Position)
 			stream.Position  = playerItemsChunk.Position;
+		var item = reader.Get<Item>();
 		/// Player
 		return new Player(
 			// Info

@@ -66,7 +66,7 @@ public sealed class Character
 internal sealed class CharacterConverter : JJxConverter<Character>
 {
 	/* Instance Methods */
-	public override Character Deserialize(JJxReader reader)
+	public override Character Read(JJxReader reader)
 	{
 		var @value = reader.GetUInt16();
 		byte tone       =      (byte)((@value & TONE_FLAG)   >> TONE_SHIFT);

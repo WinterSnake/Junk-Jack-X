@@ -33,9 +33,13 @@ public partial struct JJxReader
 			buffer = new byte[numberOfBytes];
 		var bytesRead = this.BaseStream.Read(buffer.AsSpan(0, numberOfBytes));
 		Debug.Assert(bytesRead == numberOfBytes, $"Read: {bytesRead} | Expected: {numberOfBytes}");
-		return buffer.AsSpan(0, numberOfBytes);
+		if (numberOfBytes < this._Buffer.Length)
+			return buffer.AsSpan(0, numberOfBytes);
+		return buffer;
 	}
 	public bool GetBool() => this._InternalReadByte() != 0;
+	// Int
+	// UInt
 	public byte GetUInt8() => this._InternalReadByte();
 	public ushort GetUInt16()
 	{
@@ -57,6 +61,8 @@ public partial struct JJxReader
 			(this._Buffer[0] <<  0)
 		);
 	}
+	// Float
+	// String
 	public string GetString(ulong length = 0, bool isLengthEncoded = false)
 	{
 		byte[] buffer;
@@ -75,6 +81,7 @@ public partial struct JJxReader
 		// Return string
 		return Encoding.ASCII.GetString(buffer.AsSpan(0, endSequence));
 	}
+	// Object
 	public T Get<T>()
 	{
 		Type type = typeof(T);
@@ -95,7 +102,7 @@ public partial struct JJxReader
 			}
 		}
 		if (converter == null) throw new ArgumentException($"Unhandled type '{type}' in Reader.Get()");
-		return (converter as JJxConverter<T>).Deserialize(this);
+		return (converter as JJxConverter<T>).Read(this);
 	}
 	private byte _InternalReadByte()
 	{
