@@ -15,10 +15,9 @@
 	Written By: Ryan Smith
 */
 using System;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace JJx;
+using Serialization;
 
 public enum ArchiverChunkType : ushort
 {
@@ -55,8 +54,8 @@ public enum ArchiverChunkType : ushort
 
 internal sealed class ArchiverChunk
 {
-	/* Constructors */
-	public ArchiverChunk(ArchiverChunkType type, byte version, bool compressed, uint position, uint size = 0)
+	/* Constructor */
+	public ArchiverChunk(ArchiverChunkType type, byte version, bool compressed, uint position, uint size)
 	{
 		this.Type = type;
 		this.Version = version;
@@ -65,42 +64,26 @@ internal sealed class ArchiverChunk
 		this.Size = size;
 	}
 	/* Instance Methods */
-	public override string ToString() => $"Chunk{{Type: {this.Type} | Version: {this.Version} | Compressed: {this.Compressed} | Position: 0x{this.Position:X8} | Size: 0x{this.Size:X4}}}";
-	public async Task ToStream(Stream stream)
-	{
-		var buffer = new byte[SIZE];
-		BitConverter.LittleEndian.Write((ushort)this.Type, buffer, OFFSET_TYPE);
-		buffer[OFFSET_VERSION] = this.Version;
-		BitConverter.Write(this.Compressed, buffer, OFFSET_COMPRESSEDFLAG);
-		BitConverter.LittleEndian.Write(this.Position, buffer, OFFSET_POSITION);
-		BitConverter.LittleEndian.Write(this.Size, buffer, OFFSET_SIZE);
-		await stream.WriteAsync(buffer, 0, buffer.Length);
-	}
-	/* Static Methods */
-	public static async Task<ArchiverChunk> FromStream(Stream stream)
-	{
-		int bytesRead = 0;
-		var buffer = new byte[SIZE];
-		while (bytesRead < buffer.Length)
-			bytesRead += await stream.ReadAsync(buffer, bytesRead, buffer.Length - bytesRead);
-		var type       = (ArchiverChunkType)BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_TYPE);
-		var version    = buffer[OFFSET_VERSION];
-		var compressed = BitConverter.GetBool(buffer, OFFSET_COMPRESSEDFLAG);
-		var position   = BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_POSITION);
-		var size       = BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_SIZE);
-		return new ArchiverChunk(type, version, compressed, position, size);
-	}
+	public override string ToString()
+		=> $"Chunk[{this.Type}]Version: {this.Version} ; Compressed: {this.Compressed} ; Position: 0x{this.Position:X8} ; Size: 0x{this.Size:X4}";
 	/* Properties */
 	public readonly ArchiverChunkType Type;
 	public readonly byte Version;
 	public readonly bool Compressed;
 	public uint Position;
 	public uint Size;
-	/* Class Properties */
-	internal const byte SIZE                 = 12;
-	private const byte OFFSET_TYPE           =  0;
-	private const byte OFFSET_VERSION        =  2;
-	private const byte OFFSET_COMPRESSEDFLAG =  3;
-	private const byte OFFSET_POSITION       =  4;
-	private const byte OFFSET_SIZE           =  8;
+}
+
+internal sealed class ArchiverChunkConverter : JJxConverter<ArchiverChunk>
+{
+	/* Instance Methods */
+	public override ArchiverChunk Deserialize(JJxReader reader)
+	{
+		var chunkType = (ArchiverChunkType)reader.GetUInt16();
+		var version = reader.GetUInt8();
+		var compressed = reader.GetBool();
+		var position = reader.GetUInt32();
+		var size = reader.GetUInt32();
+		return new ArchiverChunk(chunkType, version, compressed, position, size);
+	}
 }
