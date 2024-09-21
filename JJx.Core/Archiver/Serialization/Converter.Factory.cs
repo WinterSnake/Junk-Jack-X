@@ -45,7 +45,9 @@ public abstract class JJxConverterFactory
 	}
 	/* Class Properties */
 	internal static readonly JJxConverterFactory[] _InternalFactories = {
+		// System
 		new EnumConverterFactory(),
+		// JJx
 		new JJxObjectConverterFactory(),
 	};
 }

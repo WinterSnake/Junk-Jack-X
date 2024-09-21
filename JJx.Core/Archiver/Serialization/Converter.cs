@@ -12,6 +12,24 @@ namespace JJx.Serialization;
 // TODO: Cache
 public abstract class JJxConverter
 {
+	/* Static Methods */
+	internal static JJxConverter GetTypeConverter(Type type)
+	{
+		if (JJxConverter._InternalConverters.ContainsKey(type))
+		{
+			#if DEBUG
+				Console.WriteLine($"Found existing converter for {type}");
+			#endif
+			return JJxConverter._InternalConverters[type];
+		}
+		// Build factory converter
+		foreach (var factoryConverter in JJxConverterFactory._InternalFactories)
+		{
+			if (factoryConverter.CanConvert(type))
+				return factoryConverter.Build(type);
+		}
+		throw new ArgumentException($"Unhandled type '{type}' in JJxConverters");
+	}
 	/* Properties */
 	#nullable enable
 	public abstract Type? Type { get; }

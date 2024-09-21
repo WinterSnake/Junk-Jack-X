@@ -59,7 +59,6 @@ internal sealed class JJxObjectConverterFactory : JJxConverterFactory
 }
 
 // TODO: Cache
-// TODO: Sized Buffer
 internal sealed class JJxObjectConverter<T> : JJxConverter<T>
 {
 	/* Constructor */
@@ -89,7 +88,7 @@ internal sealed class JJxObjectConverter<T> : JJxConverter<T>
 			fieldsSorted[dataAttribute.Position] = field;
 		}
 		// TODO: Pull into inline buffer
-		// TODO: Calculate size
+		// TODO: Calculate size for non-set static objects appropriately
 		var startPosition = reader.BaseStream.Position;
 		// Read values and write to object
 		foreach (var field in fieldsSorted)
@@ -110,9 +109,9 @@ internal sealed class JJxObjectConverter<T> : JJxConverter<T>
 				continue;
 			}
 			// Non-primitive handling
-			var readMethod = typeof(JJxReader).GetMethod("Get")
-											  .MakeGenericMethod(field.FieldType);
-			field.SetValue(obj, readMethod.Invoke(reader, null));
+			var converter = JJxConverter.GetTypeConverter(field.FieldType);
+			var readMethod = converter.GetType().GetMethod("Read");
+			field.SetValue(obj, readMethod.Invoke(converter, new[] { (object)reader }));
 		}
 		var calculatedLength = reader.BaseStream.Position - startPosition;
 		// HACK: Compute calculated length to subtract is less than buffer -- required until using internal buffer

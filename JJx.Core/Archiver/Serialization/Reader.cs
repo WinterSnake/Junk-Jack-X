@@ -91,26 +91,7 @@ public partial struct JJxReader
 	{
 		Type type = typeof(T);
 		// Get converter
-		JJxConverter converter = null;
-		if (JJxConverter._InternalConverters.ContainsKey(type))
-		{
-			converter = JJxConverter._InternalConverters[type];
-			#if DEBUG
-				Console.WriteLine($"Found existing converter for {type}");
-			#endif
-		}
-		else
-		{
-			// Build factory converter
-			foreach (var factoryConverter in JJxConverterFactory._InternalFactories)
-			{
-				if (factoryConverter.CanConvert(type))
-				{
-					converter = factoryConverter.Build(type);
-					break;
-				}
-			}
-		}
+		var converter = JJxConverter.GetTypeConverter(type);
 		if (converter == null) throw new ArgumentException($"Unhandled type '{type}' in Reader.Get()");
 		return (converter as JJxConverter<T>).Read(this);
 	}
