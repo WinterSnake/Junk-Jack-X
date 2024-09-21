@@ -5,6 +5,7 @@
 	Written By: Ryan Smith
 */
 using System;
+using System.IO.Compression;
 
 namespace JJx.Serialization;
 
@@ -15,9 +16,10 @@ internal sealed class CompressionConverter<T> : JJxConverter<T>
 	/* Instance Methods */
 	public override T Read(JJxReader reader)
 	{
-		throw new NotImplementedException($"CompressionConverter does not implement a Read");
+		using var compressionStream = new GZipStream(reader.BaseStream, CompressionMode.Decompress, true);
+		var compressedReader = new JJxReader(compressionStream);
+		return this._InternalConverter.Read(compressedReader);
 	}
-	public override void Write(JJxWriter writer, object @value) => throw new NotImplementedException($"CompressionConverter does not implement a Write");
 	/* Properties */
 	private readonly JJxConverter<T> _InternalConverter;
 }

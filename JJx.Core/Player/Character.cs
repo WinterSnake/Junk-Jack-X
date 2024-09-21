@@ -88,7 +88,6 @@ internal sealed class CharacterConverter : JJxConverter<Character>
 		HairColor color = (HairColor)((@value & COLOR_FLAG)  >> COLOR_SHIFT);
 		return new Character(gender, tone, style, color);
 	}
-	public override void Write(JJxWriter writer, object @value) => throw new NotImplementedException($"CharacterConverter does not implement a Write");
 	/* Class Properties */
 	private const ushort GENDER_FLAG  = 0x1000;
 	private const ushort TONE_FLAG    = 0xE000;

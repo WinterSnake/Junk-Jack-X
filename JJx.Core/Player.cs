@@ -66,6 +66,8 @@ public sealed class Player
 		float health, Effect[] effects
 	)
 	{
+		Debug.Assert(items.Length == SIZEOF_ITEMS, $"Player() expects {SIZEOF_ITEMS} decorations, received: {items.Length}");
+		Debug.Assert(effects.Length == SIZEOF_EFFECTS, $"Player() expects {SIZEOF_EFFECTS} decorations, received: {effects.Length}");
 		// Info
 		this.Uid = uid;
 		this._Name = name;

@@ -39,7 +39,11 @@ public partial struct JJxReader
 			buffer = this._Buffer;
 		else
 			buffer = new byte[numberOfBytes];
-		var bytesRead = this.BaseStream.Read(buffer.AsSpan(0, numberOfBytes));
+		int bytesRead = 0;
+		do
+		{
+			bytesRead += this.BaseStream.Read(buffer.AsSpan(bytesRead, numberOfBytes - bytesRead));
+		} while (bytesRead < numberOfBytes);
 		Debug.Assert(bytesRead == numberOfBytes, $"Read: {bytesRead} | Expected: {numberOfBytes}");
 		if (numberOfBytes < this._Buffer.Length)
 			return buffer.AsSpan(0, numberOfBytes);

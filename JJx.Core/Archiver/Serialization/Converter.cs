@@ -51,8 +51,10 @@ public abstract class JJxConverter
 public abstract class JJxConverter<T> : JJxConverter
 {
 	/* Instance Methods */
-	public abstract T Read(JJxReader reader);
-	public abstract void Write(JJxWriter writer, object @value);
+	public virtual T Read(JJxReader reader)
+		=> throw new NotImplementedException($"{this.GetType()} does not implement Read()");
+	public virtual void Write(JJxWriter writer, object @value)
+		=> throw new NotImplementedException($"{this.GetType()} does not implement Write()");
 	/* Properties */
 	#nullable enable
 	public sealed override Type? Type => typeof(T);
