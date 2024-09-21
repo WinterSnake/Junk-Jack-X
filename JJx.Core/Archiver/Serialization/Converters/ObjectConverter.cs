@@ -120,6 +120,7 @@ internal sealed class JJxObjectConverter<T> : JJxConverter<T>
 			reader.GetBytes(remainingLength);
 		return (T)obj;
 	}
+	public override void Write(JJxWriter writer, object @value) => throw new NotImplementedException($"JJxObjectConverter does not implement a Write");
 	/* Properties */
 	public bool Static => this._Buffer != null;
 	public long Size => this._Buffer?.Length ?? 0;

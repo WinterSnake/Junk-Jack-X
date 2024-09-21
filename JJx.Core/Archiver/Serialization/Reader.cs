@@ -9,8 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace JJx;
-using Serialization;
+namespace JJx.Serialization;
 
 public partial struct JJxReader
 {
@@ -92,7 +91,6 @@ public partial struct JJxReader
 		Type type = typeof(T);
 		// Get converter
 		var converter = JJxConverter.GetTypeConverter(type);
-		if (converter == null) throw new ArgumentException($"Unhandled type '{type}' in Reader.Get()");
 		return (converter as JJxConverter<T>).Read(this);
 	}
 	private byte _InternalReadByte()

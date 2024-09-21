@@ -47,4 +47,5 @@ internal sealed class EnumConverter<T> : JJxConverter<T> where T : Enum
 			default: throw new ArgumentException($"Unhandled enum typecode '{typeCode}' in EnumConverter");
 		}
 	}
+	public override void Write(JJxWriter writer, object @value) => throw new NotImplementedException($"EnumConverter does not implement a Write");
 }

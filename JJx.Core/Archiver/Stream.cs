@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Win32.SafeHandles;
+using JJx.Serialization;
 
 namespace JJx;
 
@@ -34,7 +35,11 @@ public sealed class ArchiverStream : FileStream
 	private ArchiverStream(ArchiverStreamType type, ArchiverChunk[] chunks, SafeFileHandle readerHandle): base(readerHandle, FileAccess.Read)
 	{
 		this.Type = type;
-		this._Chunks = chunks;
+		this._Chunks = new List<ArchiverChunk>(chunks);
+	}
+	private ArchiverStream(string filePath, ArchiverStreamType type): base(filePath, FileMode.Create, FileAccess.Write)
+	{
+		this.Type = type;
 	}
 	/* Instance Methods */
 	// Reading
@@ -70,9 +75,15 @@ public sealed class ArchiverStream : FileStream
 		}
 		return new ArchiverStream(type, chunks, fileReader.SafeFileHandle);
 	}
+	public static ArchiverStream Writer(string filePath, ArchiverStreamType type)
+	{
+		var fileWriter = new ArchiverStream(filePath, type);
+		var writer = new JJxWriter(fileWriter);
+		return fileWriter;
+	}
 	/* Properties */
 	public readonly ArchiverStreamType Type;
-	private readonly ArchiverChunk[] _Chunks;
+	private readonly List<ArchiverChunk> _Chunks = new();
 	/* Class Properties */
 	private const byte SIZEOF_MAGIC   = 4;
 	private const byte SIZEOF_UNKNOWN = 4;

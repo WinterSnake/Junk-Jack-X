@@ -35,6 +35,7 @@
 */
 using System;
 using System.Diagnostics;
+using JJx.Serialization;
 
 namespace JJx;
 
@@ -65,29 +66,51 @@ public sealed class Player
 		float health, Effect[] effects
 	)
 	{
+		// Info
 		this.Uid = uid;
 		this._Name = name;
 		this.Version = version;
 		this.Character = character;
 		this.Options = options;
 		this.UnlockedPlanets = planets;
+		// Items
+		this.Items = items;
+		// Effects
 		this.Health = health;
 		this.Effects = effects;
 	}
 	/* Instance Methods */
+	public void Save(string filePath)
+	{
+		using var stream = ArchiverStream.Writer(filePath, ArchiverStreamType.Player);
+		this.ToStream(stream);
+	}
+	public void ToStream(ArchiverStream stream)
+	{
+		if (stream.Type != ArchiverStreamType.Player)
+			throw new ArgumentException($"Passed in a non-player ({stream.Type}) archiver stream to Player.ToStream()");
+		if (!stream.CanWrite)
+			throw new ArgumentException("Passed in a non-writable archiver stream to Player.ToStream()");
+	}
 	/* Static Methods */
+	public static Player Load(string filePath)
+	{
+		using var stream = ArchiverStream.Reader(filePath);
+		return Player.FromStream(stream);
+	}
 	public static Player FromStream(ArchiverStream stream)
 	{
 		if (stream.Type != ArchiverStreamType.Player)
 			throw new ArgumentException($"Passed in a non-player ({stream.Type}) archiver stream to Player.FromStream()");
 		if (!stream.CanRead)
 			throw new ArgumentException("Passed in a non-readable archiver stream to Player.FromStream()");
+		ArchiverChunk chunk;
 		var reader = new JJxReader(stream);
 		/// Info
-		var playerInfoChunk = stream.GetChunk(ArchiverChunkType.PlayerInfo);
-		Debug.Assert(stream.Position == playerInfoChunk.Position, $"ArchiverStream::Reader not aligned with PlayerInfoChunk || Current: {stream.Position:X8} ; Expected: {playerInfoChunk.Position:X8}");
-		if (stream.Position != playerInfoChunk.Position)
-			stream.Position  = playerInfoChunk.Position;
+		chunk = stream.GetChunk(ArchiverChunkType.PlayerInfo);
+		Debug.Assert(stream.Position == chunk.Position, $"ArchiverStream::Reader not aligned with PlayerInfoChunk || Current: {stream.Position:X8} ; Expected: {chunk.Position:X8}");
+		if (stream.Position != chunk.Position)
+			stream.Position  = chunk.Position;
 		var uid = reader.Get<Guid>();
 		var name = reader.GetString(length: SIZEOF_NAME);
 		var version = reader.Get<Version>();
@@ -100,30 +123,30 @@ public sealed class Player
 		// -UNKNOWN(3)- \\
 		reader.GetBytes(3);
 		/// Items
-		var playerItemsChunk = stream.GetChunk(ArchiverChunkType.PlayerItems);
-		Debug.Assert(stream.Position == playerItemsChunk.Position, $"ArchiverStream::Reader not aligned with PlayerItemsChunk || Current: {stream.Position:X8} ; Expected: {playerItemsChunk.Position:X8}");
-		if (stream.Position != playerItemsChunk.Position)
-			stream.Position  = playerItemsChunk.Position;
+		chunk = stream.GetChunk(ArchiverChunkType.PlayerItems);
+		Debug.Assert(stream.Position == chunk.Position, $"ArchiverStream::Reader not aligned with PlayerItemsChunk || Current: {stream.Position:X8} ; Expected: {chunk.Position:X8}");
+		if (stream.Position != chunk.Position)
+			stream.Position  = chunk.Position;
 		var items = new Item[SIZEOF_ITEMS];
 		for (var i = 0; i < items.Length; ++i)
 			items[i] = reader.Get<Item>();
-		/// Craftbook
-		var playerCraftbooksChunk = stream.GetChunk(ArchiverChunkType.PlayerCraftbooks);
-		Debug.Assert(stream.Position == playerCraftbooksChunk.Position, $"ArchiverStream::Reader not aligned with playerCraftbooksChunk || Current: {stream.Position:X8} ; Expected: {playerCraftbooksChunk.Position:X8}");
-		if (stream.Position != playerCraftbooksChunk.Position)
-			stream.Position  = playerCraftbooksChunk.Position;
-		var craftbooksData = reader.GetBytes((int)playerCraftbooksChunk.Length);
-		/// Achievements
-		var playerAchievementsChunk = stream.GetChunk(ArchiverChunkType.PlayerAchievements);
-		Debug.Assert(stream.Position == playerAchievementsChunk.Position, $"ArchiverStream::Reader not aligned with playerAchievementsChunk || Current: {stream.Position:X8} ; Expected: {playerAchievementsChunk.Position:X8}");
-		if (stream.Position != playerAchievementsChunk.Position)
-			stream.Position  = playerAchievementsChunk.Position;
-		var achievementsData = reader.GetBytes((int)playerAchievementsChunk.Length);
+		/// Craftbooks :: UNKNOWN
+		chunk = stream.GetChunk(ArchiverChunkType.PlayerCraftbooks);
+		Debug.Assert(stream.Position == chunk.Position, $"ArchiverStream::Reader not aligned with PlayerCraftbooksChunk || Current: {stream.Position:X8} ; Expected: {chunk.Position:X8}");
+		if (stream.Position != chunk.Position)
+			stream.Position  = chunk.Position;
+		var craftbooksData = reader.GetBytes((int)chunk.Length);
+		/// Achievements :: UNKNOWN
+		chunk = stream.GetChunk(ArchiverChunkType.PlayerAchievements);
+		Debug.Assert(stream.Position == chunk.Position, $"ArchiverStream::Reader not aligned with PlayerAchievementsChunk || Current: {stream.Position:X8} ; Expected: {chunk.Position:X8}");
+		if (stream.Position != chunk.Position)
+			stream.Position  = chunk.Position;
+		var achievementsData = reader.GetBytes((int)chunk.Length);
 		/// Status
-		var playerStatusChunk = stream.GetChunk(ArchiverChunkType.PlayerStatus);
-		Debug.Assert(stream.Position == playerStatusChunk.Position, $"ArchiverStream::Reader not aligned with playerStatusChunk || Current: {stream.Position:X8} ; Expected: {playerStatusChunk.Position:X8}");
-		if (stream.Position != playerStatusChunk.Position)
-			stream.Position  = playerStatusChunk.Position;
+		chunk = stream.GetChunk(ArchiverChunkType.PlayerStatus);
+		Debug.Assert(stream.Position == chunk.Position, $"ArchiverStream::Reader not aligned with PlayerStatusChunk || Current: {stream.Position:X8} ; Expected: {chunk.Position:X8}");
+		if (stream.Position != chunk.Position)
+			stream.Position  = chunk.Position;
 		var health = reader.GetFloat32() * 10.0f;
 		var effects = new Effect[SIZEOF_EFFECTS];
 		for (var i = 0; i < effects.Length; ++i)
@@ -149,7 +172,7 @@ public sealed class Player
 	public Character Character;
 	public GameOptions Options;
 	public Planet UnlockedPlanets = Planet.Terra;
-	public readonly Item[] Items = new Item[SIZEOF_ITEMS];
+	public readonly Item[] Items = new Item[SIZEOF_ITEMS];  // TODO: Custom collection
 	public float Health = 50.0f;
 	public readonly Effect[] Effects = new Effect[SIZEOF_EFFECTS];
 	/* Class Properties */

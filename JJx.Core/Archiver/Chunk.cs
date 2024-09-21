@@ -15,9 +15,9 @@
 	Written By: Ryan Smith
 */
 using System;
+using JJx.Serialization;
 
 namespace JJx;
-using Serialization;
 
 internal enum ArchiverChunkType : ushort
 {

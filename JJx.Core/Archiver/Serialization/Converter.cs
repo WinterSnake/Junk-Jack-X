@@ -47,6 +47,7 @@ public abstract class JJxConverter<T> : JJxConverter
 {
 	/* Instance Methods */
 	public abstract T Read(JJxReader reader);
+	public abstract void Write(JJxWriter writer, object @value);
 	/* Properties */
 	#nullable enable
 	public sealed override Type? Type => typeof(T);
