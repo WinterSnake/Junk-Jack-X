@@ -62,8 +62,12 @@ public sealed class Player
 			throw new ArgumentException($"Passed in a non-player ({stream.Type}) archiver stream to Player.FromStream()");
 		if (!stream.CanRead)
 			throw new ArgumentException("Passed in a non-readable archiver stream to Player.FromStream()");
-		var reader = stream._Reader ?? throw new ArgumentNullException("Invalid state of ArchiverStream::Reader");
+		var reader = new JJxReader(stream);
 		/// Info
+		var playerInfoChunk = stream.GetChunk(ArchiverChunkType.PlayerInfo);
+		Debug.Assert(stream.Position == playerInfoChunk.Position, $"ArchiverStream::Reader not aligned with PlayerInfoChunk || Current: {stream.Position:X8} ; Expected: {playerInfoChunk.Position:X8}");
+		if (stream.Position != playerInfoChunk.Position)
+			stream.Position  = playerInfoChunk.Position;
 		var uid = reader.Get<Guid>();
 		var name = reader.GetString(length: SIZEOF_NAME);
 		var version = reader.Get<Version>();
@@ -76,6 +80,10 @@ public sealed class Player
 		// -UNKNOWN(3)- \\
 		reader.GetBytes(3);
 		/// Items
+		var playerItemsChunk = stream.GetChunk(ArchiverChunkType.PlayerItems);
+		Debug.Assert(stream.Position == playerItemsChunk.Position, $"ArchiverStream::Reader not aligned with PlayerItemsChunk || Current: {stream.Position:X8} ; Expected: {playerItemsChunk.Position:X8}");
+		if (stream.Position != playerItemsChunk.Position)
+			stream.Position  = playerItemsChunk.Position;
 		/// Player
 		return new Player(
 			// Info

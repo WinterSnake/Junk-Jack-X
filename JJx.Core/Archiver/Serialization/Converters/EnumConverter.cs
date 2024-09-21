@@ -16,7 +16,7 @@ internal sealed class EnumConverterFactory : JJxConverterFactory
 	public override JJxConverter Build(Type type)
 	{
 		Type typeConverter = typeof(EnumConverter<>).MakeGenericType(type);
-		return base._Build(typeConverter);
+		return base._CreateConverter(typeConverter);
 	}
 }
 

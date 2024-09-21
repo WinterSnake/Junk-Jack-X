@@ -31,16 +31,20 @@ public enum ArchiverStreamType : ushort
 public sealed class ArchiverStream : FileStream
 {
 	/* Constructor */
-	private ArchiverStream(
-		ArchiverStreamType type, ArchiverChunk[] chunks,
-		SafeFileHandle readerHandle, JJxReader reader
-	): base(readerHandle, FileAccess.Read)
+	private ArchiverStream(ArchiverStreamType type, ArchiverChunk[] chunks, SafeFileHandle readerHandle): base(readerHandle, FileAccess.Read)
 	{
 		this.Type = type;
 		this._Chunks = chunks;
-		this._Reader = reader;
 	}
 	/* Instance Methods */
+	// Reading
+	internal ArchiverChunk GetChunk(ArchiverChunkType type) => this._GetChunk(type) ?? throw new ArgumentException($"Expected to find chunk {type} but none exist.");
+	internal ArchiverChunk? _GetChunk(ArchiverChunkType type)
+	{
+		foreach (var chunk in this._Chunks)
+			if (chunk.Type == type) return chunk;
+		return null;
+	}
 	/* Static Methods */
 	public static ArchiverStream Reader(string filePath)
 	{
@@ -64,14 +68,11 @@ public sealed class ArchiverStream : FileStream
 				Console.WriteLine($"\t{chunks[i]}");
 			#endif
 		}
-		return new ArchiverStream(type, chunks, fileReader.SafeFileHandle, reader);
+		return new ArchiverStream(type, chunks, fileReader.SafeFileHandle);
 	}
 	/* Properties */
 	public readonly ArchiverStreamType Type;
-	internal readonly ArchiverChunk[] _Chunks;
-	#nullable enable
-	internal readonly JJxReader? _Reader = null;
-	#nullable disable
+	private readonly ArchiverChunk[] _Chunks;
 	/* Class Properties */
 	private const byte SIZEOF_MAGIC   = 4;
 	private const byte SIZEOF_UNKNOWN = 4;

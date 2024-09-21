@@ -60,11 +60,10 @@ public partial struct JJxReader
 	public string GetString(ulong length = 0, bool isLengthEncoded = false)
 	{
 		byte[] buffer;
-		if (length > 0) buffer = new byte[length];
+		if (length > 0) buffer = new byte[length];  // TODO: Use buffer if small enough length
 		else
 		{
-			// Calculate buffer
-			buffer = new byte[this._Buffer.Length]; // temporary
+			throw new NotImplementedException("Non-length string calls for Reader.GetString() not implemented yet.");
 		}
 		// Read string
 		if (buffer.Length == 0) return String.Empty;

@@ -31,7 +31,7 @@ public abstract class JJxConverterFactory : JJxConverter
 	/* Instance Methods */
 	public abstract bool CanConvert(Type type);
 	public abstract JJxConverter Build(Type type);
-	protected JJxConverter _Build(Type type)
+	protected JJxConverter _CreateConverter(Type type)
 	{
 		var converterCTor = type.GetConstructors()[0];  // TODO: factory ctor binding
 		return (JJxConverter)converterCTor.Invoke(null);

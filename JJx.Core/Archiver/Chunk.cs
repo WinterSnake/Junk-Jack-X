@@ -19,7 +19,7 @@ using System;
 namespace JJx;
 using Serialization;
 
-public enum ArchiverChunkType : ushort
+internal enum ArchiverChunkType : ushort
 {
 	Padding            = 0x0000,
 	// World
@@ -52,7 +52,7 @@ public enum ArchiverChunkType : ushort
 	PlayerStatus       = 0x8004,
 }
 
-internal sealed class ArchiverChunk
+internal struct ArchiverChunk
 {
 	/* Constructor */
 	public ArchiverChunk(ArchiverChunkType type, byte version, bool compressed, uint position, uint size)
