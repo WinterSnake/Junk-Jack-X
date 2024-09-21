@@ -7,6 +7,7 @@
 using System;
 
 namespace JJx;
+using Serialization;
 
 public enum HairColor : byte
 {
@@ -30,7 +31,7 @@ public enum HairColor : byte
 
 public sealed class Character
 {
-	/* Constructors */
+	/* Constructor */
 	public Character(bool gender, byte skinTone, byte hairStyle, HairColor hairColor)
 	{
 		this.Gender = gender;
@@ -39,20 +40,10 @@ public sealed class Character
 		this.HairColor = hairColor;
 	}
 	/* Instance Methods */
-	internal ushort Pack() => (ushort)(
-		(this._SkinTone << TONE_SHIFT) |
-		(Convert.ToByte(this.Gender) << GENDER_SHIFT) |
-		(this._HairStyle << STYLE_SHIFT) |
-		((byte)this.HairColor << COLOR_SHIFT)
-	);
-	/* Static Methods */
-	internal static Character Unpack(ushort @value)
+	public override string ToString()
 	{
-		byte tone       =      (byte)((@value & TONE_FLAG)   >> TONE_SHIFT);
-		bool gender     =            ((@value & GENDER_FLAG) >> GENDER_SHIFT) == 1;
-		byte style      =      (byte)((@value & STYLE_FLAG)  >> STYLE_SHIFT);
-		HairColor color = (HairColor)((@value & COLOR_FLAG)  >> COLOR_SHIFT);
-		return new Character(gender, tone, style, color);
+		var gender = this.Gender ? "Female" : "Male";
+		return $"Gender: {gender} ; Skin: {this.SkinTone} ; Hair.Style: {this.HairStyle} ; Hair.Color: {this.HairColor}";
 	}
 	/* Properties */
 	public bool Gender;  // Male: false | Female: true
@@ -70,6 +61,21 @@ public sealed class Character
 	/* Class Properties */
 	public const byte MAX_SKINTONES  = 0x4;  // Maximum skin tones in game (5) [0-4]
 	public const byte MAX_HAIRSTYLES = 0xD;  // Maximum hair styles in game (14) [0-D]
+}
+
+internal sealed class CharacterConverter : JJxConverter<Character>
+{
+	/* Instance Methods */
+	public override Character Deserialize(JJxReader reader)
+	{
+		var @value = reader.GetUInt16();
+		byte tone       =      (byte)((@value & TONE_FLAG)   >> TONE_SHIFT);
+		bool gender     =            ((@value & GENDER_FLAG) >> GENDER_SHIFT) == 1;
+		byte style      =      (byte)((@value & STYLE_FLAG)  >> STYLE_SHIFT);
+		HairColor color = (HairColor)((@value & COLOR_FLAG)  >> COLOR_SHIFT);
+		return new Character(gender, tone, style, color);
+	}
+	/* Class Properties */
 	private const ushort GENDER_FLAG  = 0x1000;
 	private const ushort TONE_FLAG    = 0xE000;
 	private const ushort STYLE_FLAG   = 0x0F00;
