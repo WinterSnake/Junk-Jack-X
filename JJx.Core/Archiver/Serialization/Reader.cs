@@ -95,13 +95,17 @@ public partial struct JJxReader
 		return Encoding.ASCII.GetString(buffer.AsSpan(0, endSequence));
 	}
 	// Object
-	public T Get<T>()
+	#nullable enable
+	public T Get<T>(bool compressed = false, params object?[]? properties)
 	{
 		Type type = typeof(T);
 		// Get converter
-		var converter = JJxConverter.GetTypeConverter(type);
-		return (converter as JJxConverter<T>).Read(this);
+		var converter = (JJxConverter.GetTypeConverter(type, properties) as JJxConverter<T>);
+		if (compressed)
+			converter = new CompressionConverter<T>(converter);
+		return converter!.Read(this);
 	}
+	#nullable disable
 	private byte _InternalReadByte()
 	{
 		var data = this.BaseStream.ReadByte();

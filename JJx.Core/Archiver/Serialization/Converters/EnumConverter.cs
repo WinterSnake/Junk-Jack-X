@@ -5,6 +5,7 @@
 	Written By: Ryan Smith
 */
 using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace JJx.Serialization;
@@ -12,12 +13,17 @@ namespace JJx.Serialization;
 internal sealed class EnumConverterFactory : JJxConverterFactory
 {
 	/* Instance Methods */
-	public override bool CanConvert(Type type) => type.IsEnum;
-	public override JJxConverter Build(Type type)
+	#nullable enable
+	public override JJxConverter Build(Type type, params object?[]? properties)
 	{
+		Debug.Assert(properties == null, "EnumConverterFactory.Build should have null properties");
 		Type typeConverter = typeof(EnumConverter<>).MakeGenericType(type);
 		return base._CreateConverter(type, typeConverter);
 	}
+	#nullable disable
+	public override bool CanConvert(Type type) => type.IsEnum;
+	/* Properties */
+	public override bool Cache => true;
 }
 
 // TODO: Cache

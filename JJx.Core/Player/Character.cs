@@ -5,9 +5,9 @@
 	Written By: Ryan Smith
 */
 using System;
+using JJx.Serialization;
 
 namespace JJx;
-using Serialization;
 
 public enum HairColor : byte
 {
@@ -75,6 +75,7 @@ public sealed class Character
 	public const byte MAX_HAIRSTYLES = 0xD;  // Maximum hair styles in game (14) [0-D]
 }
 
+// Converters
 internal sealed class CharacterConverter : JJxConverter<Character>
 {
 	/* Instance Methods */

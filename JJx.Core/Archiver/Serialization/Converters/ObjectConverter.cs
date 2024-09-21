@@ -6,6 +6,7 @@
 */
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -43,19 +44,23 @@ internal class JJxDataAttribute : Attribute
 internal sealed class JJxObjectConverterFactory : JJxConverterFactory
 {
 	/* Instance Methods */
-	public override bool CanConvert(Type type)
-		=> type.GetCustomAttributes(typeof(JJxObjectAttribute), false).Length == 1;
-	public override JJxConverter Build(Type type)
+	#nullable enable
+	public override JJxConverter Build(Type type, params object?[]? properties)
 	{
+		Debug.Assert(properties == null, "JJxObjectConverterFactory.Build should have null properties");
 		var objectData = type.GetCustomAttributes(typeof(JJxObjectAttribute), false)[0] as JJxObjectAttribute;
 		Type typeConverter = typeof(JJxObjectConverter<>).MakeGenericType(type);
 		return base._CreateConverter(
 			type, typeConverter,
 			// Parameters
-			(typeof(ulong), objectData.Size),
-			(typeof(bool), objectData.Static)
+			(typeof(ulong), objectData!.Size),
+			(typeof(bool), objectData!.Static)
 		);
 	}
+	#nullable disable
+	public override bool CanConvert(Type type) => type.GetCustomAttributes(typeof(JJxObjectAttribute), false).Length == 1;
+	/* Properties */
+	public override bool Cache => true;
 }
 
 // TODO: Cache

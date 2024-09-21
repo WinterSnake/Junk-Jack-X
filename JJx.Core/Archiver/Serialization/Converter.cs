@@ -13,8 +13,10 @@ namespace JJx.Serialization;
 public abstract class JJxConverter
 {
 	/* Static Methods */
-	internal static JJxConverter GetTypeConverter(Type type)
+	#nullable enable
+	internal static JJxConverter GetTypeConverter(Type type, params object?[]? properties)
 	{
+		if (properties != null && properties.Length == 0) properties = null;
 		if (JJxConverter._InternalConverters.ContainsKey(type))
 		{
 			#if DEBUG
@@ -25,11 +27,13 @@ public abstract class JJxConverter
 		// Build factory converter
 		foreach (var factoryConverter in JJxConverterFactory._InternalFactories)
 		{
+			Console.WriteLine($"Checking {type} against {factoryConverter.GetType()}");
 			if (factoryConverter.CanConvert(type))
-				return factoryConverter.Build(type);
+				return factoryConverter.Build(type, properties);
 		}
 		throw new ArgumentException($"Unhandled type '{type}' in JJxConverters");
 	}
+	#nullable disable
 	/* Properties */
 	#nullable enable
 	public abstract Type? Type { get; }
