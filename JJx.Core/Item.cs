@@ -15,12 +15,11 @@
 
 	Written By: Ryan Smith
 */
-using System;
-using System.IO;
-using System.Threading.Tasks;
+using JJx.Serialization;
 
 namespace JJx;
 
+[JJxObject(0xC)]
 public sealed class Item
 {
 	/* Constructor */
@@ -32,45 +31,15 @@ public sealed class Item
 		this.Data = data;
 		this.Icon = icon;
 	}
-	/* Instance Methods */
-	public async Task ToStream(Stream stream)
-	{
-		var buffer = new byte[Item.SIZE];
-		BitConverter.LittleEndian.Write(this.Data, buffer, OFFSET_DATA);
-		BitConverter.LittleEndian.Write(this.Id, buffer, OFFSET_ID);
-		BitConverter.LittleEndian.Write(this.Count, buffer, OFFSET_COUNT);
-		BitConverter.LittleEndian.Write(this.Durability, buffer, OFFSET_DURABILITY);
-		buffer[OFFSET_ICON] = this.Icon;
-		// -UNKNOWN(1)- \\
-		await stream.WriteAsync(buffer, 0, buffer.Length);
-	}
-	/* Static Methods */
-	public static async Task<Item> FromStream(Stream stream)
-	{
-		var bytesRead = 0;
-		var buffer = new byte[SIZE];
-		while (bytesRead < buffer.Length)
-			bytesRead += await stream.ReadAsync(buffer, bytesRead, buffer.Length - bytesRead);
-		var data       = BitConverter.LittleEndian.GetUInt32(buffer, OFFSET_DATA);
-		var id         = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_ID);
-		var count      = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_COUNT);
-		var durability = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_DURABILITY);
-		var icon       = buffer[OFFSET_ICON];
-		// -UNKNOWN(1)- \\
-		return new Item(id, count, durability, data, icon);
-	}
 	/* Properties */
+	[JJxData(1)]
 	public ushort Id;
+	[JJxData(2)]
 	public ushort Count;
+	[JJxData(3)]
 	public ushort Durability;
+	[JJxData(0)]
 	public uint Data;
+	[JJxData(4)]
 	public byte Icon;
-	/* Class Properties */
-	private const byte SIZE              = 12;
-	private const byte OFFSET_DATA       =  0;
-	private const byte OFFSET_ID         =  4;
-	private const byte OFFSET_COUNT      =  6;
-	private const byte OFFSET_DURABILITY =  8;
-	private const byte OFFSET_ICON       = 10;
-	private const byte OFFSET_UNKNOWN    = 11;
 }

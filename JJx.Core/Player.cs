@@ -41,18 +41,38 @@ namespace JJx;
 public sealed class Player
 {
 	/* Constructors */
-	public Player(string name)
+	#nullable enable
+	public Player(
+		string name, Difficulty difficulty = Difficulty.Normal,
+		GameOptions.Flag flags = GameOptions.Flag.None, System.Random? rng = null
+	)
 	{
+		// Info
 		this.Name = name;
+		this.Options = new GameOptions(difficulty, flags);
+		this.Character = Character.Random(rng);
+		// Items
+		for (var i = 0; i < this.Items.Length; ++i)
+			this.Items[i] = new Item(0xFFFF, 0);
+		// Status
+		for (var i = 0; i < this.Effects.Length; ++i)
+			this.Effects[i] = new Effect(0x00, 0);
 	}
-	internal Player(Guid uid, string name, Version version, Character character, Gameplay gameplay, Planet planets)
+	#nullable disable
+	internal Player(
+		Guid uid, string name, Version version, Character character,
+		GameOptions options, Planet planets, Item[] items,
+		float health, Effect[] effects
+	)
 	{
 		this.Uid = uid;
 		this._Name = name;
 		this.Version = version;
 		this.Character = character;
-		this.Gameplay = gameplay;
+		this.Options = options;
 		this.UnlockedPlanets = planets;
+		this.Health = health;
+		this.Effects = effects;
 	}
 	/* Instance Methods */
 	/* Static Methods */
@@ -72,7 +92,7 @@ public sealed class Player
 		var name = reader.GetString(length: SIZEOF_NAME);
 		var version = reader.Get<Version>();
 		var planet = reader.Get<Planet>();
-		var flags = reader.Get<Gameplay.Flag>();
+		var flags = reader.Get<GameOptions.Flag>();
 		var character = reader.Get<Character>();
 		// -UNKNOWN(2)- \\
 		reader.GetBytes(2);
@@ -84,12 +104,34 @@ public sealed class Player
 		Debug.Assert(stream.Position == playerItemsChunk.Position, $"ArchiverStream::Reader not aligned with PlayerItemsChunk || Current: {stream.Position:X8} ; Expected: {playerItemsChunk.Position:X8}");
 		if (stream.Position != playerItemsChunk.Position)
 			stream.Position  = playerItemsChunk.Position;
-		var item = reader.Get<Item>();
+		var items = new Item[SIZEOF_ITEMS];
+		for (var i = 0; i < items.Length; ++i)
+			items[i] = reader.Get<Item>();
+		/// Craftbook
+		var playerCraftbooksChunk = stream.GetChunk(ArchiverChunkType.PlayerCraftbooks);
+		Debug.Assert(stream.Position == playerCraftbooksChunk.Position, $"ArchiverStream::Reader not aligned with playerCraftbooksChunk || Current: {stream.Position:X8} ; Expected: {playerCraftbooksChunk.Position:X8}");
+		if (stream.Position != playerCraftbooksChunk.Position)
+			stream.Position  = playerCraftbooksChunk.Position;
+		var craftbooksData = reader.GetBytes((int)playerCraftbooksChunk.Length);
+		/// Achievements
+		var playerAchievementsChunk = stream.GetChunk(ArchiverChunkType.PlayerAchievements);
+		Debug.Assert(stream.Position == playerAchievementsChunk.Position, $"ArchiverStream::Reader not aligned with playerAchievementsChunk || Current: {stream.Position:X8} ; Expected: {playerAchievementsChunk.Position:X8}");
+		if (stream.Position != playerAchievementsChunk.Position)
+			stream.Position  = playerAchievementsChunk.Position;
+		var achievementsData = reader.GetBytes((int)playerAchievementsChunk.Length);
+		/// Status
+		var playerStatusChunk = stream.GetChunk(ArchiverChunkType.PlayerStatus);
+		Debug.Assert(stream.Position == playerStatusChunk.Position, $"ArchiverStream::Reader not aligned with playerStatusChunk || Current: {stream.Position:X8} ; Expected: {playerStatusChunk.Position:X8}");
+		if (stream.Position != playerStatusChunk.Position)
+			stream.Position  = playerStatusChunk.Position;
+		var health = reader.GetFloat32() * 10.0f;
+		var effects = new Effect[SIZEOF_EFFECTS];
+		for (var i = 0; i < effects.Length; ++i)
+			effects[i] = reader.Get<Effect>();
+		Debug.Assert(stream.Position == stream.Length, $"ArchiverStream::Reader not at end of stream || Current: {stream.Position:X8} ; Expected: {stream.Length:X8}");
 		/// Player
 		return new Player(
-			// Info
-			uid, name, version, character, new Gameplay(difficulty, flags), planet
-			// Items
+			uid, name, version, character, new GameOptions(difficulty, flags), planet, items, health, effects
 		);
 	}
 	/* Properties */
@@ -105,8 +147,13 @@ public sealed class Player
 	}
 	public readonly Version Version = Version.Latest;
 	public Character Character;
-	public Gameplay Gameplay;
+	public GameOptions Options;
 	public Planet UnlockedPlanets = Planet.Terra;
+	public readonly Item[] Items = new Item[SIZEOF_ITEMS];
+	public float Health = 50.0f;
+	public readonly Effect[] Effects = new Effect[SIZEOF_EFFECTS];
 	/* Class Properties */
-	private const byte SIZEOF_NAME = 16;
+	private const byte SIZEOF_NAME    = 16;
+	private const byte SIZEOF_ITEMS   = 77;
+	private const byte SIZEOF_EFFECTS =  4;
 }

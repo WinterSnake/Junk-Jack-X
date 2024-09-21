@@ -62,6 +62,11 @@ public partial struct JJxReader
 		);
 	}
 	// Float
+	public unsafe float GetFloat32()
+	{
+		var flt = this.GetUInt32();
+		unsafe { return *(float*)&flt; }
+	}
 	// String
 	public string GetString(ulong length = 0, bool isLengthEncoded = false)
 	{
