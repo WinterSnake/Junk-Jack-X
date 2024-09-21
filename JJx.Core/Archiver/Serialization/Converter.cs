@@ -1,6 +1,6 @@
 /*
 	Junk Jack X: Core
-	- [Archiver]Converter
+	- [Serializer]Converter
 
 	Written By: Ryan Smith
 */
@@ -16,6 +16,7 @@ public abstract class JJxConverter
 	/* Class Properties */
 	public static readonly Dictionary<Type, JJxConverter> Defaults = new() {
 		{ typeof(ArchiverChunk), new ArchiverChunkConverter() },
+		{ typeof(Guid), new GuidConverter() },
 	};
 }
 

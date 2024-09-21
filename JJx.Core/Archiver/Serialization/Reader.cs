@@ -1,18 +1,19 @@
 /*
 	Junk Jack X: Core
-	- [Archiver]Reader
+	- [Serializer]Reader
 
 	Written By: Ryan Smith
 */
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace JJx;
 using Serialization;
 
-public class JJxReader
+public partial struct JJxReader
 {
 	/* Constructor */
 	public JJxReader(Stream stream, ushort bufferSize = 32)
@@ -23,13 +24,17 @@ public class JJxReader
 		this._Buffer = new byte[bufferSize];
 	}
 	/* Instance Methods */
-	public byte[] GetBytes(int numberOfBytes)
+	public Span<byte> GetBytes(int numberOfBytes)
 	{
 		if (numberOfBytes < 0) throw new ArgumentException("Must read more than 0 bytes");
-		var buffer = new byte[numberOfBytes];
-		var bytesRead = this.BaseStream.Read(buffer);
-		Debug.Assert(bytesRead == buffer.Length, $"Read: {bytesRead} | Expected: {buffer.Length}");
-		return buffer;
+		byte[] buffer;
+		if (numberOfBytes <= this._Buffer.Length)
+			buffer = this._Buffer;
+		else
+			buffer = new byte[numberOfBytes];
+		var bytesRead = this.BaseStream.Read(buffer.AsSpan(0, numberOfBytes));
+		Debug.Assert(bytesRead == numberOfBytes, $"Read: {bytesRead} | Expected: {numberOfBytes}");
+		return buffer.AsSpan(0, numberOfBytes);
 	}
 	public bool GetBool() => this._InternalReadByte() != 0;
 	public byte GetUInt8() => this._InternalReadByte();
@@ -53,6 +58,29 @@ public class JJxReader
 			(this._Buffer[0] <<  0)
 		);
 	}
+	public T GetEnum<T>() where T : Enum
+	{
+		var typeCode = Type.GetTypeCode(typeof(T));
+		switch (typeCode)
+		{
+			case TypeCode.Byte:
+			{
+				var @value = this.GetUInt8();
+				return Unsafe.As<byte, T>(ref @value);
+			}
+			case TypeCode.UInt16:
+			{
+				var @value = this.GetUInt16();
+				return Unsafe.As<ushort, T>(ref @value);
+			}
+			case TypeCode.UInt32:
+			{
+				var @value = this.GetUInt32();
+				return Unsafe.As<uint, T>(ref @value);
+			}
+			default: throw new ArgumentException($"Unhandled enum typecode '{typeCode}' in JJxReader.GetEnum()");
+		}
+	}
 	public string GetString(ulong length = 0, bool isLengthEncoded = false)
 	{
 		byte[] buffer;
@@ -72,7 +100,7 @@ public class JJxReader
 		// Return string
 		return Encoding.ASCII.GetString(buffer.AsSpan(0, endSequence));
 	}
-	public T Get<T>() where T : class
+	public T Get<T>()
 	{
 		Type type = typeof(T);
 		// Get converter

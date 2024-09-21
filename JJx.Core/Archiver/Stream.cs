@@ -14,6 +14,7 @@
 	Written By: Ryan Smith
 */
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Win32.SafeHandles;
@@ -30,9 +31,13 @@ public enum ArchiverStreamType : ushort
 public sealed class ArchiverStream : FileStream
 {
 	/* Constructor */
-	private ArchiverStream(ArchiverStreamType type, SafeFileHandle readerHandle, JJxReader reader): base(readerHandle, FileAccess.Read)
+	private ArchiverStream(
+		ArchiverStreamType type, ArchiverChunk[] chunks,
+		SafeFileHandle readerHandle, JJxReader reader
+	): base(readerHandle, FileAccess.Read)
 	{
 		this.Type = type;
+		this._Chunks = chunks;
 		this._Reader = reader;
 	}
 	/* Instance Methods */
@@ -43,7 +48,7 @@ public sealed class ArchiverStream : FileStream
 		var reader = new JJxReader(fileReader);
 		// Header \\
 		var magic = reader.GetString(length: SIZEOF_MAGIC);
-		var type = (ArchiverStreamType)reader.GetUInt16();
+		var type = reader.GetEnum<ArchiverStreamType>();
 		var chunkCount = reader.GetUInt16();
 		#if DEBUG
 			Console.WriteLine($"Magic: {magic} | Type: {type} | Chunks: {chunkCount}");
@@ -54,16 +59,19 @@ public sealed class ArchiverStream : FileStream
 		var chunks = new ArchiverChunk[chunkCount];
 		for (var i = 0; i < chunks.Length; ++i)
 		{
-			var chunk = reader.Get<ArchiverChunk>();
+			chunks[i] = reader.Get<ArchiverChunk>();
 			#if DEBUG
-				Console.WriteLine($"\t{chunk}");
+				Console.WriteLine($"\t{chunks[i]}");
 			#endif
 		}
-		return new ArchiverStream(type, fileReader.SafeFileHandle, reader);
+		return new ArchiverStream(type, chunks, fileReader.SafeFileHandle, reader);
 	}
 	/* Properties */
 	public readonly ArchiverStreamType Type;
-	internal readonly JJxReader _Reader;
+	internal readonly ArchiverChunk[] _Chunks;
+	#nullable enable
+	internal readonly JJxReader? _Reader = null;
+	#nullable disable
 	/* Class Properties */
 	private const byte SIZEOF_MAGIC   = 4;
 	private const byte SIZEOF_UNKNOWN = 4;
