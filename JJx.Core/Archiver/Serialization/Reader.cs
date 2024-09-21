@@ -7,7 +7,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace JJx;
@@ -58,29 +57,6 @@ public partial struct JJxReader
 			(this._Buffer[0] <<  0)
 		);
 	}
-	public T GetEnum<T>() where T : Enum
-	{
-		var typeCode = Type.GetTypeCode(typeof(T));
-		switch (typeCode)
-		{
-			case TypeCode.Byte:
-			{
-				var @value = this.GetUInt8();
-				return Unsafe.As<byte, T>(ref @value);
-			}
-			case TypeCode.UInt16:
-			{
-				var @value = this.GetUInt16();
-				return Unsafe.As<ushort, T>(ref @value);
-			}
-			case TypeCode.UInt32:
-			{
-				var @value = this.GetUInt32();
-				return Unsafe.As<uint, T>(ref @value);
-			}
-			default: throw new ArgumentException($"Unhandled enum typecode '{typeCode}' in JJxReader.GetEnum()");
-		}
-	}
 	public string GetString(ulong length = 0, bool isLengthEncoded = false)
 	{
 		byte[] buffer;
@@ -104,10 +80,23 @@ public partial struct JJxReader
 	{
 		Type type = typeof(T);
 		// Get converter
-		if (!JJxConverter.Defaults.ContainsKey(type))
-			throw new ArgumentException($"Invalid type '{type}' not handled by JJxReader");
-		var converter = (JJxConverter.Defaults[type] as JJxConverter<T>);
-		return converter.Deserialize(this);
+		JJxConverter converter = null;
+		if (JJxConverter.Defaults.ContainsKey(type))
+			converter = JJxConverter.Defaults[type];
+		else
+		{
+			// Build factory converter
+			foreach (var factoryConverter in JJxConverterFactory.Defaults)
+			{
+				if (factoryConverter.CanConvert(type))
+				{
+					converter = factoryConverter.Build(type);
+					break;
+				}
+			}
+		}
+		if (converter == null) throw new ArgumentException($"Unhandled type '{type}' in Reader.Get()");
+		return (converter as JJxConverter<T>).Deserialize(this);
 	}
 	private byte _InternalReadByte()
 	{

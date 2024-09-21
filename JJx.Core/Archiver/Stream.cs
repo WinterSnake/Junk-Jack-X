@@ -48,7 +48,7 @@ public sealed class ArchiverStream : FileStream
 		var reader = new JJxReader(fileReader);
 		// Header \\
 		var magic = reader.GetString(length: SIZEOF_MAGIC);
-		var type = reader.GetEnum<ArchiverStreamType>();
+		var type = reader.Get<ArchiverStreamType>();
 		var chunkCount = reader.GetUInt16();
 		#if DEBUG
 			Console.WriteLine($"Magic: {magic} | Type: {type} | Chunks: {chunkCount}");
