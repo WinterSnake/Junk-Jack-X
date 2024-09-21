@@ -10,21 +10,41 @@ using System.Reflection;
 
 namespace JJx.Serialization;
 
-// TODO: Cache
 public abstract class JJxConverterFactory
 {
 	/* Instance Methods */
 	public abstract bool CanConvert(Type type);
 	public abstract JJxConverter Build(Type type);
-	protected JJxConverter _CreateConverter(Type converterType)
+	protected JJxConverter _CreateConverter(Type baseType, Type converterType)
 	{
-		var converterCTor = converterType.GetConstructors()[0];  // TODO: factory ctor binding
-		return (JJxConverter)converterCTor.Invoke(null);
+		#if DEBUG
+			Console.WriteLine($"Creating new [{baseType}]Converter with {converterType}");
+		#endif
+		var converterCTor = converterType.GetConstructor(new Type[0]);
+		var converter = (JJxConverter)converterCTor.Invoke(null);
+		JJxConverter._InternalConverters.Add(baseType, converter);
+		return converter;
 	}
-	/* Properties */
-	protected readonly Dictionary<Type, JJxConverter> _CachedConverters = new();
+	protected JJxConverter _CreateConverter(Type baseType, Type converterType, params (Type type, object @value)[] arguments)
+	{
+		#if DEBUG
+			Console.WriteLine($"Creating new [{baseType}]Converter with {converterType}");
+		#endif
+		// Create type array for constructor
+		var cTorTypes = new Type[arguments.Length];
+		for (var i = 0; i < cTorTypes.Length; ++i)
+			cTorTypes[i] = arguments[i].type;
+		var converterCTor = converterType.GetConstructor(cTorTypes);
+		// Create value array for parameters
+		var cTorValues = new object[arguments.Length];
+		for (var i = 0; i < cTorValues.Length; ++i)
+			cTorValues[i] = arguments[i].@value;
+		var converter = (JJxConverter)converterCTor.Invoke(cTorValues);
+		JJxConverter._InternalConverters.Add(baseType, converter);
+		return converter;
+	}
 	/* Class Properties */
-	internal static readonly JJxConverterFactory[] Defaults = {
+	internal static readonly JJxConverterFactory[] _InternalFactories = {
 		new EnumConverterFactory(),
 		new JJxObjectConverterFactory(),
 	};

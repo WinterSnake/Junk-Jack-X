@@ -9,6 +9,7 @@ using System.Collections.Generic;
 
 namespace JJx.Serialization;
 
+// TODO: Cache
 public abstract class JJxConverter
 {
 	/* Properties */
@@ -16,11 +17,10 @@ public abstract class JJxConverter
 	public abstract Type? Type { get; }
 	#nullable disable
 	/* Class Properties */
-	internal static readonly Dictionary<Type, JJxConverter> Defaults = new() {
+	internal static readonly Dictionary<Type, JJxConverter> _InternalConverters = new() {
 		// System
 		{ typeof(Guid), new GuidConverter() },
 		// JJx
-		{ typeof(ArchiverChunk), new ArchiverChunkConverter() },
 		{ typeof(Character), new CharacterConverter() },
 	};
 }

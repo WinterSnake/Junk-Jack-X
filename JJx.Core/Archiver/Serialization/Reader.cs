@@ -87,12 +87,17 @@ public partial struct JJxReader
 		Type type = typeof(T);
 		// Get converter
 		JJxConverter converter = null;
-		if (JJxConverter.Defaults.ContainsKey(type))
-			converter = JJxConverter.Defaults[type];
+		if (JJxConverter._InternalConverters.ContainsKey(type))
+		{
+			converter = JJxConverter._InternalConverters[type];
+			#if DEBUG
+				Console.WriteLine($"Found existing converter for {type}");
+			#endif
+		}
 		else
 		{
 			// Build factory converter
-			foreach (var factoryConverter in JJxConverterFactory.Defaults)
+			foreach (var factoryConverter in JJxConverterFactory._InternalFactories)
 			{
 				if (factoryConverter.CanConvert(type))
 				{

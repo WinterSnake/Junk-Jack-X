@@ -52,6 +52,7 @@ internal enum ArchiverChunkType : ushort
 	PlayerStatus       = 0x8004,
 }
 
+[JJxObject]
 internal struct ArchiverChunk
 {
 	/* Constructor */
@@ -65,25 +66,16 @@ internal struct ArchiverChunk
 	}
 	/* Instance Methods */
 	public override string ToString()
-		=> $"Chunk[{this.Type}]Version: {this.Version} ; Compressed: {this.Compressed} ; Position: 0x{this.Position:X8} ; Size: 0x{this.Size:X4}";
+		=> $"Type: {this.Type} ; Version: {this.Version} ; Compressed: {this.Compressed} ; Position: 0x{this.Position:X8} ; Size: 0x{this.Size:X4}";
 	/* Properties */
+	[JJxData(0)]
 	public readonly ArchiverChunkType Type;
+	[JJxData(1)]
 	public readonly byte Version;
+	[JJxData(2)]
 	public readonly bool Compressed;
+	[JJxData(3)]
 	public uint Position;
+	[JJxData(4)]
 	public uint Size;
-}
-
-internal sealed class ArchiverChunkConverter : JJxConverter<ArchiverChunk>
-{
-	/* Instance Methods */
-	public override ArchiverChunk Read(JJxReader reader)
-	{
-		var chunkType = (ArchiverChunkType)reader.GetUInt16();
-		var version = reader.GetUInt8();
-		var compressed = reader.GetBool();
-		var position = reader.GetUInt32();
-		var size = reader.GetUInt32();
-		return new ArchiverChunk(chunkType, version, compressed, position, size);
-	}
 }

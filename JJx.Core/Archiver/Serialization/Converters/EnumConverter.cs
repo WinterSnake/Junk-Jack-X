@@ -16,7 +16,7 @@ internal sealed class EnumConverterFactory : JJxConverterFactory
 	public override JJxConverter Build(Type type)
 	{
 		Type typeConverter = typeof(EnumConverter<>).MakeGenericType(type);
-		return base._CreateConverter(typeConverter);
+		return base._CreateConverter(type, typeConverter);
 	}
 }
 
@@ -31,17 +31,17 @@ internal sealed class EnumConverter<T> : JJxConverter<T> where T : Enum
 		{
 			case TypeCode.Byte:
 			{
-				var @value = reader.GetUInt8();
+				byte @value = reader.GetUInt8();
 				return Unsafe.As<byte, T>(ref @value);
 			}
 			case TypeCode.UInt16:
 			{
-				var @value = reader.GetUInt16();
+				ushort @value = reader.GetUInt16();
 				return Unsafe.As<ushort, T>(ref @value);
 			}
 			case TypeCode.UInt32:
 			{
-				var @value = reader.GetUInt32();
+				uint @value = reader.GetUInt32();
 				return Unsafe.As<uint, T>(ref @value);
 			}
 			default: throw new ArgumentException($"Unhandled enum typecode '{typeCode}' in EnumConverter");
