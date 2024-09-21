@@ -56,17 +56,17 @@ internal enum ArchiverChunkType : ushort
 internal struct ArchiverChunk
 {
 	/* Constructor */
-	public ArchiverChunk(ArchiverChunkType type, byte version, bool compressed, uint position, uint size)
+	public ArchiverChunk(ArchiverChunkType type, byte version, bool compressed, uint position, uint length)
 	{
 		this.Type = type;
 		this.Version = version;
 		this.Compressed = compressed;
 		this.Position = position;
-		this.Size = size;
+		this.Length = length;
 	}
 	/* Instance Methods */
 	public override string ToString()
-		=> $"Type: {this.Type} ; Version: {this.Version} ; Compressed: {this.Compressed} ; Position: 0x{this.Position:X8} ; Size: 0x{this.Size:X4}";
+		=> $"Type: {this.Type} ; Version: {this.Version} ; Compressed: {this.Compressed} ; Position: 0x{this.Position:X8} ; Length: 0x{this.Length:X8}";
 	/* Properties */
 	[JJxData(0)]
 	public readonly ArchiverChunkType Type;
@@ -77,5 +77,5 @@ internal struct ArchiverChunk
 	[JJxData(3)]
 	public uint Position;
 	[JJxData(4)]
-	public uint Size;
+	public uint Length;
 }

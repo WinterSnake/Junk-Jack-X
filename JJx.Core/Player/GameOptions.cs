@@ -17,10 +17,10 @@ public enum Difficulty : byte
 	VeryHard
 }
 
-public sealed class Gameplay
+public sealed class GameOptions
 {
 	/* Constructors */
-	public Gameplay(Difficulty difficulty, Flag flags)
+	public GameOptions(Difficulty difficulty, Flag flags)
 	{
 		this.Difficulty = difficulty;
 		this.Flags = flags;

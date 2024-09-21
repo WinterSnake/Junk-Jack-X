@@ -45,6 +45,18 @@ public sealed class Character
 		var gender = this.Gender ? "Female" : "Male";
 		return $"Gender: {gender} ; Skin: {this.SkinTone} ; Hair.Style: {this.HairStyle} ; Hair.Color: {this.HairColor}";
 	}
+	/* Static Methods */
+	#nullable enable
+	public static Character Random(System.Random? rng = null)
+	{
+		rng ??= System.Random.Shared;
+		var gender    = rng.NextDouble() >= 0.5f;
+		var skinTone  = (byte)rng.Next(MAX_SKINTONES  + 1);
+		var hairStyle = (byte)rng.Next(MAX_HAIRSTYLES + 1);
+		var hairColor = (HairColor)(rng.Next(Enum.GetValues(typeof(HairColor)).Length + 1));
+		return new Character(gender, skinTone, hairStyle, hairColor);
+	}
+	#nullable disable
 	/* Properties */
 	public bool Gender;  // Male: false | Female: true
 	private byte _SkinTone;

@@ -65,7 +65,7 @@ internal sealed class JJxObjectConverter<T> : JJxConverter<T>
 	/* Constructor */
 	public JJxObjectConverter(ulong size, bool @static)
 	{
-		if (@static) this._Buffer = null;
+		if (!@static) this._Buffer = null;
 		else if (size > 0) this._Buffer = new byte[size];
 		else this._Buffer = Array.Empty<byte>();
 	}
@@ -88,7 +88,9 @@ internal sealed class JJxObjectConverter<T> : JJxConverter<T>
 			var dataAttribute = dataAttributes[0];
 			fieldsSorted[dataAttribute.Position] = field;
 		}
-		// TODO: pull into inline buffer
+		// TODO: Pull into inline buffer
+		// TODO: Calculate size
+		var startPosition = reader.BaseStream.Position;
 		// Read values and write to object
 		foreach (var field in fieldsSorted)
 		{
@@ -105,19 +107,23 @@ internal sealed class JJxObjectConverter<T> : JJxConverter<T>
 					case TypeCode.UInt32:  field.SetValue(obj, reader.GetUInt32()); break;
 					default: throw new ArgumentException($"Unhandled primitive typecode '{typeCode}' in JJxObjectConverter");
 				}
+				continue;
 			}
 			// Non-primitive handling
-			else
-			{
-				var readMethod = typeof(JJxReader).GetMethod("Get")
-												  .MakeGenericMethod(field.FieldType);
-				field.SetValue(obj, readMethod.Invoke(reader, null));
-			}
+			var readMethod = typeof(JJxReader).GetMethod("Get")
+											  .MakeGenericMethod(field.FieldType);
+			field.SetValue(obj, readMethod.Invoke(reader, null));
 		}
+		var calculatedLength = reader.BaseStream.Position - startPosition;
+		// HACK: Compute calculated length to subtract is less than buffer -- required until using internal buffer
+		var remainingLength = (int)(this.Size - calculatedLength);
+		if (remainingLength > 0)
+			reader.GetBytes(remainingLength);
 		return (T)obj;
 	}
 	/* Properties */
-	public bool Static => this._Buffer == null;
+	public bool Static => this._Buffer != null;
+	public long Size => this._Buffer?.Length ?? 0;
 	#nullable enable
 	private byte[]? _Buffer;
 	#nullable disable
