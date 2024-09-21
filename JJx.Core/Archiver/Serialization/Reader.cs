@@ -22,6 +22,15 @@ public partial struct JJxReader
 		this._Buffer = new byte[bufferSize];
 	}
 	/* Instance Methods */
+	public void Skip(uint numberOfBytes)
+	{
+		if (this.BaseStream.CanSeek)
+		{
+			this.BaseStream.Position += numberOfBytes;
+			return;
+		}
+		throw new NotImplementedException("JJxReader.Skip() not implemented for non-seekable streams");
+	}
 	public Span<byte> GetBytes(int numberOfBytes)
 	{
 		if (numberOfBytes < 0) throw new ArgumentException("Must read more than 0 bytes");

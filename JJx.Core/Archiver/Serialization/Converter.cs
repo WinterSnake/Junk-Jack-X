@@ -37,6 +37,7 @@ public abstract class JJxConverter
 	/* Class Properties */
 	internal static readonly Dictionary<Type, JJxConverter> _InternalConverters = new() {
 		// System
+		{ typeof(DateTime), new DateTimeConverter() },
 		{ typeof(Guid), new GuidConverter() },
 		// JJx
 		{ typeof(Character), new CharacterConverter() },
