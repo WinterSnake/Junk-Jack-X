@@ -55,22 +55,20 @@ public partial struct JJxReader
 	public byte GetUInt8() => this._InternalReadByte();
 	public ushort GetUInt16()
 	{
-		var bytesRead = this.BaseStream.Read(this._Buffer.AsSpan(0, sizeof(ushort)));
-		Debug.Assert(bytesRead == sizeof(ushort), $"Read: {bytesRead} | Expected: {sizeof(ushort)}");
+		var @value = this.GetBytes(sizeof(ushort));
 		return (ushort)(
-			(this._Buffer[1] << 8) |
-			(this._Buffer[0] << 0)
+			(@value[1] << 8) |
+			(@value[0] << 0)
 		);
 	}
 	public uint GetUInt32()
 	{
-		var bytesRead = this.BaseStream.Read(this._Buffer.AsSpan(0, sizeof(uint)));
-		Debug.Assert(bytesRead == sizeof(uint), $"Read: {bytesRead} | Expected: {sizeof(uint)}");
+		var @value = this.GetBytes(sizeof(uint));
 		return (uint)(
-			(this._Buffer[3] << 24) |
-			(this._Buffer[2] << 16) |
-			(this._Buffer[1] <<  8) |
-			(this._Buffer[0] <<  0)
+			(@value[3] << 24) |
+			(@value[2] << 16) |
+			(@value[1] <<  8) |
+			(@value[0] <<  0)
 		);
 	}
 	// Float
@@ -104,7 +102,12 @@ public partial struct JJxReader
 	{
 		Type type = typeof(T);
 		// Get converter
-		var converter = (JJxConverter.GetTypeConverter(type, properties) as JJxConverter<T>);
+		JJxConverter<T> converter = null!;
+		var converterMeta = JJxConverter.GetTypeConverter(type, properties);
+		if (converterMeta is JJxConverterFactory factory)
+			converter = (factory.Build(type, properties) as JJxConverter<T>)!;
+		else
+			converter = (converterMeta as JJxConverter<T>)!;
 		if (compressed)
 			converter = new CompressionConverter<T>(converter);
 		return converter!.Read(this);

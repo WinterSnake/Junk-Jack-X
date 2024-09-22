@@ -1,6 +1,6 @@
 /*
 	Junk Jack X: Core
-	- [Serializer]Converter
+	- [Serializer]Converter.Factory
 
 	Written By: Ryan Smith
 */
@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace JJx.Serialization;
 
-public abstract class JJxConverterFactory
+public abstract class JJxConverterFactory : JJxConverter
 {
 	/* Instance Methods */
 	#nullable enable
@@ -49,12 +49,14 @@ public abstract class JJxConverterFactory
 	}
 	/* Properties */
 	public abstract bool Cache { get; }
+	#nullable enable
+	public sealed override Type? Type => null;
+	#nullable disable
 	/* Class Properties */
 	internal static readonly JJxConverterFactory[] _InternalFactories = {
 		// System
 		new EnumConverterFactory(),
 		// JJx
-		new TileMapConverterFactory(),
 		new JJxObjectConverterFactory(),
 	};
 }

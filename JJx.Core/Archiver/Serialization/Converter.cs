@@ -18,16 +18,10 @@ public abstract class JJxConverter
 	{
 		if (properties != null && properties.Length == 0) properties = null;
 		if (JJxConverter._InternalConverters.ContainsKey(type))
-		{
-			#if DEBUG
-				Console.WriteLine($"Found existing converter for {type}");
-			#endif
 			return JJxConverter._InternalConverters[type];
-		}
 		// Build factory converter
 		foreach (var factoryConverter in JJxConverterFactory._InternalFactories)
 		{
-			Console.WriteLine($"Checking {type} against {factoryConverter.GetType()}");
 			if (factoryConverter.CanConvert(type))
 				return factoryConverter.Build(type, properties);
 		}
