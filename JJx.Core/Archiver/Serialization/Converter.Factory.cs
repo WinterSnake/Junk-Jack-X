@@ -48,7 +48,7 @@ public abstract class JJxConverterFactory : JJxConverter
 		return converter;
 	}
 	/* Properties */
-	public abstract bool Cache { get; }
+	protected virtual bool Cache => true;
 	#nullable enable
 	public sealed override Type? Type => null;
 	#nullable disable

@@ -15,7 +15,6 @@
 */
 using System;
 using System.Diagnostics;
-using JJx.Serialization;
 
 namespace JJx;
 
@@ -52,27 +51,4 @@ public sealed partial class Tile
 	public readonly Tile.Decoration[] Decorations = new Tile.Decoration[SIZEOF_DECORATIONS];
 	/* Class Properties */
 	internal const byte SIZEOF_DECORATIONS = 4;
-}
-
-// Converters
-internal sealed class TileConverter : JJxConverter<Tile>
-{
-	/* Instance Methods */
-	public override Tile Read(JJxReader reader)
-	{
-		var foregroundId = (ushort)(reader.GetUInt16() ^ FOREGROUND_FLAG);
-		var backgroundId = reader.GetUInt16();
-		var decorations = new Tile.Decoration[Tile.SIZEOF_DECORATIONS];
-		for (var i = 0; i < decorations.Length; ++i)
-		{
-			var decorationId = reader.GetUInt16();
-			decorations[i] = new Tile.Decoration(decorationId);
-		}
-		// -UNKNOWN(4)- \\
-		reader.GetBytes(4);
-		return new Tile(new Tile.Block(foregroundId), new Tile.Block(backgroundId), decorations);
-	}
-	/* Properties */
-	/* Class Properties */
-	private const ushort FOREGROUND_FLAG = 0x8000;
 }

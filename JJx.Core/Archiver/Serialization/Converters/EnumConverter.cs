@@ -22,8 +22,6 @@ internal sealed class EnumConverterFactory : JJxConverterFactory
 	}
 	#nullable disable
 	public override bool CanConvert(Type type) => type.IsEnum;
-	/* Properties */
-	public override bool Cache => true;
 }
 
 // TODO: Cache
