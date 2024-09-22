@@ -90,13 +90,9 @@ public sealed class World
 			throw new ArgumentException($"Passed in a non-world ({stream.Type}) archiver stream to World.FromStream()");
 		if (!stream.CanRead)
 			throw new ArgumentException("Passed in a non-readable archiver stream to World.FromStream()");
-		ArchiverChunk chunk;
 		var reader = new JJxReader(stream);
 		/// Info
-		chunk = stream.GetChunk(ArchiverChunkType.WorldInfo);
-		Debug.Assert(stream.Position == chunk.Position, $"ArchiverStream::Reader not aligned with WorldInfoChunk || Current: {stream.Position:X8} ; Expected: {chunk.Position:X8}");
-		if (stream.Position != chunk.Position)
-			stream.Position  = chunk.Position;
+		stream.JumpToChunk(ArchiverChunkType.WorldInfo);
 		var uid = reader.Get<Guid>();
 		var lastPlayed = reader.Get<DateTime>();
 		var version = reader.Get<Version>();
@@ -115,48 +111,66 @@ public sealed class World
 		// Padding
 		reader.Skip(SIZEOF_PADDING);
 		/// Skyline
-		chunk = stream.GetChunk(ArchiverChunkType.WorldSkyline);
-		Debug.Assert(stream.Position == chunk.Position, $"ArchiverStream::Reader not aligned with WorldSkylineChunk || Current: {stream.Position:X8} ; Expected: {chunk.Position:X8}");
-		if (stream.Position != chunk.Position)
-			stream.Position  = chunk.Position;
+		stream.JumpToChunk(ArchiverChunkType.WorldSkyline);
 		var skyline = new ushort[size.width];
 		for (var i = 0; i < skyline.Length; ++i)
 			skyline[i] = reader.GetUInt16();
 		/// Blocks
-		chunk = stream.GetChunk(ArchiverChunkType.WorldBlocks);
-		Debug.Assert(stream.Position == chunk.Position, $"ArchiverStream::Reader not aligned with WorldBlocksChunk || Current: {stream.Position:X8} ; Expected: {chunk.Position:X8}");
-		if (stream.Position != chunk.Position)
-			stream.Position  = chunk.Position;
+		stream.JumpToChunk(ArchiverChunkType.WorldBlocks);
 		// TODO: Figure out why GZipStream reads more than asked through this single line method (try to remove memorystream requirement)
 		// var tileMap = reader.Get<TileMap>(chunk.Compressed, size.width, size.height);
 		TileMap tileMap;
-		var tileMapBytes = reader.GetBytes((int)chunk.Length);
+		var tileMapBytes = stream.ReadEntireChunk(ArchiverChunkType.WorldBlocks);
 		fixed (byte* tileMapPin = tileMapBytes)
 		{
 			var tileMapStream = new UnmanagedMemoryStream(tileMapPin, tileMapBytes.Length);
 			var tileMapReader = new JJxReader(tileMapStream);
-			tileMap = tileMapReader.Get<TileMap>(chunk.Compressed, size.width, size.height);
+			tileMap = tileMapReader.Get<TileMap>(stream.IsChunkCompressed(ArchiverChunkType.WorldBlocks), size.width, size.height);
 		}
 		/// Layer: Fog
-		var fogChunk = stream._GetChunk(ArchiverChunkType.WorldFog);
-		if (fogChunk != null)
+		if (stream.ContainsChunk(ArchiverChunkType.WorldFog))
 		{
-			chunk = fogChunk.Value;
-			Debug.Assert(stream.Position == chunk.Position, $"ArchiverStream::Reader not aligned with WorldFogChunk || Current: {stream.Position:X8} ; Expected: {chunk.Position:X8}");
-			if (stream.Position != chunk.Position)
-				stream.Position  = chunk.Position;
+			stream.JumpToChunk(ArchiverChunkType.WorldFog);
+			var fogMapData = stream.ReadEntireChunk(ArchiverChunkType.WorldFog);
 		}
 		/// Time
-		chunk = stream.GetChunk(ArchiverChunkType.WorldTime);
-		Debug.Assert(stream.Position == chunk.Position, $"ArchiverStream::Reader not aligned with WorldTimeChunk || Current: {stream.Position:X8} ; Expected: {chunk.Position:X8}");
-		if (stream.Position != chunk.Position)
-			stream.Position  = chunk.Position;
+		stream.JumpToChunk(ArchiverChunkType.WorldTime);
+		var ticks = reader.GetUInt32();
+		var period = reader.Get<Period>();
+		// -UNKNOWN(3)- \\
+		reader.GetBytes(3);
+		/// Weather
+		stream.JumpToChunk(ArchiverChunkType.WorldWeather);
+		var poissonSum = reader.GetFloat32();
+		var weather = reader.Get<Weather>();
+		var poissonSkipped = reader.GetUInt8();
+		// -UNKNOWN(2)- \\
+		reader.GetBytes(2);
+		/// Containers
+		// -Chests
+		// -Forges
+		// -Signs
+		// -Stables
+		// -Labs
+		// -Shelves
+		// -Plants
+		// -Fruits
+		// -Plant Decay
+		// -Locks
+		// -Layer: Fluid
+		// -Layer: Circuitry
+		// -Entities
+		/// Padding
+		if (stream.ContainsChunk(ArchiverChunkType.Padding))
+			reader.Skip(sizeof(uint));
+		Debug.Assert(stream.Position == stream.Length, $"ArchiverStream::Reader not at end of stream || Current: {stream.Position:X8} ; Expected: {stream.Length:X8}");
 		/// World
 		return new World(
 			// Info
 			uid, lastPlayed, version, name, author, player, spawn, planet, season, gamemode, sizeType, skySizeType,
 			// Tiles
 			skyline, tileMap
+			// Containers
 		);
 	}
 	/* Properties */

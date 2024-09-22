@@ -106,13 +106,9 @@ public sealed class Player
 			throw new ArgumentException($"Passed in a non-player ({stream.Type}) archiver stream to Player.FromStream()");
 		if (!stream.CanRead)
 			throw new ArgumentException("Passed in a non-readable archiver stream to Player.FromStream()");
-		ArchiverChunk chunk;
 		var reader = new JJxReader(stream);
 		/// Info
-		chunk = stream.GetChunk(ArchiverChunkType.PlayerInfo);
-		Debug.Assert(stream.Position == chunk.Position, $"ArchiverStream::Reader not aligned with PlayerInfoChunk || Current: {stream.Position:X8} ; Expected: {chunk.Position:X8}");
-		if (stream.Position != chunk.Position)
-			stream.Position  = chunk.Position;
+		stream.JumpToChunk(ArchiverChunkType.PlayerInfo);
 		var uid = reader.Get<Guid>();
 		var name = reader.GetString(length: SIZEOF_NAME);
 		var version = reader.Get<Version>();
@@ -125,30 +121,18 @@ public sealed class Player
 		// -UNKNOWN(3)- \\
 		reader.GetBytes(3);
 		/// Items
-		chunk = stream.GetChunk(ArchiverChunkType.PlayerItems);
-		Debug.Assert(stream.Position == chunk.Position, $"ArchiverStream::Reader not aligned with PlayerItemsChunk || Current: {stream.Position:X8} ; Expected: {chunk.Position:X8}");
-		if (stream.Position != chunk.Position)
-			stream.Position  = chunk.Position;
+		stream.JumpToChunk(ArchiverChunkType.PlayerItems);
 		var items = new Item[SIZEOF_ITEMS];
 		for (var i = 0; i < items.Length; ++i)
 			items[i] = reader.Get<Item>();
 		/// Craftbooks :: UNKNOWN
-		chunk = stream.GetChunk(ArchiverChunkType.PlayerCraftbooks);
-		Debug.Assert(stream.Position == chunk.Position, $"ArchiverStream::Reader not aligned with PlayerCraftbooksChunk || Current: {stream.Position:X8} ; Expected: {chunk.Position:X8}");
-		if (stream.Position != chunk.Position)
-			stream.Position  = chunk.Position;
-		var craftbooksData = reader.GetBytes((int)chunk.Length);
+		stream.JumpToChunk(ArchiverChunkType.PlayerCraftbooks);
+		var craftbooksData = stream.ReadEntireChunk(ArchiverChunkType.PlayerCraftbooks);
 		/// Achievements :: UNKNOWN
-		chunk = stream.GetChunk(ArchiverChunkType.PlayerAchievements);
-		Debug.Assert(stream.Position == chunk.Position, $"ArchiverStream::Reader not aligned with PlayerAchievementsChunk || Current: {stream.Position:X8} ; Expected: {chunk.Position:X8}");
-		if (stream.Position != chunk.Position)
-			stream.Position  = chunk.Position;
-		var achievementsData = reader.GetBytes((int)chunk.Length);
+		stream.JumpToChunk(ArchiverChunkType.PlayerAchievements);
+		var achievementsData = stream.ReadEntireChunk(ArchiverChunkType.PlayerAchievements);
 		/// Status
-		chunk = stream.GetChunk(ArchiverChunkType.PlayerStatus);
-		Debug.Assert(stream.Position == chunk.Position, $"ArchiverStream::Reader not aligned with PlayerStatusChunk || Current: {stream.Position:X8} ; Expected: {chunk.Position:X8}");
-		if (stream.Position != chunk.Position)
-			stream.Position  = chunk.Position;
+		stream.JumpToChunk(ArchiverChunkType.PlayerStatus);
 		var health = reader.GetFloat32() * 10.0f;
 		var effects = new Effect[SIZEOF_EFFECTS];
 		for (var i = 0; i < effects.Length; ++i)

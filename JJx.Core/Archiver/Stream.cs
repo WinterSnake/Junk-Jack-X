@@ -15,6 +15,7 @@
 */
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Win32.SafeHandles;
@@ -43,13 +44,35 @@ public sealed class ArchiverStream : FileStream
 	}
 	/* Instance Methods */
 	// Reading
-	internal ArchiverChunk GetChunk(ArchiverChunkType type) => this._GetChunk(type) ?? throw new ArgumentException($"Expected to find chunk {type} but none exist.");
-	internal ArchiverChunk? _GetChunk(ArchiverChunkType type)
+	internal bool ContainsChunk(ArchiverChunkType type) => this.GetChunk(type) != null;
+	internal bool IsChunkCompressed(ArchiverChunkType type) => this.GetChunk(type)?.Compressed ?? false;
+	internal void JumpToChunk(ArchiverChunkType type)
+	{
+		if (!this.CanSeek) throw new ArgumentException($"Cannot jump to section {type} - stream cannot seek");
+		var chunk = this.GetChunk(type);
+		if (chunk == null) return;
+		Debug.Assert(this.Position == chunk.Value.Position, $"ArchiverStream::Reader not aligned with {type}Chunk || Current: {this.Position:X8} ; Expected: {chunk.Value.Position:X8}");
+		if (this.Position != chunk.Value.Position)
+			this.Position  = chunk.Value.Position;
+	}
+	#nullable enable
+	internal byte[]? ReadEntireChunk(ArchiverChunkType type)
+	{
+		var chunk = this.GetChunk(type);
+		if (chunk == null) return null;
+		var buffer = new byte[chunk.Value.Length];
+		this.ReadExactly(buffer);
+		return buffer;
+	}
+	#nullable disable
+	#nullable enable
+	private ArchiverChunk? GetChunk(ArchiverChunkType type)
 	{
 		foreach (var chunk in this._Chunks)
 			if (chunk.Type == type) return chunk;
 		return null;
 	}
+	#nullable disable
 	/* Static Methods */
 	public static ArchiverStream Reader(string filePath)
 	{
