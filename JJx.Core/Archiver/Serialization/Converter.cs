@@ -38,6 +38,8 @@ public abstract class JJxConverter
 		{ typeof(DateTime), new DateTimeConverter() },
 		{ typeof(Guid), new GuidConverter() },
 		// JJx
+		{ typeof(Tile), new TileConverter() },
+		{ typeof(TileMap), new TileMapConverterFactory() },
 		{ typeof(Character), new CharacterConverter() },
 	};
 }

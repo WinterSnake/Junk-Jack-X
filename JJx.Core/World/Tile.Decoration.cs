@@ -4,48 +4,46 @@
 
 	Written By: Ryan Smith
 */
-using System;
-
 namespace JJx;
 
 public partial class Tile
 {
-	/* Sub-Classes */
 	public sealed class Decoration
 	{
 		/* Constructor */
-		public Decoration(ushort id, byte icon = 0, bool isBackground = false)
+		internal Decoration(ushort id)
+		{
+			this.IsBackground = id >= BACKGROUND_FLAG;
+			if (this.IsBackground)
+				id ^= BACKGROUND_FLAG;
+			this.Icon = (byte)(id & ICON_FLAG);
+			if (this.Icon > 0)
+			{
+				this.Icon >>= 12;
+				unchecked {
+					id &= (ushort)~ICON_FLAG;
+				}
+			}
+			this.Id = id;
+		}
+		public Decoration(ushort id, byte icon, bool isBackground)
 		{
 			this.Id = id;
 			this.Icon = icon;
 			this.IsBackground = isBackground;
 		}
-		/* Instance Methods */
-		internal ushort Pack()
-		{
-			var id = (ushort)((this.Icon << 12) | this.Id);
-			if (this.IsBackground)
-				id |= BACKGROUND_FLAG;
-			return id;
-		}
-		/* Static Methods */
-		internal static Decoration Unpack(ushort id)
-		{
-			var isBackground = id >= BACKGROUND_FLAG;
-			if (isBackground)
-				id ^= BACKGROUND_FLAG;
-			var icon = id & ICON_FLAG;
-			if (icon > 0)
-			{
-				icon >>= 12;
-				unchecked { id &= (ushort)~ICON_FLAG; }
-			}
-			return new Decoration(id, (byte)icon, isBackground);
-		}
 		/* Properties */
 		public ushort Id;
 		public byte Icon;
 		public bool IsBackground;
+		internal ushort Packed {
+			get {
+				var id = (ushort)((this.Icon << 12) | this.Id);
+				if (this.IsBackground)
+					id |= BACKGROUND_FLAG;
+				return id;
+			}
+		}
 		/* Class Properties */
 		private const ushort BACKGROUND_FLAG = 0x8000;
 		private const ushort ICON_FLAG       = 0xF000;

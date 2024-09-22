@@ -29,6 +29,7 @@
 */
 using System;
 using System.Diagnostics;
+using System.IO;
 using JJx.Serialization;
 
 namespace JJx;
@@ -46,7 +47,7 @@ public sealed class World
 	/* Constructors */
 	internal World(
 		Guid uid, DateTime lastPlayed, Version version, string name, string author, (ushort, ushort) player, (ushort, ushort) spawn,
-		Planet planet, Season season, Gamemode gamemode, SizeType sizeType, SizeType skySizeType, ushort[] skyline
+		Planet planet, Season season, Gamemode gamemode, SizeType sizeType, SizeType skySizeType, ushort[] skyline, TileMap tileMap
 	)
 	{
 		// Info
@@ -62,6 +63,7 @@ public sealed class World
 		this.SkySizeType = skySizeType;
 		// Tiles
 		this.Skyline = skyline;
+		this._TileMap = tileMap;
 	}
 	/* Instance Methods */
 	public void Save(string filePath)
@@ -82,7 +84,7 @@ public sealed class World
 		using var stream = ArchiverStream.Reader(filePath);
 		return World.FromStream(stream);
 	}
-	public static World FromStream(ArchiverStream stream)
+	public static unsafe World FromStream(ArchiverStream stream)
 	{
 		if (stream.Type != ArchiverStreamType.World)
 			throw new ArgumentException($"Passed in a non-world ({stream.Type}) archiver stream to World.FromStream()");
@@ -125,12 +127,36 @@ public sealed class World
 		Debug.Assert(stream.Position == chunk.Position, $"ArchiverStream::Reader not aligned with WorldBlocksChunk || Current: {stream.Position:X8} ; Expected: {chunk.Position:X8}");
 		if (stream.Position != chunk.Position)
 			stream.Position  = chunk.Position;
+		// TODO: Figure out why GZipStream reads more than asked through this single line method (try to remove memorystream requirement)
+		// var tileMap = reader.Get<TileMap>(chunk.Compressed, size.width, size.height);
+		TileMap tileMap;
+		var tileMapBytes = reader.GetBytes((int)chunk.Length);
+		fixed (byte* tileMapPin = tileMapBytes)
+		{
+			var tileMapStream = new UnmanagedMemoryStream(tileMapPin, tileMapBytes.Length);
+			var tileMapReader = new JJxReader(tileMapStream);
+			tileMap = tileMapReader.Get<TileMap>(chunk.Compressed, size.width, size.height);
+		}
+		/// Layer: Fog
+		var fogChunk = stream._GetChunk(ArchiverChunkType.WorldFog);
+		if (fogChunk != null)
+		{
+			chunk = fogChunk.Value;
+			Debug.Assert(stream.Position == chunk.Position, $"ArchiverStream::Reader not aligned with WorldFogChunk || Current: {stream.Position:X8} ; Expected: {chunk.Position:X8}");
+			if (stream.Position != chunk.Position)
+				stream.Position  = chunk.Position;
+		}
+		/// Time
+		chunk = stream.GetChunk(ArchiverChunkType.WorldTime);
+		Debug.Assert(stream.Position == chunk.Position, $"ArchiverStream::Reader not aligned with WorldTimeChunk || Current: {stream.Position:X8} ; Expected: {chunk.Position:X8}");
+		if (stream.Position != chunk.Position)
+			stream.Position  = chunk.Position;
 		/// World
 		return new World(
 			// Info
 			uid, lastPlayed, version, name, author, player, spawn, planet, season, gamemode, sizeType, skySizeType,
 			// Tiles
-			skyline
+			skyline, tileMap
 		);
 	}
 	/* Properties */
@@ -156,7 +182,7 @@ public sealed class World
 			else this._Author = value.Substring(0, SIZEOF_AUTHOR - 1);
 		}
 	}
-	public (ushort Width, ushort Height) Size { get; }
+	public (ushort Width, ushort Height) Size => ((ushort)this._TileMap.Tiles.GetLength(0), (ushort)this._TileMap.Tiles.GetLength(1));
 	public (ushort X, ushort Y) Player;
 	public (ushort X, ushort Y) Spawn;
 	public Planet Planet;
@@ -166,6 +192,8 @@ public sealed class World
 	public SizeType SkySizeType;
 	// Tiles
 	public readonly ushort[] Skyline;
+	internal readonly TileMap _TileMap;
+	public Tile[,] Blocks => this._TileMap.Tiles;
 	// Astmosphere
 	// -Time
 	public uint Ticks = 0;

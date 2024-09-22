@@ -14,8 +14,8 @@
 	Written By: Ryan Smith
 */
 using System;
-using System.IO;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using JJx.Serialization;
 
 namespace JJx;
 
@@ -24,57 +24,55 @@ public sealed partial class Tile
 	/* Constructors */
 	public Tile(ushort foregroundId, ushort backgroundId)
 	{
-		this.Foreground = Tile.Block.Unpack(foregroundId);
-		this.Background = Tile.Block.Unpack(backgroundId);
+		this.Foreground = new Tile.Block(foregroundId);
+		this.Background = new Tile.Block(backgroundId);
 		for (var i = 0; i < this.Decorations.Length; ++i)
-			this.Decorations[i] = new(0x0000);
+			this.Decorations[i] = new Decoration(0x0000);
 	}
-	private Tile(Block foreground, Block background, Decoration[] decorations)
+	internal Tile(Tile.Block foreground, Tile.Block background, Tile.Decoration[] decorations)
 	{
+		Debug.Assert(decorations.Length == SIZEOF_DECORATIONS, $"Tile() expects {SIZEOF_DECORATIONS} decorations, received: {decorations.Length}");
 		this.Foreground = foreground;
 		this.Background = background;
 		this.Decorations = decorations;
 	}
 	/* Instance Methods */
-	public async Task ToStream(Stream stream)
+	public override string ToString()
 	{
-		var buffer = new byte[SIZE];
-		BitConverter.LittleEndian.Write((ushort)(this.Foreground.Pack() | FOREGROUND_FLAG), buffer, OFFSET_FOREGROUND);
-		BitConverter.LittleEndian.Write(this.Background.Pack(), buffer, OFFSET_BACKGROUND);
-		for (var i = 0; i < this.Decorations.Length; ++i)
-			BitConverter.LittleEndian.Write(this.Decorations[i].Pack(), buffer, OFFSET_DECORATION + i * sizeof(ushort));
-		// -UNKNOWN(4)- \\
-		await stream.WriteAsync(buffer, 0, buffer.Length);
-	}
-	/* Static Methods */
-	public static async Task<Tile> FromStream(Stream stream)
-	{
-		var bytesRead = 0;
-		var buffer = new byte[SIZE];
-		while (bytesRead < buffer.Length)
-			bytesRead += await stream.ReadAsync(buffer, bytesRead, buffer.Length - bytesRead);
-		var foregroundId = (ushort)(BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_FOREGROUND) ^ FOREGROUND_FLAG);
-		var foreground = Tile.Block.Unpack(foregroundId);
-		var backgroundId = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_BACKGROUND);
-		var background = Tile.Block.Unpack(backgroundId);
-		var decorations = new Tile.Decoration[SIZEOF_DECORATION];
+		var decorations = new string[this.Decorations.Length];
 		for (var i = 0; i < decorations.Length; ++i)
-		{
-			var decorationId = BitConverter.LittleEndian.GetUInt16(buffer, OFFSET_DECORATION + i * sizeof(ushort));
-			decorations[i] = Tile.Decoration.Unpack(decorationId);
-		}
-		// -UNKNOWN(4)- \\
-		return new(foreground, background, decorations);
+			decorations[i] = $"0x{this.Decorations[i].Packed:X4}";
+		var output = $"Foreground: 0x{this.Foreground.Packed:X4} ; Background: 0x{this.Background.Packed:X4} ; ";
+		output += '[' + String.Join(',', decorations) + ']';
+		return output;
 	}
 	/* Properties */
 	public Tile.Block Foreground;
 	public Tile.Block Background;
-	public Tile.Decoration[] Decorations = new Decoration[SIZEOF_DECORATION];
+	public Tile.Decoration[] Decorations = new Tile.Decoration[SIZEOF_DECORATIONS];
 	/* Class Properties */
-	internal const byte SIZE             = 16;
-	private const byte SIZEOF_DECORATION =  4;
-	private const byte OFFSET_FOREGROUND =  0;
-	private const byte OFFSET_BACKGROUND =  2;
-	private const byte OFFSET_DECORATION =  4;
+	internal const byte SIZEOF_DECORATIONS = 4;
+}
+
+// Converters
+internal sealed class TileConverter : JJxConverter<Tile>
+{
+	/* Instance Methods */
+	public override Tile Read(JJxReader reader)
+	{
+		var foregroundId = (ushort)(reader.GetUInt16() ^ FOREGROUND_FLAG);
+		var backgroundId = reader.GetUInt16();
+		var decorations = new Tile.Decoration[Tile.SIZEOF_DECORATIONS];
+		for (var i = 0; i < decorations.Length; ++i)
+		{
+			var decorationId = reader.GetUInt16();
+			decorations[i] = new Tile.Decoration(decorationId);
+		}
+		// -UNKNOWN(4)- \\
+		reader.GetBytes(4);
+		return new Tile(new Tile.Block(foregroundId), new Tile.Block(backgroundId), decorations);
+	}
+	/* Properties */
+	/* Class Properties */
 	private const ushort FOREGROUND_FLAG = 0x8000;
 }
