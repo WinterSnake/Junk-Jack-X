@@ -18,14 +18,19 @@ public abstract class JJxConverter
 	{
 		if (properties != null && properties.Length == 0) properties = null;
 		if (JJxConverter._InternalConverters.ContainsKey(type))
-			return JJxConverter._InternalConverters[type];
+		{
+			var converter = JJxConverter._InternalConverters[type];
+			if (converter is JJxConverterFactory factory)
+				converter = factory.Build(type, properties);
+			return converter;
+		}
 		// Build factory converter
 		foreach (var factoryConverter in JJxConverterFactory._InternalFactories)
 		{
 			if (factoryConverter.CanConvert(type))
 				return factoryConverter.Build(type, properties);
 		}
-		throw new ArgumentException($"Unhandled type '{type}' in JJxConverters");
+		throw new ArgumentException($"Unhandled type '{type}' in JJxConverter.GetTypeConverter");
 	}
 	#nullable disable
 	/* Properties */

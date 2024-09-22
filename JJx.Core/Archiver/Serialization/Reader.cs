@@ -102,15 +102,8 @@ public partial struct JJxReader
 	{
 		Type type = typeof(T);
 		// Get converter
-		JJxConverter<T> converter = null!;
-		var converterMeta = JJxConverter.GetTypeConverter(type, properties);
-		if (converterMeta is JJxConverterFactory factory)
-			converter = (factory.Build(type, properties) as JJxConverter<T>)!;
-		else
-			converter = (converterMeta as JJxConverter<T>)!;
-		if (compressed)
-			converter = new CompressionConverter<T>(converter);
-		return converter!.Read(this);
+		var converter = JJxConverter.GetTypeConverter(type, properties);
+		return (converter as JJxConverter<T>)!.Read(this);
 	}
 	#nullable disable
 	private byte _InternalReadByte()
