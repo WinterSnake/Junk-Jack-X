@@ -63,7 +63,7 @@ public sealed class World
 		this.SkySizeType = skySizeType;
 		// Tiles
 		this.Skyline = skyline;
-		this._TileMap = tileMap;
+		this.TileMap = tileMap;
 	}
 	/* Instance Methods */
 	public void Save(string filePath)
@@ -196,7 +196,7 @@ public sealed class World
 			else this._Author = value.Substring(0, SIZEOF_AUTHOR - 1);
 		}
 	}
-	public (ushort Width, ushort Height) Size => ((ushort)this._TileMap.Tiles.GetLength(0), (ushort)this._TileMap.Tiles.GetLength(1));
+	public (ushort Width, ushort Height) Size => ((ushort)this.TileMap.Tiles.GetLength(0), (ushort)this.TileMap.Tiles.GetLength(1));
 	public (ushort X, ushort Y) Player;
 	public (ushort X, ushort Y) Spawn;
 	public Planet Planet;
@@ -206,8 +206,8 @@ public sealed class World
 	public SizeType SkySizeType;
 	// Tiles
 	public readonly ushort[] Skyline;
-	internal readonly TileMap _TileMap;
-	public Tile[,] Blocks => this._TileMap.Tiles;
+	public TileMap TileMap { get; private set; }
+	public Tile[,] Blocks => this.TileMap.Tiles;
 	// Astmosphere
 	// -Time
 	public uint Ticks = 0;

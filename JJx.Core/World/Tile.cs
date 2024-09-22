@@ -49,7 +49,7 @@ public sealed partial class Tile
 	/* Properties */
 	public Tile.Block Foreground;
 	public Tile.Block Background;
-	public Tile.Decoration[] Decorations = new Tile.Decoration[SIZEOF_DECORATIONS];
+	public readonly Tile.Decoration[] Decorations = new Tile.Decoration[SIZEOF_DECORATIONS];
 	/* Class Properties */
 	internal const byte SIZEOF_DECORATIONS = 4;
 }
