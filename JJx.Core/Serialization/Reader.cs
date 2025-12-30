@@ -6,7 +6,6 @@
 */
 
 using System;
-using System.Buffers;
 using System.Buffers.Binary;
 using System.IO;
 using System.Text;
@@ -23,7 +22,7 @@ public ref struct JJxReader
 		if (count <= 0) return;
 		if (!this._Stream.CanSeek)
 			throw new InvalidOperationException("Skipping not supported on non-seekable streams");
-		this._Stream.Position += count;
+		this._Stream.Seek(count, SeekOrigin.Current);
 	}
 	public bool ReadBool()
 	{
@@ -85,6 +84,8 @@ public ref struct JJxReader
 		this._Stream.ReadExactly(buffer);
 		return Encoding.UTF8.GetString(buffer).TrimEnd('\0');
 	}
+	public void ReadSpan(scoped Span<byte> buffer)
+		=> this._Stream.ReadExactly(buffer);
 	public T ReadObject<T>() => JJxSerializationOptions.Default.GetConverter<T>().Read(ref this);
 	/* Properties */
 	private readonly Stream _Stream;
