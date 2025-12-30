@@ -84,8 +84,7 @@ public ref struct JJxReader
 		this._Stream.ReadExactly(buffer);
 		return Encoding.UTF8.GetString(buffer).TrimEnd('\0');
 	}
-	public void ReadSpan(scoped Span<byte> buffer)
-		=> this._Stream.ReadExactly(buffer);
+	public void ReadSpan(scoped Span<byte> buffer) => this._Stream.ReadExactly(buffer);
 	public T ReadObject<T>() => JJxSerializationOptions.Default.GetConverter<T>().Read(ref this);
 	/* Properties */
 	private readonly Stream _Stream;

@@ -70,6 +70,7 @@ public sealed class JJxWriter
 		BinaryPrimitives.WriteUInt64LittleEndian(buffer, @value);
 		this._Stream.Write(buffer);
 	}
+	public void Write(ReadOnlySpan<byte> @value) => this._Stream.Write(@value);
 	public void Write<T>(T @value) => JJxSerializationOptions.Default.GetConverter<T>().Write(@value, this);
 	/* Properties */
 	private readonly Stream _Stream;
