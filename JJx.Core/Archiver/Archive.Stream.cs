@@ -1,6 +1,6 @@
 /*
 	Junk Jack X: Core
-	- Archiver
+	- [Archiver]Stream
 
 	Segment Breakdown:
 	----------------------------------------------------------------------------------------------------
@@ -17,33 +17,37 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using JJx.Core.Serialization;
 
 namespace JJx.Core;
 
-public interface IArchiverReader
-{
-	/* Instance Methods */
-}
-
-public interface IArchiverWriter
-{
-	/* Instance Methods */
-}
-
-public enum ArchiverType : ushort
+public enum ArchiveType : ushort
 {
 	Player    = 0x00,
 	World     = 0x01,
 	Adventure = 0x02,
 }
 
-public sealed class ArchiverStream : IDisposable, IArchiverReader, IArchiverWriter
+public interface IArchiveReader : IDisposable
+{
+	/* Instance Methods */
+	public ChunkStream GetChunkStream(ArchiverChunkType type);
+	/* Properties */
+	public ArchiveType Type { get; }
+}
+
+public interface IArchiveWriter : IDisposable
+{
+	/* Instance Methods */
+}
+
+public sealed class ArchiveStream : IDisposable, IArchiveReader, IArchiveWriter
 {
 	/* Constructor */
-	private ArchiverStream(ArchiverType type, Stream stream)
+	private ArchiveStream(ArchiveType type, Stream stream)
 		:this(type, stream, new()) { }
-	private ArchiverStream(ArchiverType type, Stream stream, List<ArchiverChunk> chunks)
+	private ArchiveStream(ArchiveType type, Stream stream, List<ArchiverChunk> chunks)
 	{
 		this.Type = type;
 		this._Stream = stream;
@@ -51,19 +55,32 @@ public sealed class ArchiverStream : IDisposable, IArchiverReader, IArchiverWrit
 	}
 	/* Instance Methods */
 	public void Dispose() => this._Stream.Dispose();
-	/* Static Methods */
-	public static IArchiverReader Reader(string file) => ArchiverStream.Reader(File.Open(file, FileMode.Open));
-	public static IArchiverReader Reader(Stream stream)
+	// Reading
+	public ChunkStream GetChunkStream(ArchiverChunkType type)
 	{
+		foreach (ref var chunk in CollectionsMarshal.AsSpan(this._Chunks))
+		{
+			if (chunk.Type != type) continue;
+			this._Stream.Position = chunk.Offset;
+			return new ChunkStream(this._Stream, ref chunk);
+		}
+		throw new InvalidDataException($"Tried to create a chunk stream reader over non-existent '{type}' chunk");
+	}
+	// Writing
+	/* Static Methods */
+	public static IArchiveReader Reader(Stream stream)
+	{
+		if (!stream.CanRead)
+			throw new InvalidOperationException("Tried create an archive reader from non-readable stream");
 		// Header
 		var reader = new JJxReader(stream);
 		var magic = reader.ReadString(4);
-		var type = reader.ReadObject<ArchiverType>();
+		var type = reader.ReadObject<ArchiveType>();
 		// Header: Validation
 		var expected = type switch {
-			ArchiverType.Player => MAGIC_PLAYER,
-			ArchiverType.Adventure or ArchiverType.World => MAGIC_WORLD,
-			_ => throw new InvalidOperationException($"Non-expected archiver type {type} in reader creation"),
+			ArchiveType.Player => MAGIC_PLAYER,
+			ArchiveType.Adventure or ArchiveType.World => MAGIC_WORLD,
+			_ => throw new InvalidOperationException($"Non-expected archive type {type} in reader creation"),
 		};
 		if (magic != expected)
 			throw new InvalidDataException($"Tried loading {type} file with invalid format");
@@ -73,11 +90,12 @@ public sealed class ArchiverStream : IDisposable, IArchiverReader, IArchiverWrit
 		reader.Skip(sizeof(uint));
 		for (var i = 0; i < chunks.Capacity; ++i)
 			chunks.Add(reader.ReadObject<ArchiverChunk>());
-		return new ArchiverStream(type, stream, chunks);
+		return new ArchiveStream(type, stream, chunks);
 	}
 	/* Properties */
 	// Common
-	public readonly ArchiverType Type;
+	public readonly ArchiveType Type;
+    ArchiveType IArchiveReader.Type => this.Type;
 	private readonly Stream _Stream;
 	private readonly List<ArchiverChunk> _Chunks;
 	// Reading
