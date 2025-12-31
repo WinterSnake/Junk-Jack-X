@@ -20,6 +20,7 @@ public sealed class JJxSerializationOptions
 		Default.AddConverter<ArchiverChunkConverter>(typeof(ArchiverChunk));
 		Default.AddConverter<GuidConverter>(typeof(Guid));
 		Default.AddConverter<DateTimeConverter>(typeof(DateTime));
+		Default.AddConverter<ItemConverter>(typeof(Item));
 		Default._IsReadOnly = true;
 	}
 	/* Instance Methods */
