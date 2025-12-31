@@ -4,9 +4,20 @@
 
 	Written By: Ryan Smith
 */
+
 using System;
 
 namespace JJx.Core;
+
+public enum MapBounds : byte
+{
+	Tiny   = 0x0,  // Size:  512 * 128
+	Small  = 0x1,  // Size:  768 * 256
+	Normal = 0x2,  // Size: 1024 * 256
+	Large  = 0x3,  // Size: 2048 * 384
+	Huge   = 0x4,  // Size: 4096 * 512
+	Custom = 0x5,
+}
 
 [Flags]
 public enum Planet : uint
@@ -25,3 +36,14 @@ public enum Planet : uint
 	Tor    = 1 << 11,
 	All    = Terra | Seth | Alba | Xeno | Magmar | Cryo | Yuca | Lilith | Thetis | Mykon | Umbra | Tor,
 }
+
+[Flags]
+public enum Season : byte
+{
+	Spring = 0x1,
+	Summer = 0x2,
+	Autumn = 0x4,
+	Winter = 0x8,
+	None   = 0xF,
+}
+

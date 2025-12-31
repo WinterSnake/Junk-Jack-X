@@ -20,9 +20,10 @@ public static class Archive
 		var fileStream = File.Open(file, FileMode.Open);
 		try {
 			var reader = ArchiveStream.Reader(fileStream);
-			var archive = reader.Type switch
+			IArchive archive = reader.Type switch
 			{
 				ArchiveType.Player => PlayerArchive.Load(reader),
+				ArchiveType.World => WorldArchive.Load(reader),
 				_ => throw new InvalidOperationException($"Unhandled archive type '{reader.Type}'"),
 			};
 			return archive;
