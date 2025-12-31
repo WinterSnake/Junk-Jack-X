@@ -15,21 +15,48 @@ public interface IArchive : IDisposable { }
 public static class Archive
 {
 	/* Static Methods */
-	public static IArchive Load(string file)
+	private static IArchiveReader _Load(string file)
 	{
 		var fileStream = File.Open(file, FileMode.Open);
 		try {
-			var reader = ArchiveStream.Reader(fileStream);
-			IArchive archive = reader.Type switch
-			{
-				ArchiveType.Player => PlayerArchive.Load(reader),
-				ArchiveType.World => WorldArchive.Load(reader),
-				_ => throw new InvalidOperationException($"Unhandled archive type '{reader.Type}'"),
-			};
-			return archive;
+			return ArchiveStream.Reader(fileStream);
 		} catch {
 			fileStream.Dispose();
 			throw;
 		}
+	}
+	public static IArchive Load(string file, bool eagerLoad = false)
+	{
+		var reader = _Load(file);
+		try {
+			IArchive archive = reader.Type switch
+			{
+				ArchiveType.Player => PlayerArchive.Load(reader, eagerLoad),
+				ArchiveType.World => WorldArchive.Load(reader, eagerLoad),
+				_ => throw new InvalidOperationException($"Unhandled archive type '{reader.Type}'"),
+			};
+			if (eagerLoad)
+				reader.Dispose();
+			return archive;
+		} catch {
+			reader.Dispose();
+			throw;
+		}
+	}
+	public static Player LoadPlayer(string file)
+	{
+		using var reader = _Load(file);
+		if (reader.Type is not ArchiveType.Player)
+			throw new InvalidDataException($"Tried loading non-player file ({reader.Type}) as Player");
+		var archive = PlayerArchive.Load(reader, true);
+		return archive._Player;
+	}
+	public static World LoadWorld(string file)
+	{
+		using var reader = _Load(file);
+		if (reader.Type is not ArchiveType.World)
+			throw new InvalidDataException($"Tried loading non-world file ({reader.Type}) as World");
+		var archive = WorldArchive.Load(reader, true);
+		return archive._World;
 	}
 }

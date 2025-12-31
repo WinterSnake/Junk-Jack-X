@@ -84,7 +84,7 @@ public sealed class WorldArchive : IArchive
 	/* Properties */
 	public bool IsFullyLoaded => this._IsSkylineLoaded;
 	private readonly IArchiveReader? _Reader;
-	private readonly World _World;
+	internal readonly World _World;
 	// Info
 	public Guid Id => this._World.Id;
 	public Version Version => this._World.Version;
