@@ -70,13 +70,13 @@ public sealed record class CharacterAppearance
 	public HairColor HairColor;
 	/* Class Properties */
 	public const byte MAX_SKINTONES   = 0x4;  // Maximum skin tones in game (5) [0-4]
-	public const byte MAX_HAIRSTYLES  = 0xD;  // Maximum hair styles in game (14) [0-D]
+	public const byte MAX_HAIRSTYLES  = 0xD;  // Maximum hair styles in game (15) [0-D]
 	private const ushort GENDER_FLAG  = 0x1000;
 	private const ushort TONE_FLAG    = 0xE000;
 	private const ushort STYLE_FLAG   = 0x0F00;
 	private const ushort COLOR_FLAG   = 0x00F0;
-	private const byte   TONE_SHIFT   = 13;
-	private const byte   GENDER_SHIFT = 12;
-	private const byte   STYLE_SHIFT  =  8;
-	private const byte   COLOR_SHIFT  =  4;
+	private const int    TONE_SHIFT   = 13;
+	private const int    GENDER_SHIFT = 12;
+	private const int    STYLE_SHIFT  =  8;
+	private const int    COLOR_SHIFT  =  4;
 }

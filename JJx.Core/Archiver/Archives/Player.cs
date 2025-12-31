@@ -13,8 +13,7 @@ namespace JJx.Core;
 public sealed class PlayerArchive : IArchive
 {
 	/* Constructor */
-	public PlayerArchive(Player player)
-		:this(player, null) { }
+	public PlayerArchive(Player player) :this(player, null) { }
 	private PlayerArchive(Player player, IArchiveReader? reader)
 	{
 		this._Player = player;
@@ -77,9 +76,9 @@ public sealed class PlayerArchive : IArchive
 		return archive;
 	}
 	/* Properties */
-	public bool IsFullyLoaded => this._AreItemsLoaded && this._IsStatusLoaded;
 	private readonly IArchiveReader? _Reader;
 	internal readonly Player _Player;
+	internal bool IsFullyLoaded => this._AreItemsLoaded && this._IsStatusLoaded;
 	// Info
 	public Guid Id => this._Player.Id;
 	public Version Version => this._Player.Version;
