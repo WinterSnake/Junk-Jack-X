@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.InteropServices;
 using JJx.Core.Serialization;
 
@@ -32,7 +33,7 @@ public enum ArchiveType : ushort
 public interface IArchiveReader : IDisposable
 {
 	/* Instance Methods */
-	public ChunkStream GetChunkStream(ArchiverChunkType type);
+	public Stream GetChunkStream(ArchiverChunkType type);
 	/* Properties */
 	public ArchiveType Type { get; }
 	internal IEnumerable<ArchiverChunk> Chunks { get; }
@@ -58,13 +59,16 @@ public sealed class ArchiveStream : IDisposable, IArchiveReader, IArchiveWriter
 	/* Instance Methods */
 	public void Dispose() => this._Stream.Dispose();
 	// Reading
-	public ChunkStream GetChunkStream(ArchiverChunkType type)
+	public Stream GetChunkStream(ArchiverChunkType type)
 	{
 		foreach (ref var chunk in CollectionsMarshal.AsSpan(this._Chunks))
 		{
 			if (chunk.Type != type) continue;
 			this._Stream.Position = chunk.Offset;
-			return new ChunkStream(this._Stream, ref chunk);
+			Stream substream = new ChunkStream(this._Stream, ref chunk);
+			if (chunk.IsCompressed)
+				substream = new GZipStream(substream, CompressionMode.Decompress, true);
+			return substream;
 		}
 		throw new InvalidDataException($"Tried to create a chunk stream reader over non-existent '{type}' chunk");
 	}
