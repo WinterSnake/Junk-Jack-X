@@ -10,11 +10,16 @@ using System.IO;
 
 namespace JJx.Core;
 
-public interface IArchive : IDisposable { }
+public interface IArchive : IDisposable
+{
+	/* Instance Methods */
+	public void Write(IArchiveWriter writer);
+}
 
 public static class Archive
 {
 	/* Static Methods */
+	// Reading
 	private static IArchiveReader _Load(string file)
 	{
 		var fileStream = File.Open(file, FileMode.Open);
@@ -58,5 +63,19 @@ public static class Archive
 			throw new InvalidDataException($"Tried loading non-world file ({reader.Type}) as World");
 		var archive = WorldArchive.Load(reader, true);
 		return archive._World;
+	}
+	// Writing
+	public static void Save(string file, IArchive archive)
+	{
+		using var fileStream = File.Open(file, FileMode.Create);
+		var type = archive switch
+		{
+			PlayerArchive => ArchiveType.Player,
+			WorldArchive => ArchiveType.World,
+			_ => throw new InvalidOperationException($"Unhandled archive type '{archive}'"),
+		};
+		var writer = ArchiveStream.Writer(fileStream, type);
+		archive.Write(writer);
+		writer.Flush();
 	}
 }
