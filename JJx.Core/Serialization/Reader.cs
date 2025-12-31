@@ -78,6 +78,18 @@ public ref struct JJxReader
 		this._Stream.ReadExactly(buffer);
 		return BinaryPrimitives.ReadUInt64LittleEndian(buffer);
 	}
+	public float ReadFloat32()
+	{
+		Span<byte> buffer = stackalloc byte[sizeof(float)];
+		this._Stream.ReadExactly(buffer);
+		return BinaryPrimitives.ReadSingleLittleEndian(buffer);
+	}
+	public double ReadFloat64()
+	{
+		Span<byte> buffer = stackalloc byte[sizeof(double)];
+		this._Stream.ReadExactly(buffer);
+		return BinaryPrimitives.ReadDoubleLittleEndian(buffer);
+	}
 	public string ReadString(int length)
 	{
 		Span<byte> buffer = stackalloc byte[length];

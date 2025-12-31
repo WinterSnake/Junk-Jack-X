@@ -21,6 +21,7 @@ public sealed class JJxSerializationOptions
 		Default.AddConverter<GuidConverter>(typeof(Guid));
 		Default.AddConverter<DateTimeConverter>(typeof(DateTime));
 		Default.AddConverter<ItemConverter>(typeof(Item));
+		Default.AddConverter<EffectConverter>(typeof(Effect));
 		Default._IsReadOnly = true;
 	}
 	/* Instance Methods */

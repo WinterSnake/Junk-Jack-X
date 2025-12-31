@@ -5,8 +5,6 @@
 	Written By: Ryan Smith
 */
 
-using System;
-
 namespace JJx.Core.Serialization;
 
 internal sealed class ItemConverter : JJxConverter<Item>
