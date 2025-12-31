@@ -58,9 +58,11 @@ public sealed class World
 		this.Gamemode = gamemode;
 		this.SizeBounds = sizeBounds;
 		this.SkyBounds = skyBounds;
+		this.Skyline = Array.Empty<ushort>();
 	}
 	/* Instance Methods */
 	/* Properties */
+	// Info
 	public readonly Guid Id = Guid.NewGuid();
 	public readonly Version Version = Version.Latest;
 	public DateTime LastPlayed = DateTime.Now;
@@ -82,6 +84,8 @@ public sealed class World
 	public (ushort Width, ushort Height) Size { get; internal set; }
 	public (ushort X, ushort Y) Player;
 	public (ushort X, ushort Y) Spawn;
+	// Skyline
+	public ushort[] Skyline { get; internal set; }
 	/* Class Properties */
 	private const int MAX_NAME_LENGTH   = 32 - 1;
 	private const int MAX_AUTHOR_LENGTH = 16 - 1;

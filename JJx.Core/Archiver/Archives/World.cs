@@ -22,8 +22,21 @@ public sealed class WorldArchive : IArchive
 	}
 	/* Instance Methods */
 	public void Dispose() => this._Reader?.Dispose();
+	private void _LoadSkyline()
+	{
+		if (this._IsSkylineLoaded) return;
+		using (var skylineChunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldSkyline))
+		{
+			var reader = new JJxReader(skylineChunk);
+			var skyline = new ushort[this._World.Size.Width];
+			for (var i = 0; i < skyline.Length; ++i)
+				skyline[i] = reader.ReadUInt16();
+			this._World.Skyline = skyline;
+		}
+		this._IsSkylineLoaded = true;
+	}
 	/* Static Methods */
-	internal static WorldArchive Load(IArchiveReader reader)
+	internal static WorldArchive Load(IArchiveReader reader, bool eagerLoad = false)
 	{
 		World world;
 		using (var infoChunk = reader.GetChunkStream(ArchiverChunkType.WorldInfo))
@@ -61,9 +74,15 @@ public sealed class WorldArchive : IArchive
 			world.Player = player;
 			world.Spawn = spawn;
 		}
-		return new(world, reader);
+		var archive = new WorldArchive(world, reader);
+		if (eagerLoad)
+		{
+			archive._LoadSkyline();
+		}
+		return archive;
 	}
 	/* Properties */
+	public bool IsFullyLoaded => this._IsSkylineLoaded;
 	private readonly IArchiveReader? _Reader;
 	private readonly World _World;
 	// Info
@@ -80,4 +99,7 @@ public sealed class WorldArchive : IArchive
 	public (ushort Width, ushort Height) Size => this._World.Size;
 	public (ushort X, ushort Y) Player { get => this._World.Player; set => this._World.Player = value; }
 	public (ushort X, ushort Y) Spawn { get => this._World.Spawn; set => this._World.Spawn = value; }
+	// Skyline
+	private bool _IsSkylineLoaded = false;
+	public ushort[] Skyline { get { this._LoadSkyline(); return this._World.Skyline; } }
 }
