@@ -36,6 +36,7 @@ public interface IArchiveReader : IDisposable
 	/* Properties */
 	public ArchiveType Type { get; }
 	internal IEnumerable<ArchiverChunk> Chunks { get; }
+	internal int ChunkCount { get; }
 }
 
 public interface IArchiveWriter : IDisposable
@@ -101,6 +102,7 @@ public sealed class ArchiveStream : IDisposable, IArchiveReader, IArchiveWriter
 	// Reading
     ArchiveType IArchiveReader.Type => this.Type;
     IEnumerable<ArchiverChunk> IArchiveReader.Chunks => this._Chunks;
+    int IArchiveReader.ChunkCount => this._Chunks.Count;
 	// Writing
 	/* Class Properties */
 	private const string MAGIC_PLAYER = "JJXC";

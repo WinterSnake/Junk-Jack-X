@@ -50,7 +50,7 @@ public sealed class PlayerArchive : IArchive
 		this._IsStatusLoaded = true;
 	}
 	/* Static Methods */
-	internal static PlayerArchive Load(IArchiveReader reader)
+	internal static PlayerArchive Load(IArchiveReader reader, bool eagerLoad = false)
 	{
 		Player player;
 		using (var infoChunk = reader.GetChunkStream(ArchiverChunkType.PlayerInfo))
@@ -68,12 +68,18 @@ public sealed class PlayerArchive : IArchive
 			streamReader.Skip(3); // Unknown
 			player = new(guid, name, version, unlockedPlanets, appearance, ruleset);
 		}
-		return new(player, reader);
+		var archive = new PlayerArchive(player, reader);
+		if (eagerLoad)
+		{
+			archive._LoadItems();
+			archive._LoadStatus();
+		}
+		return archive;
 	}
 	/* Properties */
 	public bool IsFullyLoaded => this._AreItemsLoaded && this._IsStatusLoaded;
 	private readonly IArchiveReader? _Reader;
-	private readonly Player _Player;
+	internal readonly Player _Player;
 	// Info
 	public Guid Id => this._Player.Id;
 	public Version Version => this._Player.Version;

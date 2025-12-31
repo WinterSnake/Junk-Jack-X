@@ -19,7 +19,7 @@ namespace JJx.Core;
 
 public enum ArchiverChunkType : ushort
 {
-	Padding            = 0x0000,
+	Padding            = 0x7400,
 	// World
 	WorldInfo          = 0x0001,
 	WorldBlocks        = 0x0002,
