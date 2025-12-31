@@ -15,10 +15,12 @@
 */
 
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
+using System.Text;
 using JJx.Core.Serialization;
 
 namespace JJx.Core;
@@ -37,19 +39,20 @@ public interface IArchiveReader : IDisposable
 	/* Properties */
 	public ArchiveType Type { get; }
 	internal IEnumerable<ArchiverChunk> Chunks { get; }
-	internal int ChunkCount { get; }
 }
 
 public interface IArchiveWriter : IDisposable
 {
 	/* Instance Methods */
+	public void Flush();
+	public Stream WriteChunk(ArchiverChunkType type, byte version = 1, bool IsCompressed = false);
 }
 
 public sealed class ArchiveStream : IDisposable, IArchiveReader, IArchiveWriter
 {
 	/* Constructor */
 	private ArchiveStream(ArchiveType type, Stream stream)
-		:this(type, stream, new()) { }
+		:this(type, stream, new()) => this._PendingChunks = new();
 	private ArchiveStream(ArchiveType type, Stream stream, List<ArchiverChunk> chunks)
 	{
 		this.Type = type;
@@ -64,7 +67,7 @@ public sealed class ArchiveStream : IDisposable, IArchiveReader, IArchiveWriter
 		foreach (ref var chunk in CollectionsMarshal.AsSpan(this._Chunks))
 		{
 			if (chunk.Type != type) continue;
-			this._Stream.Position = chunk.Offset;
+			this._Stream.Seek(chunk.Offset, SeekOrigin.Begin);
 			Stream substream = new ChunkStream(this._Stream, ref chunk);
 			if (chunk.IsCompressed)
 				substream = new GZipStream(substream, CompressionMode.Decompress, true);
@@ -73,14 +76,49 @@ public sealed class ArchiveStream : IDisposable, IArchiveReader, IArchiveWriter
 		throw new InvalidDataException($"Tried to create a chunk stream reader over non-existent '{type}' chunk");
 	}
 	// Writing
+	public void Flush()
+	{
+		var chunkCount = (ushort)this._Chunks.Count;
+		int totalOffset = 0;
+		var headerOffset = SIZEOF_HEADER + chunkCount * ArchiverChunk.SIZE;
+		var chunks = CollectionsMarshal.AsSpan(this._Chunks);
+		for (var i = 0; i < this._Chunks.Count; ++i)
+		{
+			ref var chunk = ref chunks[i];
+			chunk.Offset = headerOffset + totalOffset;
+			chunk.Length = (int)this._PendingChunks![i].Length;
+			totalOffset += (int)this._PendingChunks![i].Length;
+		}
+		var writer = new JJxWriter(this._Stream);
+		writer.Write(chunkCount);
+		writer.Skip(4); // Unknown
+		foreach (ref var chunk in chunks)
+			writer.Write(chunk);
+		foreach (var pendingChunk in this._PendingChunks!)
+		{
+			pendingChunk.Position = 0;
+			pendingChunk.CopyTo(this._Stream);
+			pendingChunk.Dispose();
+		}
+		this._PendingChunks.Clear();
+		this._Stream.Flush();
+	}
+	public Stream WriteChunk(ArchiverChunkType type, byte version = 0, bool isCompressed = false)
+	{
+		var chunk = new ArchiverChunk() { Type=type, Version=version, IsCompressed=isCompressed };
+		this._Chunks.Add(chunk);
+		var stream = new ChunkStream();
+		this._PendingChunks!.Add(stream);
+		return stream;
+	}
 	/* Static Methods */
 	public static IArchiveReader Reader(Stream stream)
 	{
 		if (!stream.CanRead)
-			throw new InvalidOperationException("Tried create an archive reader from non-readable stream");
+			throw new InvalidOperationException("Tried creating an archive reader from non-readable stream");
 		// Header
 		var reader = new JJxReader(stream);
-		var magic = reader.ReadString(4);
+		var magic = reader.ReadString(SIZEOF_MAGIC);
 		var type = reader.ReadObject<ArchiveType>();
 		// Header: Validation
 		var expected = type switch {
@@ -93,10 +131,31 @@ public sealed class ArchiveStream : IDisposable, IArchiveReader, IArchiveWriter
 		// Chunks
 		var chunkCount = reader.ReadUInt16();
 		var chunks = new List<ArchiverChunk>(chunkCount);
-		reader.Skip(sizeof(uint));
+		reader.Skip(4); // Unknown
 		for (var i = 0; i < chunks.Capacity; ++i)
 			chunks.Add(reader.ReadObject<ArchiverChunk>());
 		return new ArchiveStream(type, stream, chunks);
+	}
+	public static IArchiveWriter Writer(Stream stream, ArchiveType type)
+	{
+		if (!stream.CanWrite)
+			throw new InvalidOperationException("Tried creating an archive writer from non-writable stream");
+		Span<byte> header = stackalloc byte[SIZEOF_MAGIC + sizeof(ushort)];
+		switch(type)
+		{
+			case ArchiveType.Player:
+			{
+				Encoding.UTF8.GetBytes(MAGIC_PLAYER, header);
+			} break;
+			case ArchiveType.World:
+			case ArchiveType.Adventure:
+			{
+				Encoding.UTF8.GetBytes(MAGIC_PLAYER, header);
+			} break;
+		}
+		BinaryPrimitives.WriteUInt16LittleEndian(header.Slice(SIZEOF_MAGIC), (ushort)type);
+		stream.Write(header);
+		return new ArchiveStream(type, stream);
 	}
 	/* Properties */
 	// Common
@@ -106,9 +165,11 @@ public sealed class ArchiveStream : IDisposable, IArchiveReader, IArchiveWriter
 	// Reading
     ArchiveType IArchiveReader.Type => this.Type;
     IEnumerable<ArchiverChunk> IArchiveReader.Chunks => this._Chunks;
-    int IArchiveReader.ChunkCount => this._Chunks.Count;
 	// Writing
+	private readonly List<ChunkStream>? _PendingChunks = null;
 	/* Class Properties */
+	private const int SIZEOF_HEADER   = 12;
+	private const int SIZEOF_MAGIC    =  4;
 	private const string MAGIC_PLAYER = "JJXC";
 	private const string MAGIC_WORLD  = "JJXM";
 }
