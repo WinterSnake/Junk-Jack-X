@@ -35,6 +35,7 @@ public interface IArchiveReader : IDisposable
 	public ChunkStream GetChunkStream(ArchiverChunkType type);
 	/* Properties */
 	public ArchiveType Type { get; }
+	internal IEnumerable<ArchiverChunk> Chunks { get; }
 }
 
 public interface IArchiveWriter : IDisposable
@@ -95,10 +96,11 @@ public sealed class ArchiveStream : IDisposable, IArchiveReader, IArchiveWriter
 	/* Properties */
 	// Common
 	public readonly ArchiveType Type;
-    ArchiveType IArchiveReader.Type => this.Type;
 	private readonly Stream _Stream;
 	private readonly List<ArchiverChunk> _Chunks;
 	// Reading
+    ArchiveType IArchiveReader.Type => this.Type;
+    IEnumerable<ArchiverChunk> IArchiveReader.Chunks => this._Chunks;
 	// Writing
 	/* Class Properties */
 	private const string MAGIC_PLAYER = "JJXC";
