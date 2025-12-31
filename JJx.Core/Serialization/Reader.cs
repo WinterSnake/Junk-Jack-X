@@ -6,6 +6,7 @@
 */
 
 using System;
+using System.Buffers;
 using System.Buffers.Binary;
 using System.IO;
 using System.Text;
@@ -90,11 +91,21 @@ public ref struct JJxReader
 		this._Stream.ReadExactly(buffer);
 		return BinaryPrimitives.ReadDoubleLittleEndian(buffer);
 	}
-	public string ReadString(int length)
+	public string ReadString(int length = 0)
 	{
-		Span<byte> buffer = stackalloc byte[length];
-		this._Stream.ReadExactly(buffer);
-		return Encoding.UTF8.GetString(buffer).TrimEnd('\0');
+		if (length == 0)
+			length = this.ReadInt32();
+		byte[]? storage = null;
+		Span<byte> buffer = length > 128 ? (storage = ArrayPool<byte>.Shared.Rent(length)).AsSpan(0, length) : stackalloc byte[length];
+		try {
+			this._Stream.ReadExactly(buffer);
+			var terminator = buffer.IndexOf((byte)0);
+			buffer = terminator != -1 ? buffer.Slice(0, terminator) : buffer;
+			return Encoding.UTF8.GetString(buffer);
+		} finally {
+			if (storage is not null)
+				ArrayPool<byte>.Shared.Return(storage);
+		}
 	}
 	public void ReadSpan(scoped Span<byte> buffer) => this._Stream.ReadExactly(buffer);
 	public T ReadObject<T>() => JJxSerializationOptions.Default.GetConverter<T>().Read(ref this);

@@ -6,8 +6,10 @@
 */
 
 using System;
+using System.Buffers;
 using System.Buffers.Binary;
 using System.IO;
+using System.Text;
 
 namespace JJx.Core.Serialization;
 
@@ -16,6 +18,13 @@ public sealed class JJxWriter
 	/* Constructor */
 	public JJxWriter(Stream stream) => this._Stream = stream;
 	/* Instance Methods */
+	public void Skip(int count)
+	{
+		if (count <= 0) return;
+		if (!this._Stream.CanSeek)
+			throw new InvalidOperationException("Skipping not supported on non-seekable streams");
+		this._Stream.Seek(count, SeekOrigin.Current);
+	}
 	public void Write(bool @value)
 	{
 		Span<byte> buffer = stackalloc byte[sizeof(byte)];
@@ -81,6 +90,24 @@ public sealed class JJxWriter
 		Span<byte> buffer = stackalloc byte[sizeof(double)];
 		BinaryPrimitives.WriteDoubleLittleEndian(buffer, @value);
 		this._Stream.Write(buffer);
+	}
+	public void Write(string @value, int length = 0)
+	{
+		if (length == 0)
+		{
+			length = Encoding.UTF8.GetByteCount(@value);
+			this.Write(length);
+		}
+		byte[]? storage = null;
+		Span<byte> buffer = length > 128 ? (storage = ArrayPool<byte>.Shared.Rent(length)).AsSpan(0, length) : stackalloc byte[length];
+		try {
+			buffer.Clear();
+			Encoding.UTF8.GetBytes(@value, buffer);
+			this._Stream.Write(buffer);
+		} finally {
+			if (storage is not null)
+				ArrayPool<byte>.Shared.Return(storage);
+		}
 	}
 	public void Write(ReadOnlySpan<byte> @value) => this._Stream.Write(@value);
 	public void Write<T>(T @value) => JJxSerializationOptions.Default.GetConverter<T>().Write(@value, this);
