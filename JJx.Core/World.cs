@@ -86,6 +86,9 @@ public sealed class World
 	public (ushort X, ushort Y) Spawn;
 	// Skyline
 	public ushort[] Skyline { get; internal set; }
+	// Tiles
+	internal Tilemap? _Tilemap;
+	public Tilemap Tilemap => this._Tilemap!;
 	/* Class Properties */
 	private const int MAX_NAME_LENGTH   = 32 - 1;
 	private const int MAX_AUTHOR_LENGTH = 16 - 1;

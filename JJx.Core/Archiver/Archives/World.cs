@@ -6,6 +6,7 @@
 */
 
 using System;
+using System.Runtime.InteropServices;
 using JJx.Core.Serialization;
 
 namespace JJx.Core;
@@ -13,8 +14,7 @@ namespace JJx.Core;
 public sealed class WorldArchive : IArchive
 {
 	/* Constructor */
-	public WorldArchive(World world)
-		:this(world, null) { }
+	public WorldArchive(World world) :this(world, null) { }
 	private WorldArchive(World world, IArchiveReader? reader)
 	{
 		this._World = world;
@@ -29,11 +29,23 @@ public sealed class WorldArchive : IArchive
 		{
 			var reader = new JJxReader(skylineChunk);
 			var skyline = new ushort[this._World.Size.Width];
-			for (var i = 0; i < skyline.Length; ++i)
-				skyline[i] = reader.ReadUInt16();
+			reader.ReadSpan(MemoryMarshal.Cast<ushort, byte>(skyline.AsSpan()));
 			this._World.Skyline = skyline;
 		}
 		this._IsSkylineLoaded = true;
+	}
+	private void _LoadTilemap()
+	{
+		if (this._AreTilesLoaded) return;
+		using (var tilesChunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldBlocks))
+		{
+			var reader = new JJxReader(tilesChunk);
+			var tiles = new Tile[this._World.Size.Width * this._World.Size.Height];
+			for (var i = 0; i < tiles.Length; ++i)
+				tiles[i] = reader.ReadObject<Tile>();
+			this._World._Tilemap = new(tiles, this._World.Size);
+		}
+		this._AreTilesLoaded = true;
 	}
 	/* Static Methods */
 	internal static WorldArchive Load(IArchiveReader reader, bool eagerLoad = false)
@@ -78,11 +90,12 @@ public sealed class WorldArchive : IArchive
 		if (eagerLoad)
 		{
 			archive._LoadSkyline();
+			archive._LoadTilemap();
 		}
 		return archive;
 	}
 	/* Properties */
-	public bool IsFullyLoaded => this._IsSkylineLoaded;
+	internal bool IsFullyLoaded => this._IsSkylineLoaded && this._AreTilesLoaded;
 	private readonly IArchiveReader? _Reader;
 	internal readonly World _World;
 	// Info
@@ -102,4 +115,7 @@ public sealed class WorldArchive : IArchive
 	// Skyline
 	private bool _IsSkylineLoaded = false;
 	public ushort[] Skyline { get { this._LoadSkyline(); return this._World.Skyline; } }
+	// Tiles
+	private bool _AreTilesLoaded = false;
+	public Tilemap Tilemap { get { this._LoadTilemap(); return this._World.Tilemap; } }
 }
