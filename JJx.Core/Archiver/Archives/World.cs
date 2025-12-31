@@ -66,5 +66,18 @@ public sealed class WorldArchive : IArchive
 	/* Properties */
 	private readonly IArchiveReader? _Reader;
 	private readonly World _World;
-	// World
+	// Info
+	public Guid Id => this._World.Id;
+	public Version Version => this._World.Version;
+	public DateTime LastPlayed { get => this._World.LastPlayed; set => this._World.LastPlayed = value; }
+	public string Name { get => this._World.Name; set => this._World.Name = value; }
+	public string Author { get => this._World.Author; set => this._World.Author = value; }
+	public Planet Planet { get => this._World.Planet; set => this._World.Planet = value; }
+	public Season Season { get => this._World.Season; set => this._World.Season = value; }
+	public Gamemode Gamemode { get => this._World.Gamemode; set => this._World.Gamemode = value; }
+	public MapBounds SizeBounds { get => this._World.SizeBounds; set => this._World.SizeBounds = value; }
+	public MapBounds SkyBounds { get => this._World.SkyBounds; set => this._World.SkyBounds = value; }
+	public (ushort Width, ushort Height) Size => this._World.Size;
+	public (ushort X, ushort Y) Player { get => this._World.Player; set => this._World.Player = value; }
+	public (ushort X, ushort Y) Spawn { get => this._World.Spawn; set => this._World.Spawn = value; }
 }

@@ -15,8 +15,5 @@ internal sealed class DateTimeConverter : JJxConverter<DateTime>
 	public override DateTime Read(ref JJxReader reader)
 		=> DateTimeOffset.FromUnixTimeSeconds(reader.ReadUInt32()).LocalDateTime;
 	public override void Write(DateTime value, JJxWriter writer)
-	{
-	}
-	/* Class Properties */
-	private const int SIZE = 16;
+		=> writer.Write((uint)new DateTimeOffset(value.ToUniversalTime()).ToUnixTimeSeconds());
 }

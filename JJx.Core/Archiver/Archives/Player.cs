@@ -46,4 +46,11 @@ public sealed class PlayerArchive : IArchive
 	/* Properties */
 	private readonly IArchiveReader? _Reader;
 	private readonly Player _Player;
+	// Info
+	public Guid Id => this._Player.Id;
+	public Version Version => this._Player.Version;
+	public string Name { get => this._Player.Name; set => this._Player.Name = value; }
+	public Planet UnlockedPlanets { get => this._Player.UnlockedPlanets; set => this._Player.UnlockedPlanets = value; }
+	public CharacterAppearance Appearance => this._Player.Appearance;
+	public Ruleset Rules => this._Player.Rules;
 }
