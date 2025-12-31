@@ -63,5 +63,5 @@ public sealed class Player
 	public CharacterAppearance Appearance;
 	public Ruleset Rules;
 	/* Class Properties */
-	private const int MAX_NAME_LENGTH = 16;
+	private const int MAX_NAME_LENGTH = 16 - 1;
 }

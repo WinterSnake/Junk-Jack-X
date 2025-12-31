@@ -19,6 +19,7 @@ public sealed class JJxSerializationOptions
 		Default.AddConverter<EnumFactoryConverter>();
 		Default.AddConverter<ArchiverChunkConverter>(typeof(ArchiverChunk));
 		Default.AddConverter<GuidConverter>(typeof(Guid));
+		Default.AddConverter<DateTimeConverter>(typeof(DateTime));
 		Default._IsReadOnly = true;
 	}
 	/* Instance Methods */
