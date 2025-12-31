@@ -16,9 +16,9 @@ internal sealed class ItemConverter : JJxConverter<Item>
 		var id = reader.ReadUInt16();
 		var count = reader.ReadUInt16();
 		var durabiltiy = reader.ReadUInt16();
-		var icon = reader.ReadUInt8();
+		var variant = reader.ReadUInt8();
 		var unknown = reader.ReadUInt8();
-		return new(id, count, durabiltiy, data, icon, unknown);
+		return new(id, count, durabiltiy, data, variant, unknown);
 	}
 	public override void Write(Item value, JJxWriter writer)
 	{
@@ -26,7 +26,7 @@ internal sealed class ItemConverter : JJxConverter<Item>
 		writer.Write(value.Id);
 		writer.Write(value.Count);
 		writer.Write(value.Durability);
-		writer.Write(value.Icon);
+		writer.Write(value.Variant);
 		writer.Write(value.Unknown);
 	}
 }
