@@ -58,4 +58,6 @@ internal record struct ArchiverChunk
 	public bool IsCompressed;
 	public int Offset;
 	public int Length;
+	/* Class Properties */
+	internal const int SIZE = 12;
 }
