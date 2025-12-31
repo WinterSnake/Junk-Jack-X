@@ -25,15 +25,29 @@ public sealed class PlayerArchive : IArchive
 	private void _LoadItems()
 	{
 		if (this._AreItemsLoaded) return;
-		var items = new Item[Player.COUNTOF_ITEMS];
 		using (var inventoryChunk = this._Reader!.GetChunkStream(ArchiverChunkType.PlayerItems))
 		{
 			var reader = new JJxReader(inventoryChunk);
+			var items = new Item[Player.COUNTOF_ITEMS];
 			for (var i = 0; i < items.Length; ++i)
 				items[i] = reader.ReadObject<Item>();
+			this._Player._Items = items;
 		}
-		this._Player.Items = items;
 		this._AreItemsLoaded = true;
+	}
+	private void _LoadStatus()
+	{
+		if (this._IsStatusLoaded) return;
+		using (var inventoryChunk = this._Reader!.GetChunkStream(ArchiverChunkType.PlayerStatus))
+		{
+			var reader = new JJxReader(inventoryChunk);
+			this._Player.Health = reader.ReadFloat32() * 10.0f;
+			var effects = new Effect[Player.COUNTOF_EFFECTS];
+			for (var i = 0; i < effects.Length; ++i)
+				effects[i] = reader.ReadObject<Effect>();
+			this._Player._Effects = effects;
+		}
+		this._IsStatusLoaded = true;
 	}
 	/* Static Methods */
 	internal static PlayerArchive Load(IArchiveReader reader)
@@ -57,6 +71,7 @@ public sealed class PlayerArchive : IArchive
 		return new(player, reader);
 	}
 	/* Properties */
+	public bool IsFullyLoaded => this._AreItemsLoaded && this._IsStatusLoaded;
 	private readonly IArchiveReader? _Reader;
 	private readonly Player _Player;
 	// Info
@@ -68,7 +83,7 @@ public sealed class PlayerArchive : IArchive
 	public Ruleset Rules => this._Player.Rules;
 	// Inventory
 	private bool _AreItemsLoaded = false;
-	public Item[] Items { get { this._LoadItems(); return this._Player.Items; } }
+	public Span<Item> Items { get { this._LoadItems(); return this._Player.Items; } }
 	public Span<Item> SurvivalHotbar { get { this._LoadItems(); return this._Player.SurvivalHotbar; } }
 	public Span<Item> CreativeHotbar { get { this._LoadItems(); return this._Player.CreativeHotbar; } }
 	public Span<Item> CraftingSlots { get { this._LoadItems(); return this._Player.CraftingSlots; } }
@@ -77,4 +92,11 @@ public sealed class PlayerArchive : IArchive
 	public Span<Item> ArmorVisual { get { this._LoadItems(); return this._Player.ArmorVisual; } }
 	public ref Item CraftSlot { get { this._LoadItems(); return ref this._Player.CraftSlot; } }
 	public ref Item ArrowSlot { get { this._LoadItems(); return ref this._Player.ArrowSlot; } }
+	// Status
+	private bool _IsStatusLoaded = false;
+	public float Health {
+		get { this._LoadStatus(); return this._Player.Health; }
+		set { this._LoadStatus(); this._Player.Health = value; }
+	}
+	public Span<Effect> Effects { get { this._LoadStatus(); return this._Player.Effects; } }
 }

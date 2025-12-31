@@ -49,7 +49,8 @@ public sealed class Player
 		this.UnlockedPlanets = unlockedPlanets;
 		this.Appearance = appearance;
 		this.Rules = ruleset;
-		this.Items = Array.Empty<Item>();
+		this._Items = Array.Empty<Item>();
+		this._Effects = Array.Empty<Effect>();
 	}
 	/* Instance Methods */
 	/* Properties */
@@ -64,19 +65,25 @@ public sealed class Player
 	public Planet UnlockedPlanets;
 	public CharacterAppearance Appearance;
 	public Ruleset Rules;
-	// Inventory
-	public Item[] Items { get; internal set; }
-	public Span<Item> SurvivalHotbar => this.Items.AsSpan(OFFSET_SURVIVAL_HOTBAR, SIZEOF_HOTBAR);
-	public Span<Item> CreativeHotbar => this.Items.AsSpan(OFFSET_CREATIVE_HOTBAR, SIZEOF_HOTBAR);
-	public Span<Item> CraftingSlots  => this.Items.AsSpan(OFFSET_CRAFTING, SIZEOF_CRAFTING);
-	public Span<Item> Inventory      => this.Items.AsSpan(OFFSET_INVENTORY, SIZEOF_INVENTORY);
-	public Span<Item> ArmorActual    => this.Items.AsSpan(OFFSET_ARMOR_ACTIVE, SIZEOF_ARMOR);
-	public Span<Item> ArmorVisual    => this.Items.AsSpan(OFFSET_ARMOR_VISUAL, SIZEOF_ARMOR);
-	public ref Item CraftSlot => ref this.Items[OFFSET_CRAFT];
-	public ref Item ArrowSlot => ref this.Items[OFFSET_ARROW];
+	// Items
+	internal Item[] _Items;
+	public Span<Item> Items => this._Items.AsSpan();
+	public Span<Item> SurvivalHotbar => this._Items.AsSpan(OFFSET_SURVIVAL_HOTBAR, SIZEOF_HOTBAR);
+	public Span<Item> CreativeHotbar => this._Items.AsSpan(OFFSET_CREATIVE_HOTBAR, SIZEOF_HOTBAR);
+	public Span<Item> CraftingSlots  => this._Items.AsSpan(OFFSET_CRAFTING, SIZEOF_CRAFTING);
+	public Span<Item> Inventory      => this._Items.AsSpan(OFFSET_INVENTORY, SIZEOF_INVENTORY);
+	public Span<Item> ArmorActual    => this._Items.AsSpan(OFFSET_ARMOR_ACTIVE, SIZEOF_ARMOR);
+	public Span<Item> ArmorVisual    => this._Items.AsSpan(OFFSET_ARMOR_VISUAL, SIZEOF_ARMOR);
+	public ref Item CraftSlot => ref this._Items[OFFSET_CRAFT];
+	public ref Item ArrowSlot => ref this._Items[OFFSET_ARROW];
+	// Status
+	public float Health;
+	internal Effect[] _Effects;
+	public Span<Effect> Effects => this._Effects.AsSpan();
 	/* Class Properties */
 	private const int MAX_NAME_LENGTH  = 16 - 1;
 	internal const int COUNTOF_ITEMS = 77;
+	internal const int COUNTOF_EFFECTS = 4;
 	// Items
 	private const byte OFFSET_SURVIVAL_HOTBAR =  0;
 	private const byte OFFSET_CREATIVE_HOTBAR = 10;
