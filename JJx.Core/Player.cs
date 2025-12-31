@@ -49,9 +49,11 @@ public sealed class Player
 		this.UnlockedPlanets = unlockedPlanets;
 		this.Appearance = appearance;
 		this.Rules = ruleset;
+		this.Items = Array.Empty<Item>();
 	}
 	/* Instance Methods */
 	/* Properties */
+	// Info
 	public readonly Guid Id = Guid.NewGuid();
 	public readonly Version Version = Version.Latest;
 	private string _Name;
@@ -62,6 +64,30 @@ public sealed class Player
 	public Planet UnlockedPlanets;
 	public CharacterAppearance Appearance;
 	public Ruleset Rules;
+	// Inventory
+	public Item[] Items { get; internal set; }
+	public Span<Item> SurvivalHotbar => this.Items.AsSpan(OFFSET_SURVIVAL_HOTBAR, SIZEOF_HOTBAR);
+	public Span<Item> CreativeHotbar => this.Items.AsSpan(OFFSET_CREATIVE_HOTBAR, SIZEOF_HOTBAR);
+	public Span<Item> CraftingSlots  => this.Items.AsSpan(OFFSET_CRAFTING, SIZEOF_CRAFTING);
+	public Span<Item> Inventory      => this.Items.AsSpan(OFFSET_INVENTORY, SIZEOF_INVENTORY);
+	public Span<Item> ArmorActual    => this.Items.AsSpan(OFFSET_ARMOR_ACTIVE, SIZEOF_ARMOR);
+	public Span<Item> ArmorVisual    => this.Items.AsSpan(OFFSET_ARMOR_VISUAL, SIZEOF_ARMOR);
+	public ref Item CraftSlot => ref this.Items[OFFSET_CRAFT];
+	public ref Item ArrowSlot => ref this.Items[OFFSET_ARROW];
 	/* Class Properties */
-	private const int MAX_NAME_LENGTH = 16 - 1;
+	private const int MAX_NAME_LENGTH  = 16 - 1;
+	internal const int COUNTOF_ITEMS = 77;
+	// Items
+	private const byte OFFSET_SURVIVAL_HOTBAR =  0;
+	private const byte OFFSET_CREATIVE_HOTBAR = 10;
+	private const byte SIZEOF_HOTBAR          = 10;
+	private const byte OFFSET_CRAFTING        = 20;
+	private const byte SIZEOF_CRAFTING        =  9;
+	private const byte OFFSET_INVENTORY       = 29;
+	private const byte SIZEOF_INVENTORY       = 36;
+	private const byte OFFSET_ARMOR_ACTIVE    = 65;
+	private const byte OFFSET_ARMOR_VISUAL    = 70;
+	private const byte SIZEOF_ARMOR           =  5;  // Order: Helm, Chestpiece, Leggings, Feet, Pet
+	private const byte OFFSET_CRAFT           = 75;
+	private const byte OFFSET_ARROW           = 76;
 }
