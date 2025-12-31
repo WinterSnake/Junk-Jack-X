@@ -50,6 +50,8 @@ public sealed class Player
 		this.Appearance = appearance;
 		this.Rules = ruleset;
 		this._Items = Array.Empty<Item>();
+		this._Craftbook = Array.Empty<byte>();
+		this._Achievements = Array.Empty<byte>();
 		this._Effects = Array.Empty<Effect>();
 	}
 	/* Instance Methods */
@@ -76,14 +78,22 @@ public sealed class Player
 	public Span<Item> ArmorVisual    => this._Items.AsSpan(OFFSET_ARMOR_VISUAL, SIZEOF_ARMOR);
 	public ref Item CraftSlot => ref this._Items[OFFSET_CRAFT];
 	public ref Item ArrowSlot => ref this._Items[OFFSET_ARROW];
+	// Craftbook
+	internal byte[] _Craftbook;
+	public Span<byte> Craftbook => this._Craftbook.AsSpan();
+	// Achievements
+	internal byte[] _Achievements;
+	public Span<byte> Achievements => this._Achievements.AsSpan();
 	// Status
 	public float Health;
 	internal Effect[] _Effects;
 	public Span<Effect> Effects => this._Effects.AsSpan();
 	/* Class Properties */
-	private const int MAX_NAME_LENGTH  = 16 - 1;
-	internal const int COUNTOF_ITEMS   = 77;
-	internal const int COUNTOF_EFFECTS = 4;
+	private const int MAX_NAME_LENGTH      = 16 - 1;
+	internal const int COUNTOF_ITEMS       = 77;
+	internal const int COUNTOF_EFFECTS     = 4;
+	internal const int SIZEOF_CRAFTBOOK    = 256;
+	internal const int SIZEOF_ACHIEVEMENTS = 32;
 	// Items
 	private const byte OFFSET_SURVIVAL_HOTBAR =  0;
 	private const byte OFFSET_CREATIVE_HOTBAR = 10;
