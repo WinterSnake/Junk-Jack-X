@@ -244,6 +244,9 @@ public sealed class WorldArchive : IArchive
 		{
 			var reader = new JJxReader(chunk);
 			var count = reader.ReadInt32();
+			this._World.Fruits.EnsureCapacity(count);
+			for (var i = 0; i < count; ++i)
+				this._World.Fruits.Add(reader.ReadObject<Fruit>());
 		}
 		this._IsContainerFruitLoaded = true;
 	}
@@ -405,7 +408,9 @@ public sealed class WorldArchive : IArchive
 		chunk = writer.WriteChunk(ArchiverChunkType.WorldFruits);
 		{
 			var streamWriter = new JJxWriter(chunk);
-			streamWriter.Write((int)0);
+			streamWriter.Write(this.Fruits.Count);
+			foreach (var fruit in CollectionsMarshal.AsSpan(this.Fruits))
+				streamWriter.Write(fruit);
 		}
 		// Container[Decay]
 		chunk = writer.WriteChunk(ArchiverChunkType.WorldPlantDecay);
@@ -551,6 +556,7 @@ public sealed class WorldArchive : IArchive
 	public List<Shelf> Shelves { get { this._LoadContainerShelf(); return this._World.Shelves; } }
 	private bool _IsContainerPlantLoaded = false;
 	private bool _IsContainerFruitLoaded = false;
+	public List<Fruit> Fruits { get { this._LoadContainerFruit(); return this._World.Fruits; } }
 	private bool _IsContainerDecayLoaded = false;
 	private bool _IsContainerLockLoaded = false;
 	public List<Lock> Locks { get { this._LoadContainerLock(); return this._World.Locks; } }
