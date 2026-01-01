@@ -45,7 +45,7 @@ public interface IArchiveWriter : IDisposable
 {
 	/* Instance Methods */
 	public void Flush();
-	public Stream WriteChunk(ArchiverChunkType type, byte version = 1, bool IsCompressed = false);
+	public Stream WriteChunk(ArchiverChunkType type, byte version = 0, bool isCompressed = false);
 }
 
 public sealed class ArchiveStream : IDisposable, IArchiveReader, IArchiveWriter
@@ -96,7 +96,7 @@ public sealed class ArchiveStream : IDisposable, IArchiveReader, IArchiveWriter
 		{
 			ref var chunk = ref chunks[i];
 			var pendingChunkStream = this._PendingChunks![i];
-			chunk.Offset = headerOffset + totalOffset;
+			chunk.Offset = chunk.Type is ArchiverChunkType.Padding ? 0 : headerOffset + totalOffset;
 			if (chunk.IsCompressed)
 			{
 				var compressedChunk = new MemoryStream();
