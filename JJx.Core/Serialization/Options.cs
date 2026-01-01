@@ -25,6 +25,7 @@ public sealed class JJxSerializationOptions
 		Default.AddConverter<TileConverter>(typeof(Tile));
 		// Containers
 		Default.AddConverter<SignConverter>(typeof(Sign));
+		Default.AddConverter<LabConverter>(typeof(Lab));
 		Default.AddConverter<ShelfConverter>(typeof(Shelf));
 		Default.AddConverter<LockConverter>(typeof(Lock));
 		Default.AddConverter<EntityConverter>(typeof(Entity));
