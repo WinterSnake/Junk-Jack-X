@@ -44,8 +44,8 @@ public sealed class World
 {
 	/* Constructor */
 	internal World(
-		Guid id, Version version, DateTime lastPlayed, string name, string author,
-		Planet planet, Season season, Gamemode gamemode, MapBounds sizeBounds, MapBounds skyBounds
+		Guid id, Version version, DateTime lastPlayed, string name, string author, Planet planet,
+		Season season, Gamemode gamemode, (ushort Width, ushort Height) size, MapBounds sizeBounds, MapBounds skyBounds
 	)
 	{
 		this.Id = id;
@@ -58,7 +58,8 @@ public sealed class World
 		this.Gamemode = gamemode;
 		this.SizeBounds = sizeBounds;
 		this.SkyBounds = skyBounds;
-		this.Skyline = Array.Empty<ushort>();
+		this.Size = size;
+		this._Skyline = new ushort[size.Width];
 	}
 	/* Instance Methods */
 	/* Properties */
@@ -85,7 +86,8 @@ public sealed class World
 	public (ushort X, ushort Y) Player;
 	public (ushort X, ushort Y) Spawn;
 	// Skyline
-	public ushort[] Skyline { get; internal set; }
+	private readonly ushort[] _Skyline;
+	public Span<ushort> Skyline => this._Skyline.AsSpan();
 	// Tiles
 	internal Tilemap? _Tilemap;
 	public Tilemap Tilemap => this._Tilemap!;
@@ -93,7 +95,15 @@ public sealed class World
 	internal byte[]? _Fog = null;
 	public bool HasFog => this._Fog is not null;
 	public Span<byte> Fog => this._Fog.AsSpan();
+	// Time
+	private readonly byte[] _Time = new byte[SIZEOF_TIME];
+	public Span<byte> Time => this._Time.AsSpan();
+	// Weather
+	private readonly byte[] _Weather = new byte[SIZEOF_WEATHER];
+	public Span<byte> Weather => this._Weather.AsSpan();
 	/* Class Properties */
-	private const int MAX_NAME_LENGTH   = 32 - 1;
-	private const int MAX_AUTHOR_LENGTH = 16 - 1;
+	private const int MAX_NAME_LENGTH   = WorldArchive.SIZEOF_NAME - 1;
+	private const int MAX_AUTHOR_LENGTH = WorldArchive.SIZEOF_AUTHOR - 1;
+	private const int SIZEOF_TIME       = 8;
+	private const int SIZEOF_WEATHER    = 8;
 }

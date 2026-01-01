@@ -20,6 +20,8 @@ public sealed class WorldArchive : IArchive
 		this._IsSkylineLoaded = true;
 		this._AreTilesLoaded = true;
 		this._IsFogLoaded = true;
+		this._IsTimeLoaded = true;
+		this._IsWeatherLoaded = true;
 	}
 	private WorldArchive(World world, IArchiveReader? reader)
 	{
@@ -34,6 +36,9 @@ public sealed class WorldArchive : IArchive
 		this._LoadSkyline();
 		this._LoadTilemap();
 		this._LoadFog();
+		this._LoadTime();
+		this._LoadWeather();
+		this._Reader!.Dispose();
 	}
 	private void _LoadSkyline()
 	{
@@ -41,9 +46,7 @@ public sealed class WorldArchive : IArchive
 		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldSkyline))
 		{
 			var reader = new JJxReader(chunk);
-			var skyline = new ushort[this._World.Size.Width];
-			reader.ReadSpan(MemoryMarshal.Cast<ushort, byte>(skyline.AsSpan()));
-			this._World.Skyline = skyline;
+			reader.ReadSpan(MemoryMarshal.Cast<ushort, byte>(this._World.Skyline));
 		}
 		this._IsSkylineLoaded = true;
 	}
@@ -75,14 +78,30 @@ public sealed class WorldArchive : IArchive
 		}
 		this._IsFogLoaded = true;
 	}
+	private void _LoadTime()
+	{
+		if (this._IsTimeLoaded) return;
+		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldTime))
+		{
+			var reader = new JJxReader(chunk);
+			reader.ReadSpan(this._World.Time);
+		}
+		this._IsTimeLoaded = true;
+	}
+	private void _LoadWeather()
+	{
+		if (this._IsWeatherLoaded) return;
+		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldWeather))
+		{
+			var reader = new JJxReader(chunk);
+			reader.ReadSpan(this._World.Weather);
+		}
+		this._IsWeatherLoaded = true;
+	}
 	// Writing
 	public void Write(IArchiveWriter writer)
 	{
-		if (!this.IsFullyLoaded)
-		{
-			this._Load();
-			this.Dispose();
-		}
+		if (!this.IsFullyLoaded) this._Load();
 		Stream chunk;
 		// Info
 		chunk = writer.WriteChunk(ArchiverChunkType.WorldInfo);
@@ -111,7 +130,7 @@ public sealed class WorldArchive : IArchive
 		chunk = writer.WriteChunk(ArchiverChunkType.WorldSkyline);
 		{
 			var streamWriter = new JJxWriter(chunk);
-			streamWriter.Write(MemoryMarshal.Cast<ushort, byte>(this.Skyline.AsSpan()));
+			streamWriter.Write(MemoryMarshal.Cast<ushort, byte>(this.Skyline));
 		}
 		// Tiles
 		chunk = writer.WriteChunk(ArchiverChunkType.WorldBlocks, version: 1, isCompressed: true);
@@ -131,7 +150,18 @@ public sealed class WorldArchive : IArchive
 				streamWriter.Write(this.Fog);
 			}
 		}
-			
+		// Time
+		chunk = writer.WriteChunk(ArchiverChunkType.WorldTime);
+		{
+			var streamWriter = new JJxWriter(chunk);
+			streamWriter.Write(this.Time);
+		}
+		// Weather
+		chunk = writer.WriteChunk(ArchiverChunkType.WorldWeather);
+		{
+			var streamWriter = new JJxWriter(chunk);
+			streamWriter.Write(this.Weather);
+		}
 	}
 	/* Static Methods */
 	internal static WorldArchive Load(IArchiveReader reader, bool eagerLoad = false)
@@ -165,8 +195,8 @@ public sealed class WorldArchive : IArchive
 			streamReader.Skip(4); // Unknown
 			streamReader.Skip(sizeof(uint) * 32); // Padding
 			world = new(
-				guid, version, lastPlayed, name, author,
-				planet, season, gamemode, sizeBounds, skyBounds
+				guid, version, lastPlayed, name, author, planet,
+				season, gamemode, size, sizeBounds, skyBounds
 			);
 			world.Size = size;
 			world.Player = player;
@@ -177,7 +207,11 @@ public sealed class WorldArchive : IArchive
 		return archive;
 	}
 	/* Properties */
-	internal bool IsFullyLoaded => this._IsSkylineLoaded && this._AreTilesLoaded;
+	internal bool IsFullyLoaded => this._IsSkylineLoaded &&
+								   this._AreTilesLoaded &&
+								   this._IsFogLoaded &&
+								   this._IsTimeLoaded &&
+								   this._IsWeatherLoaded;
 	private readonly IArchiveReader? _Reader;
 	internal readonly World _World;
 	// Info
@@ -196,7 +230,7 @@ public sealed class WorldArchive : IArchive
 	public (ushort X, ushort Y) Spawn { get => this._World.Spawn; set => this._World.Spawn = value; }
 	// Skyline
 	private bool _IsSkylineLoaded = false;
-	public ushort[] Skyline { get { this._LoadSkyline(); return this._World.Skyline; } }
+	public Span<ushort> Skyline { get { this._LoadSkyline(); return this._World.Skyline; } }
 	// Tiles
 	private bool _AreTilesLoaded = false;
 	public Tilemap Tilemap { get { this._LoadTilemap(); return this._World.Tilemap; } }
@@ -204,7 +238,13 @@ public sealed class WorldArchive : IArchive
 	private bool _IsFogLoaded = false;
 	public bool HasFog { get { this._LoadFog(); return this._World.HasFog; } }
 	public Span<byte> Fog { get { this._LoadFog(); return this._World.Fog; } }
+	// Time
+	private bool _IsTimeLoaded = false;
+	public Span<byte> Time { get { this._LoadTime(); return this._World.Time; } }
+	// Weather
+	private bool _IsWeatherLoaded = false;
+	public Span<byte> Weather { get { this._LoadWeather(); return this._World.Weather; } }
 	/* Class Properties */
-	private const int SIZEOF_NAME   = 32;
-	private const int SIZEOF_AUTHOR = 16;
+	internal const int SIZEOF_NAME   = 32;
+	internal const int SIZEOF_AUTHOR = 16;
 }
