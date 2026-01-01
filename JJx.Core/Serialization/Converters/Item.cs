@@ -10,16 +10,14 @@ namespace JJx.Core.Serialization;
 internal sealed class ItemConverter : JJxConverter<Item>
 {
 	/* Instance Methods */
-	public override Item Read(ref JJxReader reader)
-	{
-		var data = reader.ReadUInt32();
-		var id = reader.ReadUInt16();
-		var count = reader.ReadUInt16();
-		var durabiltiy = reader.ReadUInt16();
-		var variant = reader.ReadUInt8();
-		var unknown = reader.ReadUInt8();
-		return new(id, count, durabiltiy, data, variant, unknown);
-	}
+	public override Item Read(ref JJxReader reader) => new() {
+		Data=reader.ReadUInt32(),
+		Id=reader.ReadUInt16(),
+		Count=reader.ReadUInt16(),
+		Durability=reader.ReadUInt16(),
+		Variant=reader.ReadUInt8(),
+		Unknown=reader.ReadUInt8()
+	};
 	public override void Write(Item @value, JJxWriter writer)
 	{
 		writer.Write(@value.Data);

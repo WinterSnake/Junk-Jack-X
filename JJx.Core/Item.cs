@@ -20,21 +20,11 @@ namespace JJx.Core;
 
 public record struct Item
 {
-	/* Constructor */
-	public Item(ushort id, ushort count, ushort durability, uint data, byte variant, byte unknown)
-	{
-		this.Id = id;
-		this.Count = count;
-		this.Durability = durability;
-		this.Data = data;
-		this.Variant = variant;
-		this.Unknown = unknown;
-	}
 	/* Properties */
 	public ushort Id;
 	public ushort Count;
 	public ushort Durability;
 	public uint Data;
 	public byte Variant;
-	public readonly byte Unknown;
+	public byte Unknown;
 }
