@@ -23,5 +23,7 @@ internal sealed class StableConverter : JJxConverter<Stable>
 	{
 		writer.Write(@value.Position.X);
 		writer.Write(@value.Position.Y);
+		writer.Write(@value.Unknown);
+		writer.Write(@value.Feed);
 	}
 }

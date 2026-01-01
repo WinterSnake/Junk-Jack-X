@@ -19,8 +19,9 @@ internal sealed class TileConverter : JJxConverter<Tile>
 		var background = reader.ReadUInt16();
 		Span<ushort> decorations = stackalloc ushort[4];
 		reader.ReadSpan(MemoryMarshal.Cast<ushort, byte>(decorations));
-		var unknown = reader.ReadUInt32();
-		return new(foreground, background, decorations, unknown);
+		var tile = new Tile(foreground, background, decorations);
+		reader.ReadSpan(tile.Unknown);
+		return tile;
 	}
 	public override void Write(in Tile @value, JJxWriter writer)
 	{

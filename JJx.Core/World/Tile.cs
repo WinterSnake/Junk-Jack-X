@@ -23,12 +23,11 @@ namespace JJx.Core;
 public partial record struct Tile
 {
 	/* Constructor */
-	internal Tile(ushort foreground, ushort background, ReadOnlySpan<ushort> decorations, uint unknown)
+	internal Tile(ushort foreground, ushort background, ReadOnlySpan<ushort> decorations)
 	{
 		this.Foreground = foreground;
 		this.Background = background;
 		decorations.CopyTo(this._Decorations);
-		this.Unknown = unknown;
 	}
 	/* Properties */
 	public ushort Foreground;
@@ -36,7 +35,10 @@ public partial record struct Tile
 	private DecorationArray _Decorations;
 	[UnscopedRef]
 	public Span<ushort> Decorations => this._Decorations;
-	public readonly uint Unknown;
+	private readonly byte[] _Unknown = new byte[SIZEOF_UNKNOWN];
+	public Span<byte> Unknown => this._Unknown.AsSpan();
+	/* Class Properties */
+	private const int SIZEOF_UNKNOWN = 4;
 	/* Sub-Classes */
 	[InlineArray(4)]
 	private struct DecorationArray { private ushort _Decoration; }
