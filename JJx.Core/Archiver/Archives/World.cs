@@ -22,6 +22,8 @@ public sealed class WorldArchive : IArchive
 		this._IsFogLoaded = true;
 		this._IsTimeLoaded = true;
 		this._IsWeatherLoaded = true;
+		this._IsFluidLoaded = false;
+		this._AreCircuitsLoaded = false;
 	}
 	private WorldArchive(World world, IArchiveReader? reader)
 	{
@@ -38,6 +40,8 @@ public sealed class WorldArchive : IArchive
 		this._LoadFog();
 		this._LoadTime();
 		this._LoadWeather();
+		this._LoadFluid();
+		this._LoadCircuits();
 		this._Reader!.Dispose();
 	}
 	private void _LoadSkyline()
@@ -97,6 +101,30 @@ public sealed class WorldArchive : IArchive
 			reader.ReadSpan(this._World.Weather);
 		}
 		this._IsWeatherLoaded = true;
+	}
+	private void _LoadFluid()
+	{
+		if (this._IsFluidLoaded) return;
+		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldFluid))
+		{
+			var reader = new JJxReader(chunk);
+			var buffer = new byte[chunk.Length];
+			reader.ReadSpan(buffer.AsSpan());
+			this._World._Fluid = buffer;
+		}
+		this._AreCircuitsLoaded = true;
+	}
+	private void _LoadCircuits()
+	{
+		if (this._AreCircuitsLoaded) return;
+		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldCircuitry))
+		{
+			var reader = new JJxReader(chunk);
+			var buffer = new byte[chunk.Length];
+			reader.ReadSpan(buffer.AsSpan());
+			this._World._Circuitry = buffer;
+		}
+		this._IsFluidLoaded = true;
 	}
 	// Writing
 	public void Write(IArchiveWriter writer)
@@ -162,6 +190,18 @@ public sealed class WorldArchive : IArchive
 			var streamWriter = new JJxWriter(chunk);
 			streamWriter.Write(this.Weather);
 		}
+		// Fluid
+		chunk = writer.WriteChunk(ArchiverChunkType.WorldFluid);
+		{
+			var streamWriter = new JJxWriter(chunk);
+			streamWriter.Write(this.Fluid);
+		}
+		// Circuits
+		chunk = writer.WriteChunk(ArchiverChunkType.WorldCircuitry);
+		{
+			var streamWriter = new JJxWriter(chunk);
+			streamWriter.Write(this.Circuitry);
+		}
 	}
 	/* Static Methods */
 	internal static WorldArchive Load(IArchiveReader reader, bool eagerLoad = false)
@@ -211,7 +251,9 @@ public sealed class WorldArchive : IArchive
 								   this._AreTilesLoaded &&
 								   this._IsFogLoaded &&
 								   this._IsTimeLoaded &&
-								   this._IsWeatherLoaded;
+								   this._IsWeatherLoaded &&
+								   this._IsFluidLoaded &&
+								   this._AreCircuitsLoaded;
 	private readonly IArchiveReader? _Reader;
 	internal readonly World _World;
 	// Info
@@ -244,6 +286,13 @@ public sealed class WorldArchive : IArchive
 	// Weather
 	private bool _IsWeatherLoaded = false;
 	public Span<byte> Weather { get { this._LoadWeather(); return this._World.Weather; } }
+	// Containers
+	// Fluid
+	private bool _IsFluidLoaded = false;
+	public Span<byte> Fluid { get { this._LoadFluid(); return this._World.Fluid; } }
+	// Circuit
+	private bool _AreCircuitsLoaded = false;
+	public Span<byte> Circuitry { get { this._LoadCircuits(); return this._World.Circuitry; } }
 	/* Class Properties */
 	internal const int SIZEOF_NAME   = 32;
 	internal const int SIZEOF_AUTHOR = 16;

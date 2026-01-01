@@ -101,6 +101,13 @@ public sealed class World
 	// Weather
 	private readonly byte[] _Weather = new byte[SIZEOF_WEATHER];
 	public Span<byte> Weather => this._Weather.AsSpan();
+	// Containers
+	// Fluids
+	internal byte[] _Fluid = Array.Empty<byte>();
+	public Span<byte> Fluid => this._Fluid.AsSpan();
+	// Circuitry
+	internal byte[] _Circuitry = Array.Empty<byte>();
+	public Span<byte> Circuitry => this._Circuitry.AsSpan();
 	/* Class Properties */
 	private const int MAX_NAME_LENGTH   = WorldArchive.SIZEOF_NAME - 1;
 	private const int MAX_AUTHOR_LENGTH = WorldArchive.SIZEOF_AUTHOR - 1;
