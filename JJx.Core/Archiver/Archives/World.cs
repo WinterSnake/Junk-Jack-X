@@ -22,6 +22,17 @@ public sealed class WorldArchive : IArchive
 		this._IsFogLoaded = true;
 		this._IsTimeLoaded = true;
 		this._IsWeatherLoaded = true;
+		this._IsContainerChestLoaded = false;
+		this._IsContainerForgeLoaded = false;
+		this._IsContainerSignLoaded = false;
+		this._IsContainerStableLoaded = false;
+		this._IsContainerLabLoaded = false;
+		this._IsContainerShelfLoaded = false;
+		this._IsContainerPlantLoaded = false;
+		this._IsContainerFruitLoaded = false;
+		this._IsContainerDecayLoaded = false;
+		this._IsContainerLockLoaded = false;
+		this._IsContainerEntityLoaded = false;
 		this._IsFluidLoaded = false;
 		this._AreCircuitsLoaded = false;
 	}
@@ -40,8 +51,19 @@ public sealed class WorldArchive : IArchive
 		this._LoadFog();
 		this._LoadTime();
 		this._LoadWeather();
+		this._LoadContainerChest();
+		this._LoadContainerForge();
+		this._LoadContainerSign();
+		this._LoadContainerStable();
+		this._LoadContainerLab();
+		this._LoadContainerShelf();
+		this._LoadContainerPlant();
+		this._LoadContainerFruit();
+		this._LoadContainerDecay();
+		this._LoadContainerLock();
 		this._LoadFluid();
 		this._LoadCircuits();
+		this._LoadContainerEntity();
 		this._Reader!.Dispose();
 	}
 	private void _LoadSkyline()
@@ -112,7 +134,7 @@ public sealed class WorldArchive : IArchive
 			reader.ReadSpan(buffer.AsSpan());
 			this._World._Fluid = buffer;
 		}
-		this._AreCircuitsLoaded = true;
+		this._IsFluidLoaded = true;
 	}
 	private void _LoadCircuits()
 	{
@@ -124,7 +146,117 @@ public sealed class WorldArchive : IArchive
 			reader.ReadSpan(buffer.AsSpan());
 			this._World._Circuitry = buffer;
 		}
-		this._IsFluidLoaded = true;
+		this._AreCircuitsLoaded = true;
+	}
+	private void _LoadContainerChest()
+	{
+		if (this._IsContainerChestLoaded) return;
+		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldChests))
+		{
+			var reader = new JJxReader(chunk);
+			var count = reader.ReadInt32();
+		}
+		this._IsContainerChestLoaded = true;
+	}
+	private void _LoadContainerForge()
+	{
+		if (this._IsContainerForgeLoaded) return;
+		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldForges))
+		{
+			var reader = new JJxReader(chunk);
+			var count = reader.ReadInt32();
+		}
+		this._IsContainerForgeLoaded = true;
+	}
+	private void _LoadContainerSign()
+	{
+		if (this._IsContainerSignLoaded) return;
+		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldSigns))
+		{
+			var reader = new JJxReader(chunk);
+			var count = reader.ReadInt32();
+		}
+		this._IsContainerSignLoaded = true;
+	}
+	private void _LoadContainerStable()
+	{
+		if (this._IsContainerStableLoaded) return;
+		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldStables))
+		{
+			var reader = new JJxReader(chunk);
+			var count = reader.ReadInt32();
+		}
+		this._IsContainerStableLoaded = true;
+	}
+	private void _LoadContainerLab()
+	{
+		if (this._IsContainerLabLoaded) return;
+		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldLabs))
+		{
+			var reader = new JJxReader(chunk);
+			var count = reader.ReadInt32();
+		}
+		this._IsContainerLabLoaded = true;
+	}
+	private void _LoadContainerShelf()
+	{
+		if (this._IsContainerShelfLoaded) return;
+		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldShelves))
+		{
+			var reader = new JJxReader(chunk);
+			var count = reader.ReadInt32();
+		}
+		this._IsContainerShelfLoaded = true;
+	}
+	private void _LoadContainerPlant()
+	{
+		if (this._IsContainerPlantLoaded) return;
+		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldPlants))
+		{
+			var reader = new JJxReader(chunk);
+			var count = reader.ReadInt32();
+		}
+		this._IsContainerPlantLoaded = true;
+	}
+	private void _LoadContainerFruit()
+	{
+		if (this._IsContainerFruitLoaded) return;
+		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldFruits))
+		{
+			var reader = new JJxReader(chunk);
+			var count = reader.ReadInt32();
+		}
+		this._IsContainerFruitLoaded = true;
+	}
+	private void _LoadContainerDecay()
+	{
+		if (this._IsContainerDecayLoaded) return;
+		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldPlantDecay))
+		{
+			var reader = new JJxReader(chunk);
+			var count = reader.ReadInt32();
+		}
+		this._IsContainerDecayLoaded = true;
+	}
+	private void _LoadContainerLock()
+	{
+		if (this._IsContainerLockLoaded) return;
+		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldLocks))
+		{
+			var reader = new JJxReader(chunk);
+			var count = reader.ReadInt32();
+		}
+		this._IsContainerLockLoaded = true;
+	}
+	private void _LoadContainerEntity()
+	{
+		if (this._IsContainerEntityLoaded) return;
+		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldEntities))
+		{
+			var reader = new JJxReader(chunk);
+			var count = reader.ReadInt32();
+		}
+		this._IsContainerEntityLoaded = true;
 	}
 	// Writing
 	public void Write(IArchiveWriter writer)
@@ -190,6 +322,66 @@ public sealed class WorldArchive : IArchive
 			var streamWriter = new JJxWriter(chunk);
 			streamWriter.Write(this.Weather);
 		}
+		// Container[Chest]
+		chunk = writer.WriteChunk(ArchiverChunkType.WorldChests);
+		{
+			var streamWriter = new JJxWriter(chunk);
+			streamWriter.Write((int)0);
+		}
+		// Container[Forge]
+		chunk = writer.WriteChunk(ArchiverChunkType.WorldForges);
+		{
+			var streamWriter = new JJxWriter(chunk);
+			streamWriter.Write((int)0);
+		}
+		// Container[Sign]
+		chunk = writer.WriteChunk(ArchiverChunkType.WorldSigns);
+		{
+			var streamWriter = new JJxWriter(chunk);
+			streamWriter.Write((int)0);
+		}
+		// Container[Stable]
+		chunk = writer.WriteChunk(ArchiverChunkType.WorldStables);
+		{
+			var streamWriter = new JJxWriter(chunk);
+			streamWriter.Write((int)0);
+		}
+		// Container[Lab]
+		chunk = writer.WriteChunk(ArchiverChunkType.WorldLabs);
+		{
+			var streamWriter = new JJxWriter(chunk);
+			streamWriter.Write((int)0);
+		}
+		// Container[Shelf]
+		chunk = writer.WriteChunk(ArchiverChunkType.WorldShelves);
+		{
+			var streamWriter = new JJxWriter(chunk);
+			streamWriter.Write((int)0);
+		}
+		// Container[Plant]
+		chunk = writer.WriteChunk(ArchiverChunkType.WorldPlants);
+		{
+			var streamWriter = new JJxWriter(chunk);
+			streamWriter.Write((int)0);
+		}
+		// Container[Fruit]
+		chunk = writer.WriteChunk(ArchiverChunkType.WorldFruits);
+		{
+			var streamWriter = new JJxWriter(chunk);
+			streamWriter.Write((int)0);
+		}
+		// Container[Decay]
+		chunk = writer.WriteChunk(ArchiverChunkType.WorldPlantDecay);
+		{
+			var streamWriter = new JJxWriter(chunk);
+			streamWriter.Write((int)0);
+		}
+		// Container[Lock]
+		chunk = writer.WriteChunk(ArchiverChunkType.WorldLocks);
+		{
+			var streamWriter = new JJxWriter(chunk);
+			streamWriter.Write((int)0);
+		}
 		// Fluid
 		chunk = writer.WriteChunk(ArchiverChunkType.WorldFluid);
 		{
@@ -201,6 +393,12 @@ public sealed class WorldArchive : IArchive
 		{
 			var streamWriter = new JJxWriter(chunk);
 			streamWriter.Write(this.Circuitry);
+		}
+		// Container[Entity]
+		chunk = writer.WriteChunk(ArchiverChunkType.WorldEntities);
+		{
+			var streamWriter = new JJxWriter(chunk);
+			streamWriter.Write((int)0);
 		}
 	}
 	/* Static Methods */
@@ -252,8 +450,19 @@ public sealed class WorldArchive : IArchive
 								   this._IsFogLoaded &&
 								   this._IsTimeLoaded &&
 								   this._IsWeatherLoaded &&
+								   this._IsContainerChestLoaded &&
+								   this._IsContainerForgeLoaded &&
+								   this._IsContainerSignLoaded &&
+								   this._IsContainerStableLoaded &&
+								   this._IsContainerLabLoaded &&
+								   this._IsContainerShelfLoaded &&
+								   this._IsContainerPlantLoaded &&
+								   this._IsContainerFruitLoaded &&
+								   this._IsContainerDecayLoaded &&
+								   this._IsContainerLockLoaded &&
 								   this._IsFluidLoaded &&
-								   this._AreCircuitsLoaded;
+								   this._AreCircuitsLoaded &&
+								   this._IsContainerEntityLoaded;
 	private readonly IArchiveReader? _Reader;
 	internal readonly World _World;
 	// Info
@@ -287,6 +496,17 @@ public sealed class WorldArchive : IArchive
 	private bool _IsWeatherLoaded = false;
 	public Span<byte> Weather { get { this._LoadWeather(); return this._World.Weather; } }
 	// Containers
+	private bool _IsContainerChestLoaded = false;
+	private bool _IsContainerForgeLoaded = false;
+	private bool _IsContainerSignLoaded = false;
+	private bool _IsContainerStableLoaded = false;
+	private bool _IsContainerLabLoaded = false;
+	private bool _IsContainerShelfLoaded = false;
+	private bool _IsContainerPlantLoaded = false;
+	private bool _IsContainerFruitLoaded = false;
+	private bool _IsContainerDecayLoaded = false;
+	private bool _IsContainerLockLoaded = false;
+	private bool _IsContainerEntityLoaded = false;
 	// Fluid
 	private bool _IsFluidLoaded = false;
 	public Span<byte> Fluid { get { this._LoadFluid(); return this._World.Fluid; } }
