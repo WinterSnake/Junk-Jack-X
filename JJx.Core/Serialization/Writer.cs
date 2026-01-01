@@ -95,8 +95,8 @@ public sealed class JJxWriter
 	{
 		if (length == 0)
 		{
-			length = Encoding.UTF8.GetByteCount(@value);
-			this.Write(length);
+			length = Encoding.UTF8.GetByteCount(@value) + 1;
+			this.Write((ushort)length);
 		}
 		byte[]? storage = null;
 		Span<byte> buffer = length > 128 ? (storage = ArrayPool<byte>.Shared.Rent(length)).AsSpan(0, length) : stackalloc byte[length];

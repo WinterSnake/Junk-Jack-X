@@ -23,6 +23,8 @@ public sealed class JJxSerializationOptions
 		Default.AddConverter<ItemConverter>(typeof(Item));
 		Default.AddConverter<EffectConverter>(typeof(Effect));
 		Default.AddConverter<TileConverter>(typeof(Tile));
+		// Containers
+		Default.AddConverter<SignConverter>(typeof(Sign));
 		Default._IsReadOnly = true;
 	}
 	/* Instance Methods */

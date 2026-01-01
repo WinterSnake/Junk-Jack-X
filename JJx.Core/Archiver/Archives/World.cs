@@ -6,6 +6,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using JJx.Core.Serialization;
@@ -22,19 +23,19 @@ public sealed class WorldArchive : IArchive
 		this._IsFogLoaded = true;
 		this._IsTimeLoaded = true;
 		this._IsWeatherLoaded = true;
-		this._IsContainerChestLoaded = false;
-		this._IsContainerForgeLoaded = false;
-		this._IsContainerSignLoaded = false;
-		this._IsContainerStableLoaded = false;
-		this._IsContainerLabLoaded = false;
-		this._IsContainerShelfLoaded = false;
-		this._IsContainerPlantLoaded = false;
-		this._IsContainerFruitLoaded = false;
-		this._IsContainerDecayLoaded = false;
-		this._IsContainerLockLoaded = false;
-		this._IsContainerEntityLoaded = false;
-		this._IsFluidLoaded = false;
-		this._AreCircuitsLoaded = false;
+		this._IsContainerChestLoaded = true;
+		this._IsContainerForgeLoaded = true;
+		this._IsContainerSignLoaded = true;
+		this._IsContainerStableLoaded = true;
+		this._IsContainerLabLoaded = true;
+		this._IsContainerShelfLoaded = true;
+		this._IsContainerPlantLoaded = true;
+		this._IsContainerFruitLoaded = true;
+		this._IsContainerDecayLoaded = true;
+		this._IsContainerLockLoaded = true;
+		this._IsContainerEntityLoaded = true;
+		this._IsFluidLoaded = true;
+		this._AreCircuitsLoaded = true;
 	}
 	private WorldArchive(World world, IArchiveReader? reader)
 	{
@@ -175,6 +176,9 @@ public sealed class WorldArchive : IArchive
 		{
 			var reader = new JJxReader(chunk);
 			var count = reader.ReadInt32();
+			this._World.Signs.EnsureCapacity(count);
+			for (var i = 0; i < count; ++i)
+				this._World.Signs.Add(reader.ReadObject<Sign>());
 		}
 		this._IsContainerSignLoaded = true;
 	}
@@ -338,7 +342,9 @@ public sealed class WorldArchive : IArchive
 		chunk = writer.WriteChunk(ArchiverChunkType.WorldSigns);
 		{
 			var streamWriter = new JJxWriter(chunk);
-			streamWriter.Write((int)0);
+			streamWriter.Write(this.Signs.Count);
+			foreach (var sign in CollectionsMarshal.AsSpan(this.Signs))
+				streamWriter.Write(sign);
 		}
 		// Container[Stable]
 		chunk = writer.WriteChunk(ArchiverChunkType.WorldStables);
@@ -499,6 +505,7 @@ public sealed class WorldArchive : IArchive
 	private bool _IsContainerChestLoaded = false;
 	private bool _IsContainerForgeLoaded = false;
 	private bool _IsContainerSignLoaded = false;
+	public List<Sign> Signs { get { this._LoadContainerSign(); return this._World.Signs; } }
 	private bool _IsContainerStableLoaded = false;
 	private bool _IsContainerLabLoaded = false;
 	private bool _IsContainerShelfLoaded = false;

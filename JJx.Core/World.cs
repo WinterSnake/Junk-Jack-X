@@ -29,6 +29,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 
 namespace JJx.Core;
 
@@ -102,6 +103,7 @@ public sealed class World
 	private readonly byte[] _Weather = new byte[SIZEOF_WEATHER];
 	public Span<byte> Weather => this._Weather.AsSpan();
 	// Containers
+	public readonly List<Sign> Signs = new();
 	// Fluids
 	internal byte[] _Fluid = Array.Empty<byte>();
 	public Span<byte> Fluid => this._Fluid.AsSpan();

@@ -94,7 +94,7 @@ public ref struct JJxReader
 	public string ReadString(int length = 0)
 	{
 		if (length == 0)
-			length = this.ReadInt32();
+			length = this.ReadUInt16();
 		byte[]? storage = null;
 		Span<byte> buffer = length > 128 ? (storage = ArrayPool<byte>.Shared.Rent(length)).AsSpan(0, length) : stackalloc byte[length];
 		try {
