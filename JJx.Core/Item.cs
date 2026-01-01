@@ -27,4 +27,6 @@ public record struct Item
 	public uint Data;
 	public byte Variant;
 	public byte Unknown;
+	/* Class Properties */
+	public const ushort Empty = 0xFFFF;
 }

@@ -156,6 +156,9 @@ public sealed class WorldArchive : IArchive
 		{
 			var reader = new JJxReader(chunk);
 			var count = reader.ReadInt32();
+			this._World.Chests.EnsureCapacity(count);
+			for (var i = 0; i < count; ++i)
+				this._World.Chests.Add(reader.ReadObject<Chest>());
 		}
 		this._IsContainerChestLoaded = true;
 	}
@@ -345,7 +348,9 @@ public sealed class WorldArchive : IArchive
 		chunk = writer.WriteChunk(ArchiverChunkType.WorldChests);
 		{
 			var streamWriter = new JJxWriter(chunk);
-			streamWriter.Write((int)0);
+			streamWriter.Write(this.Chests.Count);
+			foreach (var chest in CollectionsMarshal.AsSpan(this.Chests))
+				streamWriter.Write(chest);
 		}
 		// Container[Forge]
 		chunk = writer.WriteChunk(ArchiverChunkType.WorldForges);
@@ -528,6 +533,7 @@ public sealed class WorldArchive : IArchive
 	public Span<byte> Weather { get { this._LoadWeather(); return this._World.Weather; } }
 	// Containers
 	private bool _IsContainerChestLoaded = false;
+	public List<Chest> Chests { get { this._LoadContainerChest(); return this._World.Chests; } }
 	private bool _IsContainerForgeLoaded = false;
 	private bool _IsContainerSignLoaded = false;
 	public List<Sign> Signs { get { this._LoadContainerSign(); return this._World.Signs; } }

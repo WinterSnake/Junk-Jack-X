@@ -103,6 +103,7 @@ public sealed class World
 	private readonly byte[] _Weather = new byte[SIZEOF_WEATHER];
 	public Span<byte> Weather => this._Weather.AsSpan();
 	// Containers
+	public readonly List<Chest> Chests = new();
 	public readonly List<Sign> Signs = new();
 	public readonly List<Stable> Stables = new();
 	public readonly List<Lab> Labs = new();
