@@ -105,6 +105,7 @@ public sealed class World
 	// Containers
 	public readonly List<Sign> Signs = new();
 	public readonly List<Lock> Locks = new();
+	public readonly List<Entity> Entities = new();
 	// Fluids
 	internal byte[] _Fluid = Array.Empty<byte>();
 	public Span<byte> Fluid => this._Fluid.AsSpan();

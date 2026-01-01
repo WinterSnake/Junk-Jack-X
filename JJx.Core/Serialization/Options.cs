@@ -26,6 +26,7 @@ public sealed class JJxSerializationOptions
 		// Containers
 		Default.AddConverter<SignConverter>(typeof(Sign));
 		Default.AddConverter<LockConverter>(typeof(Lock));
+		Default.AddConverter<EntityConverter>(typeof(Entity));
 		Default._IsReadOnly = true;
 	}
 	/* Instance Methods */
