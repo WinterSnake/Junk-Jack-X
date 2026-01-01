@@ -123,7 +123,7 @@ public sealed class WorldArchive : IArchive
 			streamWriter.Write(this.Gamemode);
 			streamWriter.Write(this.SizeBounds);
 			streamWriter.Write(this.SkyBounds);
-			streamWriter.Skip(4); // Unknown
+			streamWriter.Skip(4); // Unknown (likely padding)
 			streamWriter.Skip(sizeof(uint) * 32); // Padding
 		}
 		// Skyline
@@ -192,7 +192,7 @@ public sealed class WorldArchive : IArchive
 			var gamemode = streamReader.ReadObject<Gamemode>();
 			var sizeBounds = streamReader.ReadObject<MapBounds>();
 			var skyBounds = streamReader.ReadObject<MapBounds>();
-			streamReader.Skip(4); // Unknown
+			streamReader.Skip(4); // Unknown (likely padding)
 			streamReader.Skip(sizeof(uint) * 32); // Padding
 			world = new(
 				guid, version, lastPlayed, name, author, planet,

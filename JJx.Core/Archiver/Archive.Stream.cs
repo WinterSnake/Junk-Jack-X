@@ -96,7 +96,7 @@ public sealed class ArchiveStream : IDisposable, IArchiveReader, IArchiveWriter
 	{
 		var writer = new JJxWriter(this._Stream);
 		writer.Write((ushort)this._Chunks.Count);
-		writer.Skip(4); // Unknown
+		writer.Skip(4); // Unknown (likely reserved)
 		// Table
 		int totalOffset = 0;
 		var headerOffset = SIZEOF_HEADER + this._Chunks.Count * ArchiverChunk.SIZE;
@@ -160,7 +160,7 @@ public sealed class ArchiveStream : IDisposable, IArchiveReader, IArchiveWriter
 		// Chunks
 		var chunkCount = reader.ReadUInt16();
 		var chunks = new List<ArchiverChunk>(chunkCount);
-		reader.Skip(4); // Unknown
+		reader.Skip(4); // Unknown (likely reserved)
 		for (var i = 0; i < chunks.Capacity; ++i)
 			chunks.Add(reader.ReadObject<ArchiverChunk>());
 		return new ArchiveStream(type, stream, chunks);

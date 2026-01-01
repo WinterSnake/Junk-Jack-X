@@ -95,9 +95,9 @@ public sealed class PlayerArchive : IArchive
 			streamWriter.Write(this.UnlockedPlanets);
 			streamWriter.Write(this.Rules.Flags);
 			streamWriter.Write(this.Appearance.Pack());
-			streamWriter.Skip(2); // Unknown
+			streamWriter.Skip(2); // Unknown (likely padding)
 			streamWriter.Write(this.Rules.Difficulty);
-			streamWriter.Skip(3); // Unknown
+			streamWriter.Skip(3); // Unknown (likely padding)
 		}
 		// Items
 		chunk = writer.WriteChunk(ArchiverChunkType.PlayerItems);
@@ -142,9 +142,9 @@ public sealed class PlayerArchive : IArchive
 			var unlockedPlanets = streamReader.ReadObject<Planet>();
 			var ruleFlags = streamReader.ReadObject<Ruleset.GameplayOptions>();
 			var appearance = CharacterAppearance.Unpack(streamReader.ReadUInt16());
-			streamReader.Skip(2); // Unknown
+			streamReader.Skip(2); // Unknown (likely padding)
 			var difficulty = streamReader.ReadObject<Difficulty>();
-			streamReader.Skip(3); // Unknown
+			streamReader.Skip(3); // Unknown (likely padding)
 			var ruleset = new Ruleset(difficulty, ruleFlags);
 			player = new(guid, name, version, unlockedPlanets, appearance, ruleset);
 		}
