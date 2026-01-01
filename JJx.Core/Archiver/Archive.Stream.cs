@@ -60,7 +60,13 @@ public sealed class ArchiveStream : IDisposable, IArchiveReader, IArchiveWriter
 		this._Chunks = chunks;
 	}
 	/* Instance Methods */
-	public void Dispose() => this._Stream.Dispose();
+	public void Dispose()
+	{
+		this._Stream.Dispose();
+		if (this._PendingChunks is null) return;
+		foreach (var chunk in this._PendingChunks)
+			chunk.Dispose();
+	}
 	// Reading
 	public Stream GetChunkStream(ArchiverChunkType type)
 	{
@@ -78,22 +84,35 @@ public sealed class ArchiveStream : IDisposable, IArchiveReader, IArchiveWriter
 	// Writing
 	public void Flush()
 	{
-		var chunkCount = (ushort)this._Chunks.Count;
+		var writer = new JJxWriter(this._Stream);
+		writer.Write((ushort)this._Chunks.Count);
+		writer.Skip(4); // Unknown
+		// Table
 		int totalOffset = 0;
-		var headerOffset = SIZEOF_HEADER + chunkCount * ArchiverChunk.SIZE;
+		var headerOffset = SIZEOF_HEADER + this._Chunks.Count * ArchiverChunk.SIZE;
 		var chunks = CollectionsMarshal.AsSpan(this._Chunks);
+		var compressionOptions = new ZLibCompressionOptions() { CompressionLevel=6 };
 		for (var i = 0; i < this._Chunks.Count; ++i)
 		{
 			ref var chunk = ref chunks[i];
+			var pendingChunkStream = this._PendingChunks![i];
 			chunk.Offset = headerOffset + totalOffset;
-			chunk.Length = (int)this._PendingChunks![i].Length;
-			totalOffset += (int)this._PendingChunks![i].Length;
-		}
-		var writer = new JJxWriter(this._Stream);
-		writer.Write(chunkCount);
-		writer.Skip(4); // Unknown
-		foreach (ref var chunk in chunks)
+			if (chunk.IsCompressed)
+			{
+				var compressedChunk = new MemoryStream();
+				using (var compressorStream = new GZipStream(compressedChunk, compressionOptions, leaveOpen: true))
+				{
+					pendingChunkStream.Position = 0;
+					pendingChunkStream.CopyTo(compressorStream);
+				}
+				pendingChunkStream.Dispose();
+				this._PendingChunks[i] = pendingChunkStream = compressedChunk;
+			}
+			chunk.Length = (int)pendingChunkStream.Length;
+			totalOffset += (int)pendingChunkStream.Length;
 			writer.Write(chunk);
+		}
+		// Chunks
 		foreach (var pendingChunk in this._PendingChunks!)
 		{
 			pendingChunk.Position = 0;
@@ -150,7 +169,7 @@ public sealed class ArchiveStream : IDisposable, IArchiveReader, IArchiveWriter
 			case ArchiveType.World:
 			case ArchiveType.Adventure:
 			{
-				Encoding.UTF8.GetBytes(MAGIC_PLAYER, header);
+				Encoding.UTF8.GetBytes(MAGIC_WORLD, header);
 			} break;
 		}
 		BinaryPrimitives.WriteUInt16LittleEndian(header.Slice(SIZEOF_MAGIC), (ushort)type);
@@ -166,7 +185,7 @@ public sealed class ArchiveStream : IDisposable, IArchiveReader, IArchiveWriter
     ArchiveType IArchiveReader.Type => this.Type;
     IEnumerable<ArchiverChunk> IArchiveReader.Chunks => this._Chunks;
 	// Writing
-	private readonly List<ChunkStream>? _PendingChunks = null;
+	private readonly List<Stream>? _PendingChunks = null;
 	/* Class Properties */
 	private const int SIZEOF_HEADER   = 12;
 	private const int SIZEOF_MAGIC    =  4;
