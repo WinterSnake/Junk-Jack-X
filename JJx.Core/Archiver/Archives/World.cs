@@ -6,6 +6,7 @@
 */
 
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using JJx.Core.Serialization;
 
@@ -14,7 +15,11 @@ namespace JJx.Core;
 public sealed class WorldArchive : IArchive
 {
 	/* Constructor */
-	public WorldArchive(World world) :this(world, null) { }
+	public WorldArchive(World world) :this(world, null)
+	{
+		this._IsSkylineLoaded = true;
+		this._AreTilesLoaded = true;
+	}
 	private WorldArchive(World world, IArchiveReader? reader)
 	{
 		this._World = world;
@@ -22,6 +27,12 @@ public sealed class WorldArchive : IArchive
 	}
 	/* Instance Methods */
 	public void Dispose() => this._Reader?.Dispose();
+	// Reading
+	private void _Load()
+	{
+		this._LoadSkyline();
+		this._LoadTilemap();
+	}
 	private void _LoadSkyline()
 	{
 		if (this._IsSkylineLoaded) return;
@@ -46,6 +57,48 @@ public sealed class WorldArchive : IArchive
 			this._World._Tilemap = new(tiles, this._World.Size);
 		}
 		this._AreTilesLoaded = true;
+	}
+	// Writing
+	public void Write(IArchiveWriter writer)
+	{
+		if (!this.IsFullyLoaded) this._Load();
+		Stream chunk;
+		// Info
+		chunk = writer.WriteChunk(ArchiverChunkType.WorldInfo, version: 0);
+		{
+			var streamWriter = new JJxWriter(chunk);
+			streamWriter.Write(this.Id);
+			streamWriter.Write(this.LastPlayed);
+			streamWriter.Write(this.Version);
+			streamWriter.Write(this.Name, SIZEOF_NAME);
+			streamWriter.Write(this.Author, SIZEOF_AUTHOR);
+			streamWriter.Write(this.Size.Width);
+			streamWriter.Write(this.Size.Height);
+			streamWriter.Write(this.Player.X);
+			streamWriter.Write(this.Player.Y);
+			streamWriter.Write(this.Spawn.X);
+			streamWriter.Write(this.Spawn.Y);
+			streamWriter.Write(this.Planet);
+			streamWriter.Write(this.Season);
+			streamWriter.Write(this.Gamemode);
+			streamWriter.Write(this.SizeBounds);
+			streamWriter.Write(this.SkyBounds);
+			streamWriter.Skip(4); // Unknown
+			streamWriter.Skip(sizeof(uint) * 32); // Padding
+		}
+		// Skyline
+		chunk = writer.WriteChunk(ArchiverChunkType.WorldSkyline);
+		{
+			var streamWriter = new JJxWriter(chunk);
+			streamWriter.Write(MemoryMarshal.Cast<ushort, byte>(this.Skyline.AsSpan()));
+		}
+		// Tiles
+		chunk = writer.WriteChunk(ArchiverChunkType.WorldBlocks, version: 1, IsCompressed: true);
+		{
+			var streamWriter = new JJxWriter(chunk);
+			foreach (ref var tile in this.Tilemap.Tiles)
+				streamWriter.Write(tile);
+		}
 	}
 	/* Static Methods */
 	internal static WorldArchive Load(IArchiveReader reader, bool eagerLoad = false)
@@ -87,11 +140,7 @@ public sealed class WorldArchive : IArchive
 			world.Spawn = spawn;
 		}
 		var archive = new WorldArchive(world, reader);
-		if (eagerLoad)
-		{
-			archive._LoadSkyline();
-			archive._LoadTilemap();
-		}
+		if (eagerLoad) archive._Load();
 		return archive;
 	}
 	/* Properties */
@@ -118,4 +167,7 @@ public sealed class WorldArchive : IArchive
 	// Tiles
 	private bool _AreTilesLoaded = false;
 	public Tilemap Tilemap { get { this._LoadTilemap(); return this._World.Tilemap; } }
+	/* Class Properties */
+	private const int SIZEOF_NAME   = 32;
+	private const int SIZEOF_AUTHOR = 16;
 }
