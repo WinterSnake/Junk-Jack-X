@@ -19,6 +19,7 @@ public sealed class WorldArchive : IArchive
 	{
 		this._IsSkylineLoaded = true;
 		this._AreTilesLoaded = true;
+		this._IsFogLoaded = true;
 	}
 	private WorldArchive(World world, IArchiveReader? reader)
 	{
@@ -32,13 +33,14 @@ public sealed class WorldArchive : IArchive
 	{
 		this._LoadSkyline();
 		this._LoadTilemap();
+		this._LoadFog();
 	}
 	private void _LoadSkyline()
 	{
 		if (this._IsSkylineLoaded) return;
-		using (var skylineChunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldSkyline))
+		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldSkyline))
 		{
-			var reader = new JJxReader(skylineChunk);
+			var reader = new JJxReader(chunk);
 			var skyline = new ushort[this._World.Size.Width];
 			reader.ReadSpan(MemoryMarshal.Cast<ushort, byte>(skyline.AsSpan()));
 			this._World.Skyline = skyline;
@@ -48,9 +50,9 @@ public sealed class WorldArchive : IArchive
 	private void _LoadTilemap()
 	{
 		if (this._AreTilesLoaded) return;
-		using (var tilesChunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldBlocks))
+		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldBlocks))
 		{
-			var reader = new JJxReader(tilesChunk);
+			var reader = new JJxReader(chunk);
 			var tiles = new Tile[this._World.Size.Width * this._World.Size.Height];
 			for (var i = 0; i < tiles.Length; ++i)
 				tiles[i] = reader.ReadObject<Tile>();
@@ -58,13 +60,32 @@ public sealed class WorldArchive : IArchive
 		}
 		this._AreTilesLoaded = true;
 	}
+	private void _LoadFog()
+	{
+		if (this._IsFogLoaded) return;
+		if (this._Reader!.HasChunk(ArchiverChunkType.WorldFog))
+		{
+			using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldFog))
+			{
+				var reader = new JJxReader(chunk);
+				var fogMap = new byte[this._World.Size.Height / 4 * this._World.Size.Width];
+				reader.ReadSpan(fogMap.AsSpan());
+				this._World._Fog = fogMap;
+			}
+		}
+		this._IsFogLoaded = true;
+	}
 	// Writing
 	public void Write(IArchiveWriter writer)
 	{
-		if (!this.IsFullyLoaded) this._Load();
+		if (!this.IsFullyLoaded)
+		{
+			this._Load();
+			this.Dispose();
+		}
 		Stream chunk;
 		// Info
-		chunk = writer.WriteChunk(ArchiverChunkType.WorldInfo, version: 0);
+		chunk = writer.WriteChunk(ArchiverChunkType.WorldInfo);
 		{
 			var streamWriter = new JJxWriter(chunk);
 			streamWriter.Write(this.Id);
@@ -93,20 +114,32 @@ public sealed class WorldArchive : IArchive
 			streamWriter.Write(MemoryMarshal.Cast<ushort, byte>(this.Skyline.AsSpan()));
 		}
 		// Tiles
-		chunk = writer.WriteChunk(ArchiverChunkType.WorldBlocks, version: 1, IsCompressed: true);
+		chunk = writer.WriteChunk(ArchiverChunkType.WorldBlocks, version: 1, isCompressed: true);
 		{
 			var streamWriter = new JJxWriter(chunk);
 			foreach (ref var tile in this.Tilemap.Tiles)
 				streamWriter.Write(tile);
 		}
+		// Fog
+		if (!this.HasFog)
+			chunk = writer.WriteChunk(ArchiverChunkType.Padding);
+		else
+		{
+			chunk = writer.WriteChunk(ArchiverChunkType.WorldFog, isCompressed: true);
+			{
+				var streamWriter = new JJxWriter(chunk);
+				streamWriter.Write(this.Fog);
+			}
+		}
+			
 	}
 	/* Static Methods */
 	internal static WorldArchive Load(IArchiveReader reader, bool eagerLoad = false)
 	{
 		World world;
-		using (var infoChunk = reader.GetChunkStream(ArchiverChunkType.WorldInfo))
+		using (var chunk = reader.GetChunkStream(ArchiverChunkType.WorldInfo))
 		{
-			var streamReader = new JJxReader(infoChunk);
+			var streamReader = new JJxReader(chunk);
 			var guid = streamReader.ReadObject<Guid>();
 			var lastPlayed = streamReader.ReadObject<DateTime>();
 			var version = streamReader.ReadObject<Version>();
@@ -167,6 +200,10 @@ public sealed class WorldArchive : IArchive
 	// Tiles
 	private bool _AreTilesLoaded = false;
 	public Tilemap Tilemap { get { this._LoadTilemap(); return this._World.Tilemap; } }
+	// Fog
+	private bool _IsFogLoaded = false;
+	public bool HasFog { get { this._LoadFog(); return this._World.HasFog; } }
+	public Span<byte> Fog { get { this._LoadFog(); return this._World.Fog; } }
 	/* Class Properties */
 	private const int SIZEOF_NAME   = 32;
 	private const int SIZEOF_AUTHOR = 16;

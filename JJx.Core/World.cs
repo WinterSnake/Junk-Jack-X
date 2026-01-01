@@ -89,6 +89,10 @@ public sealed class World
 	// Tiles
 	internal Tilemap? _Tilemap;
 	public Tilemap Tilemap => this._Tilemap!;
+	// Fog
+	internal byte[]? _Fog = null;
+	public bool HasFog => this._Fog is not null;
+	public Span<byte> Fog => this._Fog.AsSpan();
 	/* Class Properties */
 	private const int MAX_NAME_LENGTH   = 32 - 1;
 	private const int MAX_AUTHOR_LENGTH = 16 - 1;

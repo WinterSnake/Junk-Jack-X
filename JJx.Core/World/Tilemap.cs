@@ -2,8 +2,6 @@
 	Junk Jack X: Core
 	- [World]Tilemap
 
-	Worlds are column major
-
 	Written By: Ryan Smith
 */
 

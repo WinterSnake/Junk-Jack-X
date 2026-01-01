@@ -35,6 +35,7 @@ public enum ArchiveType : ushort
 public interface IArchiveReader : IDisposable
 {
 	/* Instance Methods */
+	public bool HasChunk(ArchiverChunkType type);
 	public Stream GetChunkStream(ArchiverChunkType type);
 	/* Properties */
 	public ArchiveType Type { get; }
@@ -68,6 +69,15 @@ public sealed class ArchiveStream : IDisposable, IArchiveReader, IArchiveWriter
 			chunk.Dispose();
 	}
 	// Reading
+	public bool HasChunk(ArchiverChunkType type)
+	{
+		foreach (ref var chunk in CollectionsMarshal.AsSpan(this._Chunks))
+		{
+			if (chunk.Type != type) continue;
+			return true;
+		}
+		return false;
+	}
 	public Stream GetChunkStream(ArchiverChunkType type)
 	{
 		foreach (ref var chunk in CollectionsMarshal.AsSpan(this._Chunks))
