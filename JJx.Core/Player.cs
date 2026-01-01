@@ -49,12 +49,7 @@ public sealed class Player
 		this.UnlockedPlanets = unlockedPlanets;
 		this.Appearance = appearance;
 		this.Rules = ruleset;
-		this._Items = Array.Empty<Item>();
-		this._Craftbook = Array.Empty<byte>();
-		this._Achievements = Array.Empty<byte>();
-		this._Effects = Array.Empty<Effect>();
 	}
-	/* Instance Methods */
 	/* Properties */
 	// Info
 	public readonly Guid Id = Guid.NewGuid();
@@ -68,7 +63,7 @@ public sealed class Player
 	public CharacterAppearance Appearance;
 	public Ruleset Rules;
 	// Items
-	internal Item[] _Items;
+	private readonly Item[] _Items = new Item[COUNTOF_ITEMS];
 	public Span<Item> Items => this._Items.AsSpan();
 	public Span<Item> SurvivalHotbar => this._Items.AsSpan(OFFSET_SURVIVAL_HOTBAR, SIZEOF_HOTBAR);
 	public Span<Item> CreativeHotbar => this._Items.AsSpan(OFFSET_CREATIVE_HOTBAR, SIZEOF_HOTBAR);
@@ -79,21 +74,21 @@ public sealed class Player
 	public ref Item CraftSlot => ref this._Items[OFFSET_CRAFT];
 	public ref Item ArrowSlot => ref this._Items[OFFSET_ARROW];
 	// Craftbook
-	internal byte[] _Craftbook;
+	private readonly byte[] _Craftbook = new byte[SIZEOF_CRAFTBOOK];
 	public Span<byte> Craftbook => this._Craftbook.AsSpan();
 	// Achievements
-	internal byte[] _Achievements;
+	private readonly byte[] _Achievements = new byte[SIZEOF_ACHIEVEMENTS];
 	public Span<byte> Achievements => this._Achievements.AsSpan();
 	// Status
 	public float Health;
-	internal Effect[] _Effects;
+	private readonly Effect[] _Effects = new Effect[COUNTOF_EFFECTS];
 	public Span<Effect> Effects => this._Effects.AsSpan();
 	/* Class Properties */
-	private const int MAX_NAME_LENGTH      = 16 - 1;
-	internal const int COUNTOF_ITEMS       = 77;
-	internal const int COUNTOF_EFFECTS     = 4;
-	internal const int SIZEOF_CRAFTBOOK    = 256;
-	internal const int SIZEOF_ACHIEVEMENTS = 32;
+	private const int MAX_NAME_LENGTH     = 16 - 1;
+	private const int COUNTOF_ITEMS       = 77;
+	private const int COUNTOF_EFFECTS     = 4;
+	private const int SIZEOF_CRAFTBOOK    = 256;
+	private const int SIZEOF_ACHIEVEMENTS = 32;
 	// Items
 	private const byte OFFSET_SURVIVAL_HOTBAR =  0;
 	private const byte OFFSET_CREATIVE_HOTBAR = 10;

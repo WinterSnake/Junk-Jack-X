@@ -42,10 +42,8 @@ public sealed class PlayerArchive : IArchive
 		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.PlayerItems))
 		{
 			var reader = new JJxReader(chunk);
-			var items = new Item[Player.COUNTOF_ITEMS];
-			for (var i = 0; i < items.Length; ++i)
-				items[i] = reader.ReadObject<Item>();
-			this._Player._Items = items;
+			foreach (ref var item in this._Player.Items)
+				item = reader.ReadObject<Item>();
 		}
 		this._AreItemsLoaded = true;
 	}
@@ -55,9 +53,7 @@ public sealed class PlayerArchive : IArchive
 		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.PlayerCraftbooks))
 		{
 			var reader = new JJxReader(chunk);
-			var buffer = new byte[Player.SIZEOF_CRAFTBOOK];
-			reader.ReadSpan(buffer.AsSpan());
-			this._Player._Craftbook = buffer;
+			reader.ReadSpan(this._Player.Craftbook);
 		}
 		this._IsCraftbookLoaded = true;
 	}
@@ -67,9 +63,7 @@ public sealed class PlayerArchive : IArchive
 		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.PlayerAchievements))
 		{
 			var reader = new JJxReader(chunk);
-			var buffer = new byte[Player.SIZEOF_ACHIEVEMENTS];
-			reader.ReadSpan(buffer.AsSpan());
-			this._Player._Achievements = buffer;
+			reader.ReadSpan(this._Player.Achievements);
 		}
 		this._AreAchievementsLoaded = true;
 	}
@@ -80,10 +74,8 @@ public sealed class PlayerArchive : IArchive
 		{
 			var reader = new JJxReader(chunk);
 			this._Player.Health = reader.ReadFloat32() * 10.0f;
-			var effects = new Effect[Player.COUNTOF_EFFECTS];
-			for (var i = 0; i < effects.Length; ++i)
-				effects[i] = reader.ReadObject<Effect>();
-			this._Player._Effects = effects;
+			foreach (ref var effect in this._Player.Effects)
+				effect = reader.ReadObject<Effect>();
 		}
 		this._IsStatusLoaded = true;
 	}
