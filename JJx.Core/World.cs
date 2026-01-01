@@ -104,6 +104,7 @@ public sealed class World
 	public Span<byte> Weather => this._Weather.AsSpan();
 	// Containers
 	public readonly List<Sign> Signs = new();
+	public readonly List<Lock> Locks = new();
 	// Fluids
 	internal byte[] _Fluid = Array.Empty<byte>();
 	public Span<byte> Fluid => this._Fluid.AsSpan();

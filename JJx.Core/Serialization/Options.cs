@@ -25,6 +25,7 @@ public sealed class JJxSerializationOptions
 		Default.AddConverter<TileConverter>(typeof(Tile));
 		// Containers
 		Default.AddConverter<SignConverter>(typeof(Sign));
+		Default.AddConverter<LockConverter>(typeof(Lock));
 		Default._IsReadOnly = true;
 	}
 	/* Instance Methods */

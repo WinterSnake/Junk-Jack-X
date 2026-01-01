@@ -249,6 +249,9 @@ public sealed class WorldArchive : IArchive
 		{
 			var reader = new JJxReader(chunk);
 			var count = reader.ReadInt32();
+			this._World.Locks.EnsureCapacity(count);
+			for (var i = 0; i < count; ++i)
+				this._World.Locks.Add(reader.ReadObject<Lock>());
 		}
 		this._IsContainerLockLoaded = true;
 	}
@@ -386,7 +389,9 @@ public sealed class WorldArchive : IArchive
 		chunk = writer.WriteChunk(ArchiverChunkType.WorldLocks);
 		{
 			var streamWriter = new JJxWriter(chunk);
-			streamWriter.Write((int)0);
+			streamWriter.Write(this.Locks.Count);
+			foreach (var @lock in CollectionsMarshal.AsSpan(this.Locks))
+				streamWriter.Write(@lock);
 		}
 		// Fluid
 		chunk = writer.WriteChunk(ArchiverChunkType.WorldFluid);
@@ -513,6 +518,7 @@ public sealed class WorldArchive : IArchive
 	private bool _IsContainerFruitLoaded = false;
 	private bool _IsContainerDecayLoaded = false;
 	private bool _IsContainerLockLoaded = false;
+	public List<Lock> Locks { get { this._LoadContainerLock(); return this._World.Locks; } }
 	private bool _IsContainerEntityLoaded = false;
 	// Fluid
 	private bool _IsFluidLoaded = false;
