@@ -31,6 +31,7 @@ public sealed class JJxSerializationOptions
 		Default.AddConverter<LabConverter>(typeof(Lab));
 		Default.AddConverter<ShelfConverter>(typeof(Shelf));
 		Default.AddConverter<FruitConverter>(typeof(Fruit));
+		Default.AddConverter<DecayConverter>(typeof(Decay));
 		Default.AddConverter<LockConverter>(typeof(Lock));
 		Default.AddConverter<EntityConverter>(typeof(Entity));
 		Default._IsReadOnly = true;
