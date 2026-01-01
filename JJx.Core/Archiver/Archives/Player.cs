@@ -35,6 +35,7 @@ public sealed class PlayerArchive : IArchive
 		this._LoadCraftbook();
 		this._LoadAchievements();
 		this._LoadStatus();
+		this._Reader!.Dispose();
 	}
 	private void _LoadItems()
 	{
@@ -154,7 +155,10 @@ public sealed class PlayerArchive : IArchive
 	/* Properties */
 	private readonly IArchiveReader? _Reader;
 	internal readonly Player _Player;
-	internal bool IsFullyLoaded => this._AreItemsLoaded && this._IsCraftbookLoaded && this._AreAchievementsLoaded && this._IsStatusLoaded;
+	internal bool IsFullyLoaded => this._AreItemsLoaded &&
+								   this._IsCraftbookLoaded &&
+								   this._AreAchievementsLoaded &&
+								   this._IsStatusLoaded;
 	// Info
 	public Guid Id => this._Player.Id;
 	public Version Version => this._Player.Version;
@@ -187,5 +191,5 @@ public sealed class PlayerArchive : IArchive
 	}
 	public Span<Effect> Effects { get { this._LoadStatus(); return this._Player.Effects; } }
 	/* Class Properties */
-	private const int SIZEOF_NAME = 16;
+	internal const int SIZEOF_NAME = 16;
 }

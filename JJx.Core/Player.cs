@@ -84,7 +84,7 @@ public sealed class Player
 	private readonly Effect[] _Effects = new Effect[COUNTOF_EFFECTS];
 	public Span<Effect> Effects => this._Effects.AsSpan();
 	/* Class Properties */
-	private const int MAX_NAME_LENGTH     = 16 - 1;
+	private const int MAX_NAME_LENGTH     = PlayerArchive.SIZEOF_NAME - 1;
 	private const int COUNTOF_ITEMS       = 77;
 	private const int COUNTOF_EFFECTS     = 4;
 	private const int SIZEOF_CRAFTBOOK    = 256;
