@@ -12,12 +12,12 @@ internal sealed class LabConverter : JJxConverter<Lab>
 	/* Instance Methods */
 	public override Lab Read(ref JJxReader reader)
 	{
-		var shelf = new Lab(
+		var lab = new Lab(
 			reader.ReadUInt16(), reader.ReadUInt16()
 		);
-		foreach (ref var item in shelf.Items)
+		foreach (ref var item in lab.Items)
 			item = reader.ReadObject<Item>();
-		return shelf;
+		return lab;
 	}
 	public override void Write(in Lab @value, JJxWriter writer)
 	{

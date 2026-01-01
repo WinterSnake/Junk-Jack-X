@@ -63,7 +63,7 @@ public sealed class Chest
 		{
 			this._Items.EnsureCapacity(length);
 			while (this._Items.Count < length)
-				this._Items.Add(new() { Id=0xFFFF, Count=1 });
+				this._Items.Add(new() { Id=Item.Empty, Count=1 });
 		}
 		// Shrink
 		else this._Items.RemoveRange(length, this._Items.Count - length);
