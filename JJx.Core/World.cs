@@ -104,6 +104,7 @@ public sealed class World
 	public Span<byte> Weather => this._Weather.AsSpan();
 	// Containers
 	public readonly List<Sign> Signs = new();
+	public readonly List<Stable> Stables = new();
 	public readonly List<Lab> Labs = new();
 	public readonly List<Shelf> Shelves = new();
 	public readonly List<Lock> Locks = new();

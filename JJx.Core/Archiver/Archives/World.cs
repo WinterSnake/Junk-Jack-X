@@ -189,6 +189,9 @@ public sealed class WorldArchive : IArchive
 		{
 			var reader = new JJxReader(chunk);
 			var count = reader.ReadInt32();
+			this._World.Stables.EnsureCapacity(count);
+			for (var i = 0; i < count; ++i)
+				this._World.Stables.Add(reader.ReadObject<Stable>());
 		}
 		this._IsContainerStableLoaded = true;
 	}
@@ -362,7 +365,9 @@ public sealed class WorldArchive : IArchive
 		chunk = writer.WriteChunk(ArchiverChunkType.WorldStables);
 		{
 			var streamWriter = new JJxWriter(chunk);
-			streamWriter.Write((int)0);
+			streamWriter.Write(this.Stables.Count);
+			foreach (var stable in CollectionsMarshal.AsSpan(this.Stables))
+				streamWriter.Write(stable);
 		}
 		// Container[Lab]
 		chunk = writer.WriteChunk(ArchiverChunkType.WorldLabs);
@@ -527,6 +532,7 @@ public sealed class WorldArchive : IArchive
 	private bool _IsContainerSignLoaded = false;
 	public List<Sign> Signs { get { this._LoadContainerSign(); return this._World.Signs; } }
 	private bool _IsContainerStableLoaded = false;
+	public List<Stable> Stables { get { this._LoadContainerStable(); return this._World.Stables; } }
 	private bool _IsContainerLabLoaded = false;
 	public List<Lab> Labs { get { this._LoadContainerLab(); return this._World.Labs; } }
 	private bool _IsContainerShelfLoaded = false;
