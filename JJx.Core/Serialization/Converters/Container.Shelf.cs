@@ -19,7 +19,7 @@ internal sealed class ShelfConverter : JJxConverter<Shelf>
 			item = reader.ReadObject<Item>();
 		return shelf;
 	}
-	public override void Write(Shelf @value, JJxWriter writer)
+	public override void Write(in Shelf @value, JJxWriter writer)
 	{
 		writer.Write(@value.Position.X);
 		writer.Write(@value.Position.Y);

@@ -20,5 +20,5 @@ public abstract class JJxConverter<T> : JJxConverter
 	/* Instance Methods */
     public override bool CanSupportType(Type type) => type == typeof(T);
 	public abstract T Read(ref JJxReader reader);
-	public abstract void Write(T value, JJxWriter writer);
+	public abstract void Write(in T value, JJxWriter writer);
 }

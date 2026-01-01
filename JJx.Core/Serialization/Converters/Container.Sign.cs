@@ -14,7 +14,7 @@ internal sealed class SignConverter : JJxConverter<Sign>
 		reader.ReadUInt16(), reader.ReadUInt16(),
 		reader.ReadString()
 	);
-	public override void Write(Sign @value, JJxWriter writer)
+	public override void Write(in Sign @value, JJxWriter writer)
 	{
 		writer.Write(@value.Position.X);
 		writer.Write(@value.Position.Y);

@@ -18,7 +18,7 @@ internal sealed class ItemConverter : JJxConverter<Item>
 		Variant=reader.ReadUInt8(),
 		Unknown=reader.ReadUInt8()
 	};
-	public override void Write(Item @value, JJxWriter writer)
+	public override void Write(in Item @value, JJxWriter writer)
 	{
 		writer.Write(@value.Data);
 		writer.Write(@value.Id);

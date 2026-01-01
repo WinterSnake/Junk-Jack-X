@@ -15,7 +15,7 @@ internal sealed class EntityConverter : JJxConverter<Entity>
 		reader.ReadUInt8(),
 		reader.ReadUInt16()
 	);
-	public override void Write(Entity @value, JJxWriter writer)
+	public override void Write(in Entity @value, JJxWriter writer)
 	{
 		writer.Write(@value.Position.X);
 		writer.Write(@value.Position.Y);

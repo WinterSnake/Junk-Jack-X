@@ -14,7 +14,7 @@ internal sealed class EffectConverter : JJxConverter<Effect>
 		reader.ReadUInt16(),
 		reader.ReadUInt16()
 	);
-	public override void Write(Effect @value, JJxWriter writer)
+	public override void Write(in Effect @value, JJxWriter writer)
 	{
 		writer.Write(@value.Id);
 		writer.Write(@value.Duration);

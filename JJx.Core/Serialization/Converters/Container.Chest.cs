@@ -23,7 +23,7 @@ internal sealed class ChestConverter : JJxConverter<Chest>
 			slot = reader.ReadObject<Item>();
 		return chest;
 	}
-	public override void Write(Chest @value, JJxWriter writer)
+	public override void Write(in Chest @value, JJxWriter writer)
 	{
 		writer.Write(@value.Position.X);
 		writer.Write(@value.Position.Y);

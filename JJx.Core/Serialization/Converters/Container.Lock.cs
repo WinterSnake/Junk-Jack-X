@@ -14,7 +14,7 @@ internal sealed class LockConverter : JJxConverter<Lock>
 		reader.ReadUInt16(), reader.ReadUInt16(),
 		reader.ReadUInt8()
 	);
-	public override void Write(Lock @value, JJxWriter writer)
+	public override void Write(in Lock @value, JJxWriter writer)
 	{
 		writer.Write(@value.Position.X);
 		writer.Write(@value.Position.Y);

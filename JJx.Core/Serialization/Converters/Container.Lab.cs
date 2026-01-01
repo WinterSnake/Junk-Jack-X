@@ -19,7 +19,7 @@ internal sealed class LabConverter : JJxConverter<Lab>
 			item = reader.ReadObject<Item>();
 		return shelf;
 	}
-	public override void Write(Lab @value, JJxWriter writer)
+	public override void Write(in Lab @value, JJxWriter writer)
 	{
 		writer.Write(@value.Position.X);
 		writer.Write(@value.Position.Y);

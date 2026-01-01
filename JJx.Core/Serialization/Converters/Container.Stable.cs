@@ -19,7 +19,7 @@ internal sealed class StableConverter : JJxConverter<Stable>
 		stable.Feed = reader.ReadObject<Item>();
 		return stable;
 	}
-	public override void Write(Stable @value, JJxWriter writer)
+	public override void Write(in Stable @value, JJxWriter writer)
 	{
 		writer.Write(@value.Position.X);
 		writer.Write(@value.Position.Y);

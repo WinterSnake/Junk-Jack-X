@@ -110,7 +110,7 @@ public sealed class JJxWriter
 		}
 	}
 	public void Write(ReadOnlySpan<byte> @value) => this._Stream.Write(@value);
-	public void Write<T>(T @value) => JJxSerializationOptions.Default.GetConverter<T>().Write(@value, this);
+	public void Write<T>(in T @value) => JJxSerializationOptions.Default.GetConverter<T>().Write(@value, this);
 	/* Properties */
 	private readonly Stream _Stream;
 }
