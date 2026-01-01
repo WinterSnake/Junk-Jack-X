@@ -18,10 +18,10 @@ internal sealed class GuidConverter : JJxConverter<Guid>
 		reader.ReadSpan(buffer);
 		return new Guid(buffer);
 	}
-	public override void Write(Guid value, JJxWriter writer)
+	public override void Write(Guid @value, JJxWriter writer)
 	{
 		Span<byte> buffer = stackalloc byte[GuidConverter.SIZE];
-		if (!value.TryWriteBytes(buffer))
+		if (!@value.TryWriteBytes(buffer))
 			throw new InvalidOperationException("Unable to write Guid to JJxWriter");
 		writer.Write(buffer);
 	}

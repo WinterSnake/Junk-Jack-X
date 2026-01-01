@@ -29,18 +29,18 @@ internal sealed class EnumConverter<T> : JJxConverter<T>
 			_ => throw new InvalidOperationException($"EnumConverter<T> does not support typecode '{_EnumType}'"),
 		};
 	}
-	public override void Write(T value, JJxWriter writer)
+	public override void Write(T @value, JJxWriter writer)
 	{
 		switch(_EnumType)
 		{
-			case TypeCode.SByte: writer.Write(Unsafe.BitCast<T, sbyte>(value)); break;
-			case TypeCode.Byte: writer.Write(Unsafe.BitCast<T, byte>(value)); break;
-			case TypeCode.Int16: writer.Write(Unsafe.BitCast<T, short>(value)); break;
-			case TypeCode.UInt16: writer.Write(Unsafe.BitCast<T, ushort>(value)); break;
-			case TypeCode.Int32: writer.Write(Unsafe.BitCast<T, int>(value)); break;
-			case TypeCode.UInt32: writer.Write(Unsafe.BitCast<T, uint>(value)); break;
-			case TypeCode.Int64: writer.Write(Unsafe.BitCast<T, long>(value)); break;
-			case TypeCode.UInt64: writer.Write(Unsafe.BitCast<T, ulong>(value)); break;
+			case TypeCode.SByte: writer.Write(Unsafe.BitCast<T, sbyte>(@value)); break;
+			case TypeCode.Byte: writer.Write(Unsafe.BitCast<T, byte>(@value)); break;
+			case TypeCode.Int16: writer.Write(Unsafe.BitCast<T, short>(@value)); break;
+			case TypeCode.UInt16: writer.Write(Unsafe.BitCast<T, ushort>(@value)); break;
+			case TypeCode.Int32: writer.Write(Unsafe.BitCast<T, int>(@value)); break;
+			case TypeCode.UInt32: writer.Write(Unsafe.BitCast<T, uint>(@value)); break;
+			case TypeCode.Int64: writer.Write(Unsafe.BitCast<T, long>(@value)); break;
+			case TypeCode.UInt64: writer.Write(Unsafe.BitCast<T, ulong>(@value)); break;
 			default: throw new InvalidOperationException($"EnumConverter<T> does not support typecode '{_EnumType}'");
 		}
 	}

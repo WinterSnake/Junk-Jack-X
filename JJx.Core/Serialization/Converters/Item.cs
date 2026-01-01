@@ -20,13 +20,13 @@ internal sealed class ItemConverter : JJxConverter<Item>
 		var unknown = reader.ReadUInt8();
 		return new(id, count, durabiltiy, data, variant, unknown);
 	}
-	public override void Write(Item value, JJxWriter writer)
+	public override void Write(Item @value, JJxWriter writer)
 	{
-		writer.Write(value.Data);
-		writer.Write(value.Id);
-		writer.Write(value.Count);
-		writer.Write(value.Durability);
-		writer.Write(value.Variant);
-		writer.Write(value.Unknown);
+		writer.Write(@value.Data);
+		writer.Write(@value.Id);
+		writer.Write(@value.Count);
+		writer.Write(@value.Durability);
+		writer.Write(@value.Variant);
+		writer.Write(@value.Unknown);
 	}
 }

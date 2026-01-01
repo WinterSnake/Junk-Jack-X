@@ -10,8 +10,10 @@ namespace JJx.Core.Serialization;
 internal sealed class SignConverter : JJxConverter<Sign>
 {
 	/* Instance Methods */
-	public override Sign Read(ref JJxReader reader)
-		=> new(reader.ReadUInt16(), reader.ReadUInt16(), reader.ReadString());
+	public override Sign Read(ref JJxReader reader) => new(
+		reader.ReadUInt16(), reader.ReadUInt16(),
+		reader.ReadString()
+	);
 	public override void Write(Sign @value, JJxWriter writer)
 	{
 		writer.Write(@value.Position.X);

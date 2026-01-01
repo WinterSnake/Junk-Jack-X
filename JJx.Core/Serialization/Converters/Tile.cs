@@ -22,11 +22,11 @@ internal sealed class TileConverter : JJxConverter<Tile>
 		var unknown = reader.ReadUInt32();
 		return new(foreground, background, decorations, unknown);
 	}
-	public override void Write(Tile value, JJxWriter writer)
+	public override void Write(Tile @value, JJxWriter writer)
 	{
-		writer.Write(value.Foreground);
-		writer.Write(value.Background);
-		writer.Write(MemoryMarshal.Cast<ushort, byte>(value.Decorations));
-		writer.Write(value.Unknown);
+		writer.Write(@value.Foreground);
+		writer.Write(@value.Background);
+		writer.Write(MemoryMarshal.Cast<ushort, byte>(@value.Decorations));
+		writer.Write(@value.Unknown);
 	}
 }
