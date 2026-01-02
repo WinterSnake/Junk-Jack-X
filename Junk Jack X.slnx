@@ -1,4 +1,6 @@
 <Solution>
   <Project Path="JJx.Core/JJx.Core.csproj" />
   <Project Path="JJx.Core.Tests/JJx.Core.Tests.csproj" />
+  <Project Path="JJx.Protocol.Tests/JJx.Protocol.Tests.csproj" />
+  <Project Path="JJx.Protocol/JJx.Protocol.csproj" />
 </Solution>
