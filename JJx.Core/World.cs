@@ -109,6 +109,7 @@ public sealed class World
 	public readonly List<Stable> Stables = new();
 	public readonly List<Lab> Labs = new();
 	public readonly List<Shelf> Shelves = new();
+	public readonly List<Plant> Plants = new();
 	public readonly List<Fruit> Fruits = new();
 	public readonly List<Decay> PlantDecay = new();
 	public readonly List<Lock> Locks = new();

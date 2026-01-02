@@ -30,6 +30,8 @@ public sealed class JJxSerializationOptions
 		Default.AddConverter<StableConverter>(typeof(Stable));
 		Default.AddConverter<LabConverter>(typeof(Lab));
 		Default.AddConverter<ShelfConverter>(typeof(Shelf));
+		Default.AddConverter<PlantConverter>();
+		Default.AddConverter<BranchConverter>(typeof(Tree.Branch));
 		Default.AddConverter<FruitConverter>(typeof(Fruit));
 		Default.AddConverter<DecayConverter>(typeof(Decay));
 		Default.AddConverter<LockConverter>(typeof(Lock));
@@ -56,16 +58,20 @@ public sealed class JJxSerializationOptions
 		if (this._ConverterCache.TryGetValue(typeof(T), out var cachedConverter))
 			return (JJxConverter<T>)cachedConverter;
 		var type = typeof(T);
-		foreach (var converter in this._Converters)
+		while (type != null)
 		{
-			if (!converter.CanSupportType(type)) continue;
-			JJxConverter actual = converter;
-			if (converter is JJxConverterFactory factory)
-				actual = factory.Build(type);
-			this._ConverterCache[type] = actual;
-			return (JJxConverter<T>)actual;
+			foreach (var converter in this._Converters)
+			{
+				if (!converter.CanSupportType(type)) continue;
+				JJxConverter actual = converter;
+				if (converter is JJxConverterFactory factory)
+					actual = factory.Build(type);
+				this._ConverterCache[type] = actual;
+				return (JJxConverter<T>)actual;
+			}
+			type = type.BaseType;
 		}
-		throw new InvalidOperationException($"JJx format does not support the type '{type.Name}'");
+		throw new InvalidOperationException($"JJx format does not support the type '{typeof(T).Name}'");
 	}
 	/* Properties */
 	private bool _IsReadOnly = false;
