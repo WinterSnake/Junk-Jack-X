@@ -22,3 +22,9 @@ public abstract class JJxConverter<T> : JJxConverter
 	public abstract T Read(ref JJxReader reader);
 	public abstract void Write(in T value, JJxWriter writer);
 }
+
+public abstract class JJxConverterFactory : JJxConverter
+{
+	/* Instance Methods */
+	public abstract JJxConverter Build(Type type);
+}
