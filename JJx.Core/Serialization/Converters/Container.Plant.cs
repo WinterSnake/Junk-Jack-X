@@ -23,6 +23,7 @@ internal sealed class PlantConverter : JJxConverter<Plant>
 		{
 			var tree = new Tree(position, id);
 			reader.ReadSpan(tree.Unknown);
+			tree.Height = reader.ReadUInt16();
 			tree.Branches.EnsureCapacity(tree.Unknown[2]);
 			for (var i = 0; i < tree.Unknown[2]; ++i)
 				tree.Branches.Add(reader.ReadObject<Tree.Branch>());
@@ -50,6 +51,7 @@ internal sealed class PlantConverter : JJxConverter<Plant>
 				writer.Write((uint)1);
 				writer.Write((uint)0);
 				writer.Write(tree.Unknown);
+				writer.Write(tree.Height);
 				foreach (var branch in tree.Branches)
 					writer.Write(branch);
 			} break;
@@ -65,10 +67,13 @@ public sealed class BranchConverter : JJxConverter<Tree.Branch>
 	{
 		var branch = new Tree.Branch();
 		reader.ReadSpan(branch.Unknown);
+		branch.Position = (reader.ReadUInt16(), reader.ReadUInt16());
 		return branch;
 	}
 	public override void Write(in Tree.Branch @value, JJxWriter writer)
 	{
 		writer.Write(@value.Unknown);
+		writer.Write(@value.Position.X);
+		writer.Write(@value.Position.Y);
 	}
 }

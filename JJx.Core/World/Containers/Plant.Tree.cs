@@ -28,9 +28,10 @@ public sealed partial class Tree : Plant
 	public Tree(ushort x, ushort y, uint id) :this((x, y), id) { }
 	public Tree((ushort, ushort) position, uint id) : base(position, id) { }
 	/* Properties */
+	public ushort Height;
 	private readonly byte[] _Unknown = new byte[SIZE];
 	public Span<byte> Unknown => this._Unknown.AsSpan();
 	public readonly List<Branch> Branches = new();
 	/* Class Properties */
-	private const int SIZE = 10;
+	private const int SIZE = 8;
 }
