@@ -12,12 +12,12 @@
 	Segment[0x128 :  0x137] = Author               | Length:  16 (0x10) | Type: char*
 	Segment[0x138 :  0x139] = World.Width          | Length:   2  (0x2) | Type: uint16
 	Segment[0x13A :  0x13B] = World.Height         | Length:   2  (0x2) | Type: uint16t
-	Segment[0x13C :  0x13D] = Player.X             | Length:   2  (0x2) | Type: uint16
-	Segment[0x13E :  0x13F] = Player.Y             | Length:   2  (0x2) | Type: uint16
-	Segment[0x140 :  0x141] = Spawn.X              | Length:   2  (0x2) | Type: uint16
-	Segment[0x142 :  0x143] = Spawn.Y              | Length:   2  (0x2) | Type: uint16
+	Segment[0x13C :  0x13D] = (UNUSED)Player.X     | Length:   2  (0x2) | Type: uint16
+	Segment[0x13E :  0x13F] = (UNUSED)Player.Y     | Length:   2  (0x2) | Type: uint16
+	Segment[0x140 :  0x141] = (UNUSED)Spawn.X      | Length:   2  (0x2) | Type: uint16
+	Segment[0x142 :  0x143] = (UNUSED)Spawn.Y      | Length:   2  (0x2) | Type: uint16
 	Segment[0x144 :  0x147] = Planet               | Length:   4  (0x4) | Type: enum[uint32]     | Parent: Planet
-	Segment[0x148]          = Season               | Length:   1  (0x1) | Type: enum[uint8]      | Parent: Season
+	Segment[0x148]          = (UNUSED)Season       | Length:   1  (0x1) | Type: enum[uint8]      | Parent: Season
 	Segment[0x149]          = Gamemode             | Length:   1  (0x1) | Type: enum[uint8]      | Parent: Gamemode
 	Segment[0x14A]          = World Size           | Length:   1  (0x1) | Type: enum[uint8]      | Parent: InitSize
 	Segment[0x14B]          = Sky Size             | Length:   1  (0x1) | Type: enum[uint8]      | Parent: InitSize

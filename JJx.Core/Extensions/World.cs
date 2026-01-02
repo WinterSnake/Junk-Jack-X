@@ -29,4 +29,8 @@ public static class WorldExtensions
 		var archive = new WorldArchive(world);
 		Archive.Save(file, archive);
 	}
+	public static Portal CreatePortal(this Planet origin, ushort originX, ushort originY, Planet destination, ushort destinationX, ushort destinationY)
+		=> new(origin, (originX, originY), destination, (destinationX, destinationY));
+	public static Portal CreatePortal(this Planet origin, (ushort, ushort) originPosition, Planet destination, (ushort, ushort) destinationPosition)
+		=> new(origin, originPosition, destination, destinationPosition);
 }
