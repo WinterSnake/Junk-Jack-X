@@ -492,7 +492,6 @@ public sealed class WorldArchive : IArchive
 				guid, version, lastPlayed, name, author, planet,
 				season, gamemode, size, sizeBounds, skyBounds
 			);
-			world.Size = size;
 			world.Player = player;
 			world.Spawn = spawn;
 		}

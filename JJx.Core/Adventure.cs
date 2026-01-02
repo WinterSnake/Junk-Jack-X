@@ -1,6 +1,6 @@
 /*
 	Junk Jack X: Core
-	- World
+	- Adventure
 
 	Segment Breakdown:
 	---------------------------------------------------------------------------------------------------------------------
@@ -33,20 +33,12 @@ using System.Collections.Generic;
 
 namespace JJx.Core;
 
-public enum Gamemode : byte
-{
-	Survival  = 0x0,
-	Creative  = 0x1,
-	Flat      = 0x2,
-	Adventure = 0x3,
-}
-
-public sealed class World
+public sealed class Adventure
 {
 	/* Constructor */
-	internal World(
-		Guid id, Version version, DateTime lastPlayed, string name, string author, Planet planet,
-		Season season, Gamemode gamemode, (ushort Width, ushort Height) size, MapBounds sizeBounds, MapBounds skyBounds
+	internal Adventure(
+		Guid id, Version version, DateTime lastPlayed, string name, string author,
+		Planet planet, (ushort, ushort) size, MapBounds sizeBounds, MapBounds skyBounds
 	)
 	{
 		this.Id = id;
@@ -55,14 +47,10 @@ public sealed class World
 		this._Name = name;
 		this._Author = author;
 		this.Planet = planet;
-		this.Season = season;
-		this.Gamemode = gamemode;
 		this.Size = size;
 		this.SizeBounds = sizeBounds;
 		this.SkyBounds = skyBounds;
-		this._Skyline = new ushort[size.Width];
 	}
-	/* Instance Methods */
 	/* Properties */
 	// Info
 	public readonly Guid Id = Guid.NewGuid();
@@ -79,50 +67,12 @@ public sealed class World
 		set => this._Author = value.Length > MAX_AUTHOR_LENGTH ? value[..MAX_AUTHOR_LENGTH] : value;
 	}
 	public Planet Planet;
-	public Season Season;
-	public Gamemode Gamemode;
 	public MapBounds SizeBounds;
 	public MapBounds SkyBounds;
 	public readonly (ushort Width, ushort Height) Size;
-	public (ushort X, ushort Y) Player;
-	public (ushort X, ushort Y) Spawn;
-	// Skyline
-	private readonly ushort[] _Skyline;
-	public Span<ushort> Skyline => this._Skyline.AsSpan();
-	// Tiles
-	internal Tilemap? _Tilemap;
-	public Tilemap Tilemap => this._Tilemap!;
-	// Fog
-	internal byte[]? _Fog = null;
-	public bool HasFog => this._Fog is not null;
-	public Span<byte> Fog => this._Fog.AsSpan();
-	// Time
-	private readonly byte[] _Time = new byte[SIZEOF_TIME];
-	public Span<byte> Time => this._Time.AsSpan();
-	// Weather
-	private readonly byte[] _Weather = new byte[SIZEOF_WEATHER];
-	public Span<byte> Weather => this._Weather.AsSpan();
-	// Containers
-	public readonly List<Chest> Chests = new();
-	public readonly List<Forge> Forges = new();
-	public readonly List<Sign> Signs = new();
-	public readonly List<Stable> Stables = new();
-	public readonly List<Lab> Labs = new();
-	public readonly List<Shelf> Shelves = new();
-	public readonly List<Plant> Plants = new();
-	public readonly List<Fruit> Fruits = new();
-	public readonly List<Decay> PlantDecay = new();
-	public readonly List<Lock> Locks = new();
-	public readonly List<Entity> Entities = new();
-	// Fluids
-	internal byte[] _Fluid = Array.Empty<byte>();
-	public Span<byte> Fluid => this._Fluid.AsSpan();
-	// Circuitry
-	internal byte[] _Circuitry = Array.Empty<byte>();
-	public Span<byte> Circuitry => this._Circuitry.AsSpan();
+	// Portal
+	public readonly List<Portal> Portals = new();
 	/* Class Properties */
 	private const int MAX_NAME_LENGTH   = WorldArchive.SIZEOF_NAME - 1;
 	private const int MAX_AUTHOR_LENGTH = WorldArchive.SIZEOF_AUTHOR - 1;
-	private const int SIZEOF_TIME       = 8;
-	private const int SIZEOF_WEATHER    = 8;
 }

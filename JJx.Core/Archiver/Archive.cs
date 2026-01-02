@@ -38,6 +38,7 @@ public static class Archive
 			{
 				ArchiveType.Player => PlayerArchive.Load(reader, eagerLoad),
 				ArchiveType.World => WorldArchive.Load(reader, eagerLoad),
+				ArchiveType.Adventure => AdventureArchive.Load(reader, eagerLoad),
 				_ => throw new InvalidOperationException($"Unhandled archive type '{reader.Type}'"),
 			};
 			if (eagerLoad)
@@ -64,6 +65,14 @@ public static class Archive
 		var archive = WorldArchive.Load(reader, true);
 		return archive._World;
 	}
+	public static Adventure LoadAdventure(string file)
+	{
+		using var reader = _Load(file);
+		if (reader.Type is not ArchiveType.Adventure)
+			throw new InvalidDataException($"Tried loading non-adventure file ({reader.Type}) as Adventure");
+		var archive = AdventureArchive.Load(reader, true);
+		return archive._Adventure;
+	}
 	// Writing
 	public static void Save(string file, IArchive archive)
 	{
@@ -72,6 +81,7 @@ public static class Archive
 		{
 			PlayerArchive => ArchiveType.Player,
 			WorldArchive => ArchiveType.World,
+			AdventureArchive => ArchiveType.Adventure,
 			_ => throw new InvalidOperationException($"Unhandled archive type '{archive}'"),
 		};
 		var writer = ArchiveStream.Writer(fileStream, type);

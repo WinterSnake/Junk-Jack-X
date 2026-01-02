@@ -36,6 +36,7 @@ public sealed class JJxSerializationOptions
 		Default.AddConverter<DecayConverter>(typeof(Decay));
 		Default.AddConverter<LockConverter>(typeof(Lock));
 		Default.AddConverter<EntityConverter>(typeof(Entity));
+		Default.AddConverter<PortalConverter>(typeof(Portal));
 		Default._IsReadOnly = true;
 	}
 	/* Instance Methods */
