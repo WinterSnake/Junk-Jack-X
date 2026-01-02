@@ -131,9 +131,14 @@ public sealed class WorldArchive : IArchive
 		using (var chunk = this._Reader!.GetChunkStream(ArchiverChunkType.WorldFluid))
 		{
 			var reader = new JJxReader(chunk);
-			var buffer = new byte[chunk.Length];
-			reader.ReadSpan(buffer.AsSpan());
-			this._World._Fluid = buffer;
+			var nonsourceCount = reader.ReadInt32();
+			this._World.NonsourceFluids.EnsureCapacity(nonsourceCount);
+			for (var i = 0; i < nonsourceCount; ++i)
+				this._World.NonsourceFluids.Add((reader.ReadUInt16(), reader.ReadUInt16()));
+			var sourceCount = reader.ReadInt32();
+			this._World.SourceFluids.EnsureCapacity(sourceCount);
+			for (var i = 0; i < sourceCount; ++i)
+				this._World.SourceFluids.Add((reader.ReadUInt16(), reader.ReadUInt16()));
 		}
 		this._IsFluidLoaded = true;
 	}
@@ -440,7 +445,18 @@ public sealed class WorldArchive : IArchive
 		chunk = writer.WriteChunk(ArchiverChunkType.WorldFluid);
 		{
 			var streamWriter = new JJxWriter(chunk);
-			streamWriter.Write(this.Fluid);
+			streamWriter.Write(this.NonsourceFluids.Count);
+			foreach (var nonsourceFluid in this.NonsourceFluids)
+			{
+				streamWriter.Write(nonsourceFluid.X);
+				streamWriter.Write(nonsourceFluid.Y);
+			}
+			streamWriter.Write(this.SourceFluids.Count);
+			foreach (var sourceFluid in this.SourceFluids)
+			{
+				streamWriter.Write(sourceFluid.X);
+				streamWriter.Write(sourceFluid.Y);
+			}
 		}
 		// Circuits
 		chunk = writer.WriteChunk(ArchiverChunkType.WorldCircuitry);
@@ -575,7 +591,8 @@ public sealed class WorldArchive : IArchive
 	public List<Entity> Entities { get { this._LoadContainerEntity(); return this._World.Entities; } }
 	// Fluid
 	private bool _IsFluidLoaded = false;
-	public Span<byte> Fluid { get { this._LoadFluid(); return this._World.Fluid; } }
+	public List<(ushort X, ushort Y)> NonsourceFluids { get { this._LoadFluid(); return this._World.NonsourceFluids; } }
+	public List<(ushort X, ushort Y)> SourceFluids { get { this._LoadFluid(); return this._World.SourceFluids; } }
 	// Circuit
 	private bool _AreCircuitsLoaded = false;
 	public Span<byte> Circuitry { get { this._LoadCircuits(); return this._World.Circuitry; } }
