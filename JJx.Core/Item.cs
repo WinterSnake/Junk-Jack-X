@@ -8,7 +8,7 @@
 	Segment[0x4 : 0x5] = Id         | Length: 2 (0x2) | Type: uint16
 	Segment[0x6 : 0x7] = Count      | Length: 2 (0x2) | Type: uint16
 	Segment[0x8 : 0x9] = Durabiltiy | Length: 2 (0x2) | Type: uint16
-	Segment[0xA]       = Icon       | Length: 1 (0x1) | Type: uint8
+	Segment[0xA]       = Variant    | Length: 1 (0x1) | Type: uint8
 	Segment[0xB]       = UNKNOWN    | Length: 1 (0x1) | Type: uint8
 	----------------------------------------------------------------
 	Length: 12 (0xC)
