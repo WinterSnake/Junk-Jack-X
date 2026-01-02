@@ -115,8 +115,8 @@ public sealed class World
 	public readonly List<Lock> Locks = new();
 	public readonly List<Entity> Entities = new();
 	// Fluids
-	public readonly List<(ushort X, ushort Y)> NonsourceFluids = new();
 	public readonly List<(ushort X, ushort Y)> SourceFluids = new();
+	public readonly List<(ushort X, ushort Y)> NonsourceFluids = new();
 	// Circuitry
 	internal byte[] _Circuitry = Array.Empty<byte>();
 	public Span<byte> Circuitry => this._Circuitry.AsSpan();

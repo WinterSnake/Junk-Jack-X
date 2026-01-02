@@ -65,7 +65,7 @@ public sealed class AdventureArchive : IArchive
 			streamWriter.Write((ushort)0);
 			streamWriter.Write(this.Planet);
 			streamWriter.Write((byte)0);
-			streamWriter.Write((byte)0);
+			streamWriter.Write(Gamemode.Adventure);
 			streamWriter.Write(this.SizeBounds);
 			streamWriter.Write(this.SkyBounds);
 			streamWriter.Skip(4); // Unknown (likely padding)

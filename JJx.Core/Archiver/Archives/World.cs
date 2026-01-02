@@ -591,8 +591,8 @@ public sealed class WorldArchive : IArchive
 	public List<Entity> Entities { get { this._LoadContainerEntity(); return this._World.Entities; } }
 	// Fluid
 	private bool _IsFluidLoaded = false;
-	public List<(ushort X, ushort Y)> NonsourceFluids { get { this._LoadFluid(); return this._World.NonsourceFluids; } }
 	public List<(ushort X, ushort Y)> SourceFluids { get { this._LoadFluid(); return this._World.SourceFluids; } }
+	public List<(ushort X, ushort Y)> NonsourceFluids { get { this._LoadFluid(); return this._World.NonsourceFluids; } }
 	// Circuit
 	private bool _AreCircuitsLoaded = false;
 	public Span<byte> Circuitry { get { this._LoadCircuits(); return this._World.Circuitry; } }
