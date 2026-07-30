@@ -1,6 +1,6 @@
 /*
-	Junk Jack X: Core
-	- [Archiver]Chunk
+   Junk Jack X: Core
+   - [Archiver]Chunk
 
 	Segment Breakdown:
 	--------------------------------------------------------------------------------------------------
@@ -59,5 +59,5 @@ internal record struct ArchiverChunk
 	public int Offset;
 	public int Length;
 	/* Class Properties */
-	internal const int SIZE = 12;
+	internal const int SIZE = 0xC;
 }
