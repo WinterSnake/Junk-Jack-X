@@ -1,6 +1,6 @@
 /*
 	Junk Jack X: Core
-	- [Archiver]Writer
+	- [Serialization]Writer
 
 	Written By: Ryan Smith
 */
@@ -8,109 +8,67 @@
 using System;
 using System.Buffers;
 using System.Buffers.Binary;
-using System.IO;
+using System.Diagnostics;
 using System.Text;
 
 namespace JJx.Core.Serialization;
 
-public sealed class JJxWriter
+internal sealed class JJxWriter
 {
 	/* Constructor */
-	public JJxWriter(Stream stream) => this._Stream = stream;
+	public JJxWriter(IBufferWriter<byte> writer) => this._Writer = writer;
 	/* Instance Methods */
-	public void Skip(int count)
-	{
-		if (count <= 0) return;
-		if (!this._Stream.CanSeek)
-			throw new InvalidOperationException("Skipping not supported on non-seekable streams");
-		this._Stream.Seek(count, SeekOrigin.Current);
-	}
 	public void Write(bool @value)
 	{
-		Span<byte> buffer = stackalloc byte[sizeof(byte)];
-		buffer[0] = Convert.ToByte(value);
-		this._Stream.Write(buffer);
-	}
-	public void Write(sbyte @value)
-	{
-		Span<byte> buffer = stackalloc byte[sizeof(sbyte)];
-		buffer[0] = (byte)value;
-		this._Stream.Write(buffer);
+		var size = sizeof(bool);
+		this._Writer.GetSpan(size)[0] = Convert.ToByte(@value);
+		this._Writer.Advance(size);
 	}
 	public void Write(byte @value)
 	{
-		Span<byte> buffer = stackalloc byte[sizeof(byte)];
-		buffer[0] = value;
-		this._Stream.Write(buffer);
-	}
-	public void Write(short @value)
-	{
-		Span<byte> buffer = stackalloc byte[sizeof(short)];
-		BinaryPrimitives.WriteInt16LittleEndian(buffer, @value);
-		this._Stream.Write(buffer);
+		var size = sizeof(byte);
+		this._Writer.GetSpan(size)[0] = @value;
+		this._Writer.Advance(size);
 	}
 	public void Write(ushort @value)
 	{
-		Span<byte> buffer = stackalloc byte[sizeof(ushort)];
-		BinaryPrimitives.WriteUInt16LittleEndian(buffer, @value);
-		this._Stream.Write(buffer);
+		var size = sizeof(ushort);
+		BinaryPrimitives.WriteUInt16LittleEndian(this._Writer.GetSpan(size), @value);
+		this._Writer.Advance(size);
+	}
+	public void WriteBE(ushort @value)
+	{
+		var size = sizeof(ushort);
+		BinaryPrimitives.WriteUInt16BigEndian(this._Writer.GetSpan(size), @value);
+		this._Writer.Advance(size);
 	}
 	public void Write(int @value)
 	{
-		Span<byte> buffer = stackalloc byte[sizeof(int)];
-		BinaryPrimitives.WriteInt32LittleEndian(buffer, @value);
-		this._Stream.Write(buffer);
+		var size = sizeof(int);
+		BinaryPrimitives.WriteInt32LittleEndian(this._Writer.GetSpan(size), @value);
+		this._Writer.Advance(size);
 	}
 	public void Write(uint @value)
 	{
-		Span<byte> buffer = stackalloc byte[sizeof(uint)];
-		BinaryPrimitives.WriteUInt32LittleEndian(buffer, @value);
-		this._Stream.Write(buffer);
-	}
-	public void Write(long @value)
-	{
-		Span<byte> buffer = stackalloc byte[sizeof(long)];
-		BinaryPrimitives.WriteInt64LittleEndian(buffer, @value);
-		this._Stream.Write(buffer);
-	}
-	public void Write(ulong @value)
-	{
-		Span<byte> buffer = stackalloc byte[sizeof(ulong)];
-		BinaryPrimitives.WriteUInt64LittleEndian(buffer, @value);
-		this._Stream.Write(buffer);
-	}
-	public void Write(float @value)
-	{
-		Span<byte> buffer = stackalloc byte[sizeof(float)];
-		BinaryPrimitives.WriteSingleLittleEndian(buffer, @value);
-		this._Stream.Write(buffer);
-	}
-	public void Write(double @value)
-	{
-		Span<byte> buffer = stackalloc byte[sizeof(double)];
-		BinaryPrimitives.WriteDoubleLittleEndian(buffer, @value);
-		this._Stream.Write(buffer);
+		var size = sizeof(uint);
+		BinaryPrimitives.WriteUInt32LittleEndian(this._Writer.GetSpan(size), @value);
+		this._Writer.Advance(size);
 	}
 	public void Write(string @value, int length = 0)
 	{
-		if (length == 0)
-		{
-			length = Encoding.UTF8.GetByteCount(@value) + 1;
-			this.Write((ushort)length);
-		}
-		byte[]? storage = null;
-		Span<byte> buffer = length > 128 ? (storage = ArrayPool<byte>.Shared.Rent(length)).AsSpan(0, length) : stackalloc byte[length];
-		try {
-			buffer.Clear();
-			Encoding.UTF8.GetBytes(@value, buffer);
-			this._Stream.Write(buffer);
-		} finally {
-			if (storage is not null)
-				ArrayPool<byte>.Shared.Return(storage);
-		}
+		Debug.Assert(length > 0);
+		var span = this._Writer.GetSpan(length);
+		var written = Encoding.UTF8.GetBytes(@value, span);
+		span[written..].Clear();
+		this._Writer.Advance(length);
 	}
-	public void Write(ReadOnlySpan<byte> @value) => this._Stream.Write(@value);
-	public void Write<T>(in T @value) => JJxSerializationOptions.Default.GetConverter<T>().Write(@value, this);
+	public void Write(ReadOnlySpan<byte> buffer)
+	{
+		buffer.CopyTo(this._Writer.GetSpan(buffer.Length));
+		this._Writer.Advance(buffer.Length);
+	}
+	public void Write<T>(in T @value)
+		=> JJxSerializationOptions.Default.GetConverter<T>().Write(@value, this);
 	/* Properties */
-	private readonly Stream _Stream;
+	private readonly IBufferWriter<byte> _Writer;
 }

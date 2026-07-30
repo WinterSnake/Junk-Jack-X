@@ -1,6 +1,6 @@
 /*
 	Junk Jack X: Core
-	- [Archiver]Reader
+	- [Serialization]Reader
 
 	Written By: Ryan Smith
 */
@@ -8,107 +8,78 @@
 using System;
 using System.Buffers;
 using System.Buffers.Binary;
-using System.IO;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace JJx.Core.Serialization;
 
-public ref struct JJxReader
+internal ref struct JJxReader
 {
 	/* Constructor */
-	public JJxReader(Stream stream) => this._Stream = stream;
+	public JJxReader(ReadOnlySpan<byte> buffer) => this._Buffer = buffer;
 	/* Instance Methods */
-	public void Skip(int count)
-	{
-		if (count <= 0) return;
-		if (!this._Stream.CanSeek)
-			throw new InvalidOperationException("Skipping not supported on non-seekable streams");
-		this._Stream.Seek(count, SeekOrigin.Current);
-	}
 	public bool ReadBool()
 	{
-		Span<byte> buffer = stackalloc byte[sizeof(byte)];
-		this._Stream.ReadExactly(buffer);
-		return Convert.ToBoolean(buffer[0]);
-	}
-	public sbyte ReadInt8()
-	{
-		Span<byte> buffer = stackalloc byte[sizeof(sbyte)];
-		this._Stream.ReadExactly(buffer);
-		return (sbyte)buffer[0];
+		var @value = Convert.ToBoolean(this._Buffer[0]);
+		this._Buffer = this._Buffer.Slice(sizeof(bool));
+		return @value;
 	}
 	public byte ReadUInt8()
 	{
-		Span<byte> buffer = stackalloc byte[sizeof(byte)];
-		this._Stream.ReadExactly(buffer);
-		return buffer[0];
-	}
-	public short ReadInt16()
-	{
-		Span<byte> buffer = stackalloc byte[sizeof(short)];
-		this._Stream.ReadExactly(buffer);
-		return BinaryPrimitives.ReadInt16LittleEndian(buffer);
+		var @value = this._Buffer[0];
+		this._Buffer = this._Buffer.Slice(sizeof(byte));
+		return @value;
 	}
 	public ushort ReadUInt16()
 	{
-		Span<byte> buffer = stackalloc byte[sizeof(ushort)];
-		this._Stream.ReadExactly(buffer);
-		return BinaryPrimitives.ReadUInt16LittleEndian(buffer);
+		var @value = BinaryPrimitives.ReadUInt16LittleEndian(this._Buffer);
+		this._Buffer = this._Buffer.Slice(sizeof(ushort));
+		return @value;
+	}
+	public ushort ReadUInt16BE()
+	{
+		var @value = BinaryPrimitives.ReadUInt16BigEndian(this._Buffer);
+		this._Buffer = this._Buffer.Slice(sizeof(ushort));
+		return @value;
 	}
 	public int ReadInt32()
 	{
-		Span<byte> buffer = stackalloc byte[sizeof(int)];
-		this._Stream.ReadExactly(buffer);
-		return BinaryPrimitives.ReadInt32LittleEndian(buffer);
+		var @value = BinaryPrimitives.ReadInt32LittleEndian(this._Buffer);
+		this._Buffer = this._Buffer.Slice(sizeof(int));
+		return @value;
 	}
 	public uint ReadUInt32()
 	{
-		Span<byte> buffer = stackalloc byte[sizeof(uint)];
-		this._Stream.ReadExactly(buffer);
-		return BinaryPrimitives.ReadUInt32LittleEndian(buffer);
+		var @value = BinaryPrimitives.ReadUInt32LittleEndian(this._Buffer);
+		this._Buffer = this._Buffer.Slice(sizeof(uint));
+		return @value;
 	}
-	public long ReadInt64()
+	public string ReadString(int length = 0, int maxCapacity = 128)
 	{
-		Span<byte> buffer = stackalloc byte[sizeof(long)];
-		this._Stream.ReadExactly(buffer);
-		return BinaryPrimitives.ReadInt64LittleEndian(buffer);
-	}
-	public ulong ReadUInt64()
-	{
-		Span<byte> buffer = stackalloc byte[sizeof(ulong)];
-		this._Stream.ReadExactly(buffer);
-		return BinaryPrimitives.ReadUInt64LittleEndian(buffer);
-	}
-	public float ReadFloat32()
-	{
-		Span<byte> buffer = stackalloc byte[sizeof(float)];
-		this._Stream.ReadExactly(buffer);
-		return BinaryPrimitives.ReadSingleLittleEndian(buffer);
-	}
-	public double ReadFloat64()
-	{
-		Span<byte> buffer = stackalloc byte[sizeof(double)];
-		this._Stream.ReadExactly(buffer);
-		return BinaryPrimitives.ReadDoubleLittleEndian(buffer);
-	}
-	public string ReadString(int length = 0)
-	{
-		if (length == 0)
-			length = this.ReadUInt16();
+		Debug.Assert(length > 0);
 		byte[]? storage = null;
-		Span<byte> buffer = length > 128 ? (storage = ArrayPool<byte>.Shared.Rent(length)).AsSpan(0, length) : stackalloc byte[length];
+		Span<byte> buffer = length > maxCapacity
+			? (storage = ArrayPool<byte>.Shared.Rent(length)).AsSpan(0, length)
+			: stackalloc byte[length];
 		try {
-			this._Stream.ReadExactly(buffer);
-			var terminator = buffer.IndexOf((byte)0);
-			buffer = terminator != -1 ? buffer.Slice(0, terminator) : buffer;
+			this._Buffer[..length].CopyTo(buffer);
+			var terminator = buffer.IndexOf<byte>(0);
+			buffer = terminator == -1 ? buffer : buffer[..terminator];
+			this._Buffer = this._Buffer.Slice(length);
 			return Encoding.UTF8.GetString(buffer);
 		} finally {
-			if (storage is not null)
-				ArrayPool<byte>.Shared.Return(storage);
+			if (storage is not null) ArrayPool<byte>.Shared.Return(storage);
 		}
 	}
-	public void ReadSpan(scoped Span<byte> buffer) => this._Stream.ReadExactly(buffer);
-	public T ReadObject<T>() => JJxSerializationOptions.Default.GetConverter<T>().Read(ref this);
+	public void CopyTo(scoped Span<byte> buffer)
+	{
+		this._Buffer[..buffer.Length].CopyTo(buffer);
+		this._Buffer = this._Buffer.Slice(buffer.Length);
+	}
+	public T ReadObject<T>()
+		=> JJxSerializationOptions.Default.GetConverter<T>().Read(ref this);
 	/* Properties */
-	private readonly Stream _Stream;
+	private ReadOnlySpan<byte> _Buffer;
+	public int Remaining => this._Buffer.Length;
 }
