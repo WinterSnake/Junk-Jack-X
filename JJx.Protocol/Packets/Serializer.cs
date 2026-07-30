@@ -26,8 +26,8 @@ public static class JJxPacketSerializer
 	public static JJxPacket Deserialize(in ReadOnlySpan<byte> rawPacket, JJxPacketRegistry options)
 	{
 		var reader = new JJxReader(rawPacket);
-		var opcode = (JJxPacketOpcode)reader.ReadUInt16BE();
-		if (!options.TryGetDeserializer(opcode, out var deserializeFunc))
+		var opcode = reader.ReadUInt16BE();
+		if (!options.TryGetDeserializer((JJxPacketOpcode)opcode, out var deserializeFunc))
 			throw new InvalidOperationException($"No packet deserializer found for 0x{opcode:X4}. Packet not registered.");
 		return deserializeFunc(ref reader);
 	}

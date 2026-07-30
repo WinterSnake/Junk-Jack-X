@@ -16,7 +16,7 @@ namespace JJx.Protocol.Packets;
 
 internal delegate TPacket DeserializeFunc<out TPacket>(ref JJxReader reader) where TPacket: JJxPacket;
 
-public class JJxPacketRegistry
+public sealed class JJxPacketRegistry
 {
 	/* Constructors */
 	public JJxPacketRegistry()

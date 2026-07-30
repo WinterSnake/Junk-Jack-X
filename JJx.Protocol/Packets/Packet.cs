@@ -15,6 +15,8 @@ public enum JJxPacketOpcode : ushort
 	Management = (0x00 << 8),
 	// Sub-type
 	LoginRequest = Management | 0x02,
+	LoginSuccess = Management | 0x03,
+	LoginFail    = Management | 0x0C,
 }
 
 [AttributeUsage(AttributeTargets.Class)]

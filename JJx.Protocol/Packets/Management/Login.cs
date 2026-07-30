@@ -5,6 +5,7 @@
 	Written By: Ryan Smith
 */
 
+using System;
 using JJx.Core;
 using JJx.Core.Serialization;
 
@@ -38,4 +39,44 @@ public sealed class LoginRequestPacket : JJxPacket
 	public readonly JJxVersion Version;
 	/* Class Properties */
 	public const int SIZEOF_NAME = 32;
+}
+
+[PacketOpcode(Opcode=JJxPacketOpcode.LoginSuccess)]
+public sealed class LoginSuccessPacket : JJxPacket
+{
+	/* Constructor */
+	public LoginSuccessPacket(ushort status = 0x0001) => this.Status = status;
+	/* Static Methods */
+	internal static void Serialize(LoginSuccessPacket packet, JJxWriter writer)
+	{
+		writer.Write(packet.Status);
+	}
+	internal static LoginSuccessPacket Deserialize(ref JJxReader reader) => new(
+		reader.ReadUInt16()
+	);
+	/* Properties */
+	public readonly ushort Status;
+}
+
+[PacketOpcode(Opcode=JJxPacketOpcode.LoginFail)]
+public sealed class LoginFailPacket : JJxPacket
+{
+	/* Constructor */
+	public LoginFailPacket(FailureCode code) => this.Code = code;
+	/* Static Methods */
+	internal static void Serialize(LoginFailPacket packet, JJxWriter writer)
+	{
+		writer.Write(packet.Code);
+	}
+	internal static LoginFailPacket Deserialize(ref JJxReader reader) => new(
+		reader.ReadObject<FailureCode>()
+	);
+	/* Properties */
+	public readonly FailureCode Code;
+	/* Sub-Classes */
+	public enum FailureCode : byte
+	{
+		ServerIsFull = 0x00,
+		DifferentGameVersion = 0x01,
+	}
 }
