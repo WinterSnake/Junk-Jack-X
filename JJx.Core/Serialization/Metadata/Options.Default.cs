@@ -19,6 +19,7 @@ internal static class JJxDefaultSerializationOptions
 		Options.AddConverter<EnumConverterFactory>();
 		Options.AddConverter<ArchiverChunkConverter>(typeof(ArchiverChunk));
 		Options.AddConverter<GuidConverter>(typeof(Guid));
+		Options.AddConverter<DateTimeConverter>(typeof(DateTime));
 	}
 	/* Class Properties */
 	internal static readonly JJxSerializationOptions Options;

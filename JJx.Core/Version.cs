@@ -7,7 +7,7 @@
 
 namespace JJx.Core;
 
-public enum Version : uint
+public enum JJxVersion : uint
 {
 	V2490  = 24900,
 	V2910  = 29100,
