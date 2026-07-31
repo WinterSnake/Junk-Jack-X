@@ -18,6 +18,8 @@ internal static class JJxServerRegistry
 		Registry.RegisterDeserializer(LoginRequestPacket.Deserialize);
 		Registry.RegisterSerializer<LoginSuccessPacket>(LoginSuccessPacket.Serialize);
 		Registry.RegisterSerializer<LoginFailPacket>(LoginFailPacket.Serialize);
+		Registry.RegisterDeserializer(WorldInfoRequestPacket.Deserialize);
+		Registry.RegisterSerializer<WorldInfoResponsePacket>(WorldInfoResponsePacket.Serialize);
 	}
 	/* Class Properties */
 	internal static readonly JJxPacketRegistry Registry;

@@ -22,17 +22,17 @@ public sealed class LoginRequestPacket : JJxPacket
 		this.Version = version;
 	}
 	/* Static Methods */
+	internal static LoginRequestPacket Deserialize(ref JJxReader reader) => new(
+		reader.ReadUInt8(),
+		reader.ReadString(length: SIZEOF_NAME),
+		reader.ReadObject<JJxVersion>()
+	);
 	internal static void Serialize(LoginRequestPacket packet, JJxWriter writer)
 	{
 		writer.Write(packet.Id);
 		writer.Write(packet.Name, length: SIZEOF_NAME);
 		writer.Write(packet.Version);
 	}
-	internal static LoginRequestPacket Deserialize(ref JJxReader reader) => new(
-		reader.ReadUInt8(),
-		reader.ReadString(length: SIZEOF_NAME),
-		reader.ReadObject<JJxVersion>()
-	);
     /* Properties */
 	public readonly byte Id;
 	public readonly string Name;
@@ -47,13 +47,13 @@ public sealed class LoginSuccessPacket : JJxPacket
 	/* Constructor */
 	public LoginSuccessPacket(ushort status = 0x0001) => this.Status = status;
 	/* Static Methods */
+	internal static LoginSuccessPacket Deserialize(ref JJxReader reader) => new(
+		reader.ReadUInt16()
+	);
 	internal static void Serialize(LoginSuccessPacket packet, JJxWriter writer)
 	{
 		writer.Write(packet.Status);
 	}
-	internal static LoginSuccessPacket Deserialize(ref JJxReader reader) => new(
-		reader.ReadUInt16()
-	);
 	/* Properties */
 	public readonly ushort Status;
 }
@@ -64,13 +64,13 @@ public sealed class LoginFailPacket : JJxPacket
 	/* Constructor */
 	public LoginFailPacket(FailureCode code) => this.Code = code;
 	/* Static Methods */
+	internal static LoginFailPacket Deserialize(ref JJxReader reader) => new(
+		reader.ReadObject<FailureCode>()
+	);
 	internal static void Serialize(LoginFailPacket packet, JJxWriter writer)
 	{
 		writer.Write(packet.Code);
 	}
-	internal static LoginFailPacket Deserialize(ref JJxReader reader) => new(
-		reader.ReadObject<FailureCode>()
-	);
 	/* Properties */
 	public readonly FailureCode Code;
 	/* Sub-Classes */
