@@ -37,12 +37,6 @@ internal ref struct JJxReader
 		this._Buffer = this._Buffer.Slice(sizeof(ushort));
 		return @value;
 	}
-	public ushort ReadUInt16BE()
-	{
-		var @value = BinaryPrimitives.ReadUInt16BigEndian(this._Buffer);
-		this._Buffer = this._Buffer.Slice(sizeof(ushort));
-		return @value;
-	}
 	public int ReadInt32()
 	{
 		var @value = BinaryPrimitives.ReadInt32LittleEndian(this._Buffer);

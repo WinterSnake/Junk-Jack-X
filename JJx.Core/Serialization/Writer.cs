@@ -36,12 +36,6 @@ internal sealed class JJxWriter
 		BinaryPrimitives.WriteUInt16LittleEndian(this._Writer.GetSpan(size), @value);
 		this._Writer.Advance(size);
 	}
-	public void WriteBE(ushort @value)
-	{
-		var size = sizeof(ushort);
-		BinaryPrimitives.WriteUInt16BigEndian(this._Writer.GetSpan(size), @value);
-		this._Writer.Advance(size);
-	}
 	public void Write(int @value)
 	{
 		var size = sizeof(int);
