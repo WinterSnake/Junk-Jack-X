@@ -31,21 +31,22 @@ public enum ArchiveType : ushort
 	Adventure = 0x02,
 }
 
-public interface IArchiveReader
+public interface IArchiveReader : IDisposable
 {
 	/* Instance Methods */
 	public bool HasChunkType(ArchiverChunkType type);
 	public Stream GetChunkStream(ArchiverChunkType type);
+	internal JJxReader GetChunkReader(ArchiverChunkType type, out byte[] buffer);
 	/* Properties */
 	public ArchiveType Type { get; }
 }
 
-public interface IArchiveWriter
+public interface IArchiveWriter : IDisposable
 {
 	/* Instance Methods */
 }
 
-public sealed class ArchiveManager : IDisposable, IArchiveReader, IArchiveWriter
+public sealed class ArchiveManager : IArchiveReader, IArchiveWriter
 {
 	/* Constructors */
 	private ArchiveManager(Stream stream, IEnumerable<ArchiverChunk> chunks)
@@ -64,14 +65,21 @@ public sealed class ArchiveManager : IDisposable, IArchiveReader, IArchiveWriter
 	}
 	public Stream GetChunkStream(ArchiverChunkType type)
 	{
+		var chunkStream = this._GetChunkStream(type);
+		return chunkStream;
+	}
+	JJxReader IArchiveReader.GetChunkReader(ArchiverChunkType type, out byte[] buffer)
+	{
+		var chunkStream = this._GetChunkStream(type);
+		buffer = ArrayPool<byte>.Shared.Rent((int)chunkStream.Length);
+		var slice = buffer.AsSpan(0, (int)chunkStream.Length);
+		chunkStream.ReadExactly(slice);
+		return new JJxReader(slice);
+	}
+	private ChunkReaderStream _GetChunkStream(ArchiverChunkType type)
+	{
 		foreach (ref var chunk in CollectionsMarshal.AsSpan(this._Chunks))
-		{
-			if (type == chunk.Type)
-			{
-				var chunkStream = new ChunkReaderStream(this._Stream, ref chunk);
-				return chunkStream;
-			}
-		}
+			if (type == chunk.Type) return new ChunkReaderStream(this._Stream, ref chunk);
 		throw new InvalidDataException($"Tried to create a chunk stream reader over non-existent '{type}' chunk");
 	}
 	/* Static Methods */
