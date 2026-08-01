@@ -14,10 +14,9 @@ using JJx.Protocol.Packets;
 
 namespace JJx.Protocol.Extensions;
 
-internal static class PacketExtensions
+public static partial class PacketExtensions
 {
 	/* Static Methods */
-	// Skyline Packet
 	public static ushort[] Decompress(this WorldSkylinePacket packet, ushort width)
 	{
 		var skyline = new ushort[width];
