@@ -55,6 +55,8 @@ public sealed class JJxWorldBuilder : IDisposable
 	private readonly ushort[] _Skyline;
 	private readonly byte[] _CompressedData;
 	private readonly Memory<byte> _CompressedMemory;
+	internal ReadOnlyMemory<byte> CompressedMemory => this._CompressedMemory;
 	public int CurrentSizeInBytes { get; private set; } = 0;
 	public int TotalSizeInBytes => this._CompressedMemory.Length;
+	public bool IsCompressionCompleted => this.CurrentSizeInBytes == this.TotalSizeInBytes;
 }
