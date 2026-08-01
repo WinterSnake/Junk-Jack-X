@@ -6,12 +6,7 @@
 */
 
 using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Runtime.InteropServices;
-using JJx.Core;
+using CommunityToolkit.HighPerformance;
 using JJx.Core.Serialization;
 
 namespace JJx.Protocol.Packets;
@@ -20,12 +15,8 @@ namespace JJx.Protocol.Packets;
 public sealed class WorldCompressedSegmentPacket : JJxPacket
 {
 	/* Constructor */
-	private WorldCompressedSegmentPacket(byte[] compressedData) => this._CompressedData = compressedData;
+	internal WorldCompressedSegmentPacket(byte[] compressedData) => this._CompressedData = compressedData;
 	/* Static Methods */
-	public static IEnumerable<WorldCompressedSegmentPacket> Compress(JJxWorld world, int maxChunkSize = 1024)
-	{
-		yield return new(Array.Empty<byte>());
-	}
 	internal static WorldCompressedSegmentPacket Deserialize(ref JJxReader reader)
 	{
 		var buffer = new byte[reader.ReadUInt32()];
@@ -35,7 +26,7 @@ public sealed class WorldCompressedSegmentPacket : JJxPacket
 	internal static void Serialize(WorldCompressedSegmentPacket packet, JJxWriter writer)
 	{
 		writer.Write(packet._CompressedData.Length);
-		writer.Write(packet._CompressedData);
+		writer.Write(packet._CompressedData.AsSpan());
 	}
     /* Properties */
 	public ReadOnlyMemory<byte> CompressedData => this._CompressedData;
