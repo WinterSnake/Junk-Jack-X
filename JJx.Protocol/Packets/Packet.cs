@@ -16,13 +16,14 @@ public enum JJxPacketOpcode : ushort
 	WorldData  = (0x03 << 8),
 	Entity     = (0x05 << 8),
 	// Sub-type[Management]
-	LoginRequest      = Management | 0x02,
-	LoginSuccess      = Management | 0x03,
-	LoginFail         = Management | 0x0C,
-	WorldInfoRequest  = Management | 0x09,
+	LoginRequest           = Management | 0x02,
+	LoginSuccess           = Management | 0x03,
+	LoginFail              = Management | 0x0C,
+	WorldInfoRequest       = Management | 0x09,
 	// Sub-type[WorldData]
-	WorldInfoResponse = WorldData  | 0x43,
-	WorldSkyline      = WorldData  | 0x4C,
+	WorldInfoResponse      = WorldData  | 0x43,
+	WorldCompressedSegment = WorldData  | 0x47,
+	WorldSkyline           = WorldData  | 0x4C,
 	// Sub-type[Entity]
 }
 
