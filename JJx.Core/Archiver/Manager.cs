@@ -18,7 +18,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.IO.Compression;
 using System.Runtime.InteropServices;
 using JJx.Core.Serialization;
 
@@ -36,7 +36,7 @@ public interface IArchiveReader : IDisposable
 	/* Instance Methods */
 	public bool HasChunkType(ArchiverChunkType type);
 	public Stream GetChunkStream(ArchiverChunkType type);
-	internal JJxReader GetChunkReader(ArchiverChunkType type, out byte[] buffer);
+	internal IMemoryOwner<byte> GetChunkReader(ArchiverChunkType type, out JJxReader reader);
 	/* Properties */
 	public ArchiveType Type { get; }
 }
@@ -65,21 +65,35 @@ public sealed class ArchiveManager : IArchiveReader, IArchiveWriter
 	}
 	public Stream GetChunkStream(ArchiverChunkType type)
 	{
-		var chunkStream = this._GetChunkStream(type);
+		ref var chunk = ref this._GetChunk(type);
+		if (this._Stream.Position != chunk.Offset)
+			this._Stream.Seek(chunk.Offset, SeekOrigin.Begin);
+		Stream chunkStream = new ChunkReaderStream(this._Stream, ref chunk);
+		if (chunk.IsCompressed)
+			chunkStream = new GZipStream(chunkStream, CompressionMode.Decompress, true);
 		return chunkStream;
 	}
-	JJxReader IArchiveReader.GetChunkReader(ArchiverChunkType type, out byte[] buffer)
+	IMemoryOwner<byte> IArchiveReader.GetChunkReader(ArchiverChunkType type, out JJxReader reader)
 	{
-		var chunkStream = this._GetChunkStream(type);
-		buffer = ArrayPool<byte>.Shared.Rent((int)chunkStream.Length);
-		var slice = buffer.AsSpan(0, (int)chunkStream.Length);
-		chunkStream.ReadExactly(slice);
-		return new JJxReader(slice);
+		ref var chunk = ref this._GetChunk(type);
+		if (this._Stream.Position != chunk.Offset)
+			this._Stream.Seek(chunk.Offset, SeekOrigin.Begin);
+		var chunkStream = new ChunkReaderStream(this._Stream, ref chunk);
+		var owner = MemoryPool<byte>.Shared.Rent((int)chunkStream.Length);
+		try {
+			var slice = owner.Memory.Slice(0, (int)chunkStream.Length).Span;
+			chunkStream.ReadExactly(slice);
+			reader = new JJxReader(slice);
+			return owner;
+		} catch {
+			owner.Dispose();
+			throw;
+		}
 	}
-	private ChunkReaderStream _GetChunkStream(ArchiverChunkType type)
+	private ref ArchiverChunk _GetChunk(ArchiverChunkType type)
 	{
 		foreach (ref var chunk in CollectionsMarshal.AsSpan(this._Chunks))
-			if (type == chunk.Type) return new ChunkReaderStream(this._Stream, ref chunk);
+			if (type == chunk.Type) return ref chunk;
 		throw new InvalidDataException($"Tried to create a chunk stream reader over non-existent '{type}' chunk");
 	}
 	/* Static Methods */

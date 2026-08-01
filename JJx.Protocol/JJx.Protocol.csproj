@@ -6,4 +6,7 @@
 	<ItemGroup>
 		<ProjectReference Include="../JJx.Core/JJx.Core.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.HighPerformance" Version="8.4.2" />
+	</ItemGroup>
 </Project>
