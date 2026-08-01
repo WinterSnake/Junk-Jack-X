@@ -20,6 +20,8 @@ internal static class JJxServerRegistry
 		Registry.RegisterSerializer<LoginFailPacket>(LoginFailPacket.Serialize);
 		Registry.RegisterDeserializer(WorldInfoRequestPacket.Deserialize);
 		Registry.RegisterSerializer<WorldInfoResponsePacket>(WorldInfoResponsePacket.Serialize);
+		Registry.RegisterSerializer<WorldSkylinePacket>(WorldSkylinePacket.Serialize);
+		Registry.RegisterSerializer<WorldCompressedSegmentPacket>(WorldCompressedSegmentPacket.Serialize);
 	}
 	/* Class Properties */
 	internal static readonly JJxPacketRegistry Registry;
