@@ -18,6 +18,7 @@ public enum JJxPacketOpcode : ushort
 	// Sub-type[Management]
 	LoginRequest           = Management | 0x02,
 	LoginSuccess           = Management | 0x03,
+	PlayerReady            = Management | 0x05,
 	PlayerListRequest      = Management | 0x06,
 	PlayerListEntry        = Management | 0x07,
 	WorldInfoRequest       = Management | 0x09,

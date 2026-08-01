@@ -5,6 +5,7 @@
 	Written By: Ryan Smith
 */
 
+using System;
 using JJx.Core;
 using JJx.Core.Serialization;
 
@@ -78,4 +79,28 @@ public sealed class LoginFailPacket : JJxPacket
 		ServerIsFull = 0x00,
 		DifferentGameVersion = 0x01,
 	}
+}
+
+[PacketOpcode(Opcode=JJxPacketOpcode.PlayerReady)]
+public sealed class PlayerReadyPacket : JJxPacket
+{
+	/* Constructor */
+	public PlayerReadyPacket(byte maxHealth, byte health)
+	{
+		this.Health = health;
+		this.MaxHealth = maxHealth;
+	}
+	/* Static Methods */
+	internal static PlayerReadyPacket Deserialize(ref JJxReader reader) => new(
+		reader.ReadUInt8(),
+		reader.ReadUInt8()
+	);
+	internal static void Serialize(PlayerReadyPacket packet, JJxWriter writer)
+	{
+		writer.Write(packet.MaxHealth);
+		writer.Write(packet.Health);
+	}
+	/* Properties */
+	public readonly byte Health;
+	public readonly byte MaxHealth;
 }
