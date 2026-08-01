@@ -18,8 +18,9 @@ public enum JJxPacketOpcode : ushort
 	// Sub-type[Management]
 	LoginRequest           = Management | 0x02,
 	LoginSuccess           = Management | 0x03,
-	LoginFail              = Management | 0x0C,
 	WorldInfoRequest       = Management | 0x09,
+	WorldProgress          = Management | 0x0A,
+	LoginFail              = Management | 0x0C,
 	// Sub-type[WorldData]
 	WorldInfoResponse      = WorldData  | 0x43,
 	WorldCompressedSegment = WorldData  | 0x47,

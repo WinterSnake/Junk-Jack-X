@@ -24,9 +24,10 @@ public static class JJxWorldBuilderExtensions
 		using var decompressionStream = packet.GetDecompressionStream();
 		decompressionStream.ReadExactly(MemoryMarshal.Cast<ushort, byte>(builder.Skyline));
 	}
-	public static void ApplyCompressedSegment(this JJxWorldBuilder builder, WorldCompressedSegmentPacket packet)
+	public static WorldProgressPacket ApplyCompressedSegment(this JJxWorldBuilder builder, WorldCompressedSegmentPacket packet)
 	{
-		var completion = builder.PushToCompressedBuffer(packet.CompressedData.Span);
+		var progress = builder.PushToCompressedBuffer(packet.CompressedData.Span);
+		return new(progress);
 	}
 	public static Tilemap BuildTilemap(this JJxWorldBuilder builder)
 	{

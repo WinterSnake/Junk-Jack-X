@@ -26,3 +26,21 @@ public sealed class WorldInfoRequestPacket : JJxPacket
 	/* Properties */
 	public readonly ushort Status;
 }
+
+[PacketOpcode(Opcode=JJxPacketOpcode.WorldProgress)]
+public sealed class WorldProgressPacket : JJxPacket
+{
+	/* Constructor */
+	public WorldProgressPacket(ushort progress) => this.Progress = progress;
+	public WorldProgressPacket(float progress) => this.Progress = (ushort)(progress * 100.0f);
+	/* Static Methods */
+	internal static WorldProgressPacket Deserialize(ref JJxReader reader) => new(
+		reader.ReadUInt16()
+	);
+	internal static void Serialize(WorldProgressPacket packet, JJxWriter writer)
+	{
+		writer.Write(packet.Progress);
+	}
+	/* Properties */
+	public readonly ushort Progress;
+}

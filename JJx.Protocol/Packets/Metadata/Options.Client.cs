@@ -22,6 +22,7 @@ internal static class JJxClientRegistry
 		Registry.RegisterDeserializer(WorldInfoResponsePacket.Deserialize);
 		Registry.RegisterDeserializer(WorldSkylinePacket.Deserialize);
 		Registry.RegisterDeserializer(WorldCompressedSegmentPacket.Deserialize);
+		Registry.RegisterSerializer<WorldProgressPacket>(WorldProgressPacket.Serialize);
 	}
 	/* Class Properties */
 	internal static readonly JJxPacketRegistry Registry;
