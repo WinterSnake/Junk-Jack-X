@@ -5,12 +5,22 @@
 	Written By: Ryan Smith
 */
 
-using JJx.Protocol;
+using System;
+using System.Runtime.InteropServices;
 using JJx.Protocol.Packets;
+
+namespace JJx.Protocol.Extensions;
 
 public static class JJxWorldBuilderExtensions
 {
 	/* Static Methods */
-	public static void DecompressSkyline(this JJxWorldBuilder builder, WorldSkylinePacket packet)
-		=> builder.Skyline = packet.Decompress(builder.Size.Width);
+	public static void ApplySkyline(this JJxWorldBuilder builder, WorldSkylinePacket packet)
+	{
+		using var decompressionStream = packet.GetDecompressionStream();
+		decompressionStream.ReadExactly(MemoryMarshal.Cast<ushort, byte>(builder.Skyline));
+	}
+	public static void ApplyCompressedSegment(this JJxWorldBuilder builder, WorldCompressedSegmentPacket packet)
+	{
+		var completion = builder.PushToCompressedBuffer(packet.CompressedData.Span);
+	}
 }

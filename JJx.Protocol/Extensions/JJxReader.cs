@@ -9,6 +9,8 @@ using System.Buffers.Binary;
 using JJx.Core.Serialization;
 using JJx.Protocol.Packets;
 
+namespace JJx.Protocol.Extensions;
+
 internal static class JJxReaderExtensions
 {
 	/* Static Methods */

@@ -8,6 +8,7 @@
 using System;
 using System.Buffers;
 using JJx.Core.Serialization;
+using JJx.Protocol.Extensions;
 
 namespace JJx.Protocol.Packets;
 

@@ -6,11 +6,6 @@
 */
 
 using System;
-using System.Buffers;
-using System.IO;
-using System.IO.Compression;
-using System.Runtime.InteropServices;
-using JJx.Core;
 using JJx.Core.Serialization;
 
 namespace JJx.Protocol.Packets;
@@ -20,15 +15,6 @@ public sealed class WorldSkylinePacket : JJxPacket
 {
 	/* Constructor */
 	private WorldSkylinePacket(byte[] compressedData) => this._CompressedData = compressedData;
-	/* Instance Methods */
-	public ushort[] Decompress(ushort width)
-	{
-		var skyline = new ushort[width];
-		using var compressedStream = new MemoryStream(this._CompressedData);
-		using var decompressionStream = new GZipStream(compressedStream, CompressionMode.Decompress);
-		decompressionStream.ReadExactly(MemoryMarshal.Cast<ushort, byte>(skyline.AsSpan()));
-		return skyline;
-	}
 	/* Static Methods */
 	public static WorldSkylinePacket Compress(ushort[] skyline)
 	{
@@ -45,6 +31,6 @@ public sealed class WorldSkylinePacket : JJxPacket
 		writer.Write(packet._CompressedData);
 	}
     /* Properties */
-	/* Class Properties */
-	public readonly byte[] _CompressedData;
+	public ReadOnlyMemory<byte> CompressedData => this._CompressedData;
+	private readonly byte[] _CompressedData;
 }
