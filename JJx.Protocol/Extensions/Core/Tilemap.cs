@@ -15,7 +15,7 @@ using JJx.Protocol.Packets;
 
 namespace JJx.Protocol.Extensions;
 
-internal static class JJxWorldExtensions
+public static partial class JJxWorldExtensions
 {
 	/* Static Methods */
 	public static (uint sizeInBytes, IEnumerable<WorldCompressedSegmentPacket> compressedSegments) Compress(this Tilemap tilemap, int maxSegmentSize = 1024)
