@@ -25,6 +25,7 @@ public enum JJxPacketOpcode : ushort
 	LoginFail              = Management | 0x0C,
 	// Sub-type[WorldData]
 	WorldInfoResponse      = WorldData  | 0x43,
+	WorldTime              = WorldData  | 0x44,
 	WorldCompressedSegment = WorldData  | 0x47,
 	WorldSkyline           = WorldData  | 0x4C,
 	// Sub-type[Entity]

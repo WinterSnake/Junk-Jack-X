@@ -5,7 +5,6 @@
 	Written By: Ryan Smith
 */
 
-using System;
 using JJx.Core;
 using JJx.Core.Serialization;
 
