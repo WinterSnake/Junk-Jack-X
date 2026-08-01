@@ -20,6 +20,7 @@ internal static class JJxDefaultSerializationOptions
 		Options.AddConverter<ArchiverChunkConverter>(typeof(ArchiverChunk));
 		Options.AddConverter<GuidConverter>(typeof(Guid));
 		Options.AddConverter<DateTimeConverter>(typeof(DateTime));
+		Options.AddConverter<TileConverter>(typeof(Tile));
 	}
 	/* Class Properties */
 	internal static readonly JJxSerializationOptions Options;
