@@ -58,5 +58,5 @@ public sealed class JJxWorldBuilder : IDisposable
 	internal ReadOnlyMemory<byte> CompressedMemory => this._CompressedMemory;
 	public int CurrentSizeInBytes { get; private set; } = 0;
 	public int TotalSizeInBytes => this._CompressedMemory.Length;
-	public bool IsCompressionCompleted => this.CurrentSizeInBytes == this.TotalSizeInBytes;
+	public bool AreSegmentsCompleted => this.CurrentSizeInBytes == this.TotalSizeInBytes;
 }

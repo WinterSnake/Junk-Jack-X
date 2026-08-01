@@ -13,6 +13,7 @@ public enum JJxPacketOpcode : ushort
 {
 	// Primary
 	Management = (0x00 << 8),
+	Player     = (0x02 << 8),
 	WorldData  = (0x03 << 8),
 	Entity     = (0x05 << 8),
 	// Sub-type[Management]
@@ -24,6 +25,7 @@ public enum JJxPacketOpcode : ushort
 	WorldInfoRequest       = Management | 0x09,
 	WorldProgress          = Management | 0x0A,
 	LoginFail              = Management | 0x0C,
+	// Sub-type[Player]
 	// Sub-type[WorldData]
 	WorldInfoResponse      = WorldData  | 0x43,
 	WorldTime              = WorldData  | 0x44,

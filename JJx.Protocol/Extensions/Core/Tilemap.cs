@@ -28,7 +28,7 @@ public static partial class JJxWorldExtensions
 		using (var compressionStream = new GZipStream(compressedStream, new ZLibCompressionOptions() { CompressionLevel = 6 }, true))
 			decompressedStream.CopyTo(compressionStream);
 		// Get Iter
-		var compressedSegment = compressedStream.ToArray();
+		var compressedSegment = compressedStream.GetBuffer().AsMemory(0, (int)compressedStream.Position);
 		return ((uint)compressedSegment.Length, _GetCompressionSegmentIter(compressedSegment, maxSegmentSize));
 	}
 	private static IEnumerable<WorldCompressedSegmentPacket> _GetCompressionSegmentIter(ReadOnlyMemory<byte> compressedSegment, int maxSegmentSize)
@@ -36,7 +36,7 @@ public static partial class JJxWorldExtensions
 		while (compressedSegment.Length > 0)
 		{
 			var segmentSize = Math.Min(compressedSegment.Length, maxSegmentSize);
-			var segment = compressedSegment[..segmentSize].ToArray();
+			var segment = compressedSegment[..segmentSize];
 			yield return new(segment);
 			compressedSegment = compressedSegment.Slice(segmentSize);
 		}

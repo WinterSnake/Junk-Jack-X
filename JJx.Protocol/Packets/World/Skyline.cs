@@ -17,7 +17,7 @@ namespace JJx.Protocol.Packets;
 public sealed class WorldSkylinePacket : JJxPacket
 {
 	/* Constructor */
-	private WorldSkylinePacket(byte[] compressedData) => this._CompressedData = compressedData;
+	private WorldSkylinePacket(ReadOnlyMemory<byte> compressedData) => this.CompressedData = compressedData;
 	/* Static Methods */
 	public static WorldSkylinePacket Compress(ReadOnlySpan<ushort> skyline)
 	{
@@ -29,7 +29,8 @@ public sealed class WorldSkylinePacket : JJxPacket
 		using var compressedStream = new MemoryStream();
 		using (var compressionStream = new GZipStream(compressedStream, CompressionMode.Compress, true))
 			decompressedStream.CopyTo(compressionStream);
-		return new(compressedStream.ToArray());
+		var memory = compressedStream.GetBuffer().AsMemory(0, (int)compressedStream.Position);
+		return new(memory);
 	}
 	internal static WorldSkylinePacket Deserialize(ref JJxReader reader)
 	{
@@ -39,9 +40,8 @@ public sealed class WorldSkylinePacket : JJxPacket
 	}
 	internal static void Serialize(WorldSkylinePacket packet, JJxWriter writer)
 	{
-		writer.Write(packet._CompressedData.AsSpan());
+		writer.Write(packet.CompressedData.Span);
 	}
     /* Properties */
-	public ReadOnlyMemory<byte> CompressedData => this._CompressedData;
-	private readonly byte[] _CompressedData;
+	public ReadOnlyMemory<byte> CompressedData;
 }

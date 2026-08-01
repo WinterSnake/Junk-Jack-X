@@ -31,7 +31,7 @@ public static class JJxWorldBuilderExtensions
 	}
 	public static Tilemap BuildTilemap(this JJxWorldBuilder builder)
 	{
-		Debug.Assert(builder.IsCompressionCompleted);
+		Debug.Assert(builder.AreSegmentsCompleted);
 		var length = builder.Size.Width * builder.Size.Height * Tile.SIZE;
 		using var compressedStream = builder.CompressedMemory.AsStream();
 		using var decompressionStream = new GZipStream(compressedStream, CompressionMode.Decompress);

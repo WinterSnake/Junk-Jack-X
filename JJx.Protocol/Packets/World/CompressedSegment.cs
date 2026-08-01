@@ -15,20 +15,19 @@ namespace JJx.Protocol.Packets;
 public sealed class WorldCompressedSegmentPacket : JJxPacket
 {
 	/* Constructor */
-	internal WorldCompressedSegmentPacket(byte[] compressedData) => this._CompressedData = compressedData;
+	internal WorldCompressedSegmentPacket(ReadOnlyMemory<byte> compressedData) => this.CompressedData = compressedData;
 	/* Static Methods */
 	internal static WorldCompressedSegmentPacket Deserialize(ref JJxReader reader)
 	{
 		var buffer = new byte[reader.ReadUInt32()];
 		reader.CopyTo(buffer);
-		return new(buffer);
+		return new(buffer.AsMemory());
 	}
 	internal static void Serialize(WorldCompressedSegmentPacket packet, JJxWriter writer)
 	{
-		writer.Write(packet._CompressedData.Length);
-		writer.Write(packet._CompressedData.AsSpan());
+		writer.Write(packet.CompressedData.Length);
+		writer.Write(packet.CompressedData.Span);
 	}
     /* Properties */
-	public ReadOnlyMemory<byte> CompressedData => this._CompressedData;
-	private readonly byte[] _CompressedData;
+	public ReadOnlyMemory<byte> CompressedData;
 }
