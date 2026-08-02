@@ -29,6 +29,12 @@ internal sealed class JJxWriter
 		this._Writer.GetSpan(size)[0] = Convert.ToByte(@value);
 		this._Writer.Advance(size);
 	}
+	public void Write(sbyte @value)
+	{
+		var size = sizeof(sbyte);
+		this._Writer.GetSpan(size)[0] = (byte)@value;
+		this._Writer.Advance(size);
+	}
 	public void Write(byte @value)
 	{
 		var size = sizeof(byte);

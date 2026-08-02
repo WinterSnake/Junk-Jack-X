@@ -30,6 +30,12 @@ internal ref struct JJxReader
 		this.Advance(sizeof(bool));
 		return @value;
 	}
+	public sbyte ReadInt8()
+	{
+		var @value = (sbyte)this._Buffer[0];
+		this.Advance(sizeof(sbyte));
+		return @value;
+	}
 	public byte ReadUInt8()
 	{
 		var @value = this._Buffer[0];

@@ -14,7 +14,13 @@ namespace JJx.Core.Serialization;
 public sealed class JJxSerializationOptions
 {
 	/* Constructor */
-	public JJxSerializationOptions(bool isPacked) => this.IsPacked = isPacked;
+	internal JJxSerializationOptions(bool isPacked) => this.IsPacked = isPacked;
+	internal JJxSerializationOptions(JJxSerializationOptions copyFrom, bool isPacked)
+	{
+		this.IsPacked = isPacked;
+		this._Converters = copyFrom._Converters;
+		this._ConverterCache = copyFrom._ConverterCache;
+	}
 	/* Instance Methods */
 	internal void AddConverter<T>() where T: JJxConverter, new() => this._Converters.Add(new T());
 	internal void AddConverter<T>(Type lookupType) where T: JJxConverter, new() => this._ConverterCache[lookupType] = new T();
