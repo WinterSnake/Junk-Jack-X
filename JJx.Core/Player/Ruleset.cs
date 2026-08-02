@@ -1,6 +1,6 @@
 /*
 	Junk Jack X: Core
-	- [Player]Gameplay
+	- [Player]Ruleset
 
 	Written By: Ryan Smith
 */
@@ -12,13 +12,13 @@ namespace JJx.Core;
 public enum Difficulty : byte
 {
 	Peaceful = 0,
-	Easy,
-	Normal,
-	Hard,
-	VeryHard
+	Easy     = 1,
+	Normal   = 2,
+	Hard     = 3,
+	VeryHard = 4,
 }
 
-public sealed record class Ruleset
+public sealed class Ruleset
 {
 	/* Constructor */
 	public Ruleset(Difficulty difficulty, GameplayOptions flags)
