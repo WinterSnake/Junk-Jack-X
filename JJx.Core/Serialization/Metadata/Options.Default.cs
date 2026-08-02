@@ -23,6 +23,7 @@ internal static class JJxDefaultSerializationOptions
 		Options.AddConverter<TileConverter>(typeof(Tile));
 		Options.AddConverter<CharacterModelConverter>(typeof(CharacterModel));
 		Options.AddConverter<ItemConverter>(typeof(Item));
+		Options.AddConverter<EffectConverter>(typeof(Effect));
 	}
 	/* Class Properties */
 	internal static readonly JJxSerializationOptions Options;

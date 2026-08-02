@@ -53,6 +53,12 @@ internal sealed class JJxWriter
 		BinaryPrimitives.WriteUInt32LittleEndian(this._Writer.GetSpan(size), @value);
 		this._Writer.Advance(size);
 	}
+	public void Write(float @value)
+	{
+		var size = sizeof(float);
+		BinaryPrimitives.WriteSingleLittleEndian(this._Writer.GetSpan(size), @value);
+		this._Writer.Advance(size);
+	}
 	public void Write(string @value, int length = 0)
 	{
 		Debug.Assert(length > 0);

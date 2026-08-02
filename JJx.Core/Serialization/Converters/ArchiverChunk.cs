@@ -17,7 +17,7 @@ internal sealed class ArchiverChunkConverter : JJxConverter<ArchiverChunk>
 		Offset=reader.ReadInt32(),
 		Length=reader.ReadInt32(),
 	};
-    public override void Write(in ArchiverChunk value, JJxWriter writer)
+    public override void Write(in ArchiverChunk @value, JJxWriter writer)
     {
 		writer.Write(@value.Type);
 		writer.Write(@value.Version);

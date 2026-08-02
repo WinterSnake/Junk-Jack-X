@@ -40,7 +40,7 @@ internal sealed class EnumConverter<T> : JJxConverter<T>
 			_ => throw new InvalidOperationException($"EnumConverter<T> does not support typecode '{_EnumType}'"),
 		};
     }
-    public override void Write(in T value, JJxWriter writer)
+    public override void Write(in T @value, JJxWriter writer)
     {
 		switch(_EnumType)
 		{

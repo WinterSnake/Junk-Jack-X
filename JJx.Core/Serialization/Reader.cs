@@ -22,36 +22,42 @@ internal ref struct JJxReader
 	public void CopyTo(scoped Span<byte> buffer)
 	{
 		this._Buffer[..buffer.Length].CopyTo(buffer);
-		this._Buffer = this._Buffer.Slice(buffer.Length);
+		this.Advance(buffer.Length);
 	}
 	public bool ReadBool()
 	{
 		var @value = Convert.ToBoolean(this._Buffer[0]);
-		this._Buffer = this._Buffer.Slice(sizeof(bool));
+		this.Advance(sizeof(bool));
 		return @value;
 	}
 	public byte ReadUInt8()
 	{
 		var @value = this._Buffer[0];
-		this._Buffer = this._Buffer.Slice(sizeof(byte));
+		this.Advance(sizeof(byte));
 		return @value;
 	}
 	public ushort ReadUInt16()
 	{
 		var @value = BinaryPrimitives.ReadUInt16LittleEndian(this._Buffer);
-		this._Buffer = this._Buffer.Slice(sizeof(ushort));
+		this.Advance(sizeof(ushort));
 		return @value;
 	}
 	public int ReadInt32()
 	{
 		var @value = BinaryPrimitives.ReadInt32LittleEndian(this._Buffer);
-		this._Buffer = this._Buffer.Slice(sizeof(int));
+		this.Advance(sizeof(int));
 		return @value;
 	}
 	public uint ReadUInt32()
 	{
 		var @value = BinaryPrimitives.ReadUInt32LittleEndian(this._Buffer);
-		this._Buffer = this._Buffer.Slice(sizeof(uint));
+		this.Advance(sizeof(uint));
+		return @value;
+	}
+	public float ReadFloat32()
+	{
+		var @value = BinaryPrimitives.ReadSingleLittleEndian(this._Buffer);
+		this.Advance(sizeof(float));
 		return @value;
 	}
 	public string ReadString(int length = 0, int maxCapacity = 128)
@@ -65,7 +71,7 @@ internal ref struct JJxReader
 			this._Buffer[..length].CopyTo(buffer);
 			var terminator = buffer.IndexOf<byte>(0);
 			buffer = terminator == -1 ? buffer : buffer[..terminator];
-			this._Buffer = this._Buffer.Slice(length);
+			this.Advance(length);
 			return Encoding.UTF8.GetString(buffer);
 		} finally {
 			if (storage is not null) ArrayPool<byte>.Shared.Return(storage);

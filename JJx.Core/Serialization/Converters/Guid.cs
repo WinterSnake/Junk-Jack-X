@@ -1,6 +1,6 @@
 /*
 	Junk Jack X: Core
-	- [Serialization]Converter - Enum
+	- [Serialization]Converter - Guid
 
 	Written By: Ryan Smith
 */
