@@ -11,7 +11,7 @@ using JJx.Core.Serialization;
 
 namespace JJx.Protocol.Packets;
 
-[PacketOpcode(Opcode=JJxPacketOpcode.LoginRequest)]
+[PacketOpcode(Opcode=JJxPacketOpcode.ManagementLoginRequest)]
 public sealed class LoginRequestPacket : JJxPacket
 {
 	/* Constructor */
@@ -25,13 +25,13 @@ public sealed class LoginRequestPacket : JJxPacket
 	internal static LoginRequestPacket Deserialize(ref JJxReader reader) => new(
 		reader.ReadUInt8(),
 		reader.ReadString(length: SIZEOF_NAME),
-		reader.ReadObject<JJxVersion>()
+		reader.ReadObject<JJxVersion>(JJxPacketRegistry.Default)
 	);
 	internal static void Serialize(LoginRequestPacket packet, JJxWriter writer)
 	{
 		writer.Write(packet.Id);
 		writer.Write(packet.Name, length: SIZEOF_NAME);
-		writer.Write(packet.Version);
+		writer.Write(packet.Version, JJxPacketRegistry.Default);
 	}
     /* Properties */
 	public readonly byte Id;
@@ -41,7 +41,7 @@ public sealed class LoginRequestPacket : JJxPacket
 	public const int SIZEOF_NAME = 32;
 }
 
-[PacketOpcode(Opcode=JJxPacketOpcode.LoginSuccess)]
+[PacketOpcode(Opcode=JJxPacketOpcode.ManagementLoginSuccess)]
 public sealed class LoginSuccessPacket : JJxPacket
 {
 	/* Constructor */
@@ -58,18 +58,18 @@ public sealed class LoginSuccessPacket : JJxPacket
 	public readonly ushort Status;
 }
 
-[PacketOpcode(Opcode=JJxPacketOpcode.LoginFail)]
+[PacketOpcode(Opcode=JJxPacketOpcode.ManagementLoginFail)]
 public sealed class LoginFailPacket : JJxPacket
 {
 	/* Constructor */
 	public LoginFailPacket(FailureCode code) => this.Code = code;
 	/* Static Methods */
 	internal static LoginFailPacket Deserialize(ref JJxReader reader) => new(
-		reader.ReadObject<FailureCode>()
+		reader.ReadObject<FailureCode>(JJxPacketRegistry.Default)
 	);
 	internal static void Serialize(LoginFailPacket packet, JJxWriter writer)
 	{
-		writer.Write(packet.Code);
+		writer.Write(packet.Code, JJxPacketRegistry.Default);
 	}
 	/* Properties */
 	public readonly FailureCode Code;
@@ -81,7 +81,7 @@ public sealed class LoginFailPacket : JJxPacket
 	}
 }
 
-[PacketOpcode(Opcode=JJxPacketOpcode.PlayerReady)]
+[PacketOpcode(Opcode=JJxPacketOpcode.ManagementPlayerReady)]
 public sealed class PlayerReadyPacket : JJxPacket
 {
 	/* Constructor */

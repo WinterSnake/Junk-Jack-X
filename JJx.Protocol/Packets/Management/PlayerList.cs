@@ -11,7 +11,7 @@ using JJx.Core.Serialization;
 
 namespace JJx.Protocol.Packets;
 
-[PacketOpcode(Opcode=JJxPacketOpcode.PlayerListRequest)]
+[PacketOpcode(Opcode=JJxPacketOpcode.ManagementPlayerListRequest)]
 public sealed class PlayerListRequestPacket : JJxPacket
 {
 	/* Constructor */
@@ -28,7 +28,7 @@ public sealed class PlayerListRequestPacket : JJxPacket
 	public readonly ushort Status;
 }
 
-[PacketOpcode(Opcode=JJxPacketOpcode.PlayerListEntry)]
+[PacketOpcode(Opcode=JJxPacketOpcode.ManagementPlayerListEntry)]
 public sealed class PlayerListEntryPacket : JJxPacket
 {
 	/* Constructor */

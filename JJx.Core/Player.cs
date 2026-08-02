@@ -36,6 +36,7 @@
 
 using System;
 using System.Diagnostics;
+using JJx.Core.Serialization;
 
 namespace JJx.Core;
 
@@ -82,14 +83,14 @@ public sealed class JJxPlayer : IArchive
 		Difficulty difficulty;
 		using (var memory = reader.GetChunkReader(ArchiverChunkType.PlayerInfo, out var chunkReader))
 		{
-			id = chunkReader.ReadObject<Guid>();
+			id = chunkReader.ReadObject<Guid>(JJxSerializationOptions.Default);
 			name = chunkReader.ReadString(SIZEOF_NAME);
-			version = chunkReader.ReadObject<JJxVersion>();
-			unlockedPlanets = chunkReader.ReadObject<Planet>();
-			flags = chunkReader.ReadObject<Ruleset.GameplayOptions>();
-			model = chunkReader.ReadObject<CharacterModel>();
+			version = chunkReader.ReadObject<JJxVersion>(JJxSerializationOptions.Default);
+			unlockedPlanets = chunkReader.ReadObject<Planet>(JJxSerializationOptions.Default);
+			flags = chunkReader.ReadObject<Ruleset.GameplayOptions>(JJxSerializationOptions.Default);
+			model = chunkReader.ReadObject<CharacterModel>(JJxSerializationOptions.Default);
 			chunkReader.Advance(2);  // Unknown: Likely padding
-			difficulty = chunkReader.ReadObject<Difficulty>();
+			difficulty = chunkReader.ReadObject<Difficulty>(JJxSerializationOptions.Default);
 			chunkReader.Advance(3);  // Unknown: Likely padding
 			Debug.Assert(chunkReader.Remaining == 0);
 		}
@@ -98,7 +99,7 @@ public sealed class JJxPlayer : IArchive
 		using (var memory = reader.GetChunkReader(ArchiverChunkType.PlayerItems, out var chunkReader))
 		{
 			for (var i = 0; i < items.Length; ++i)
-				items[i] = chunkReader.ReadObject<Item>();
+				items[i] = chunkReader.ReadObject<Item>(JJxSerializationOptions.Default);
 			Debug.Assert(chunkReader.Remaining == 0);
 		}
 		// Craftbooks
@@ -122,7 +123,7 @@ public sealed class JJxPlayer : IArchive
 		{
 			health = chunkReader.ReadFloat32();
 			for (var i = 0; i < effects.Length; ++i)
-				effects[i] = chunkReader.ReadObject<Effect>();
+				effects[i] = chunkReader.ReadObject<Effect>(JJxSerializationOptions.Default);
 			Debug.Assert(chunkReader.Remaining == 0);
 		}
 		return new(id, version, name, flags, model, difficulty, items, craftbook, achievemets, effects) {

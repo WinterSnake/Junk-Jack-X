@@ -22,12 +22,12 @@ public sealed class WorldTimePacket : JJxPacket
 	}
 	/* Static Methods */
 	internal static WorldTimePacket Deserialize(ref JJxReader reader) => new(
-		reader.ReadObject<DayPhase>(),
+		reader.ReadObject<DayPhase>(JJxPacketRegistry.Default),
 		reader.ReadUInt16()
 	);
 	internal static void Serialize(WorldTimePacket packet, JJxWriter writer)
 	{
-		writer.Write(packet.DayPhase);
+		writer.Write(packet.DayPhase, JJxPacketRegistry.Default);
 		writer.Write(packet.Ticks);
 	}
     /* Properties */

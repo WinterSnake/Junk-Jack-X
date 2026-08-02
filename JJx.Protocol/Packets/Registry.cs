@@ -25,6 +25,12 @@ public sealed class JJxPacketRegistry
 		this._Deserializers = new();
 	}
 	/* Instance Methods */
+	internal void Register<T>(Action<T, JJxWriter> serializeFunc, DeserializeFunc<T> deserializeFunc)
+		where T: JJxPacket
+	{
+		this.RegisterSerializer<T>(serializeFunc);
+		this.RegisterDeserializer<T>(deserializeFunc);
+	}
 	internal void RegisterSerializer<T>(Action<T, JJxWriter> serializeFunc)
 		where T: JJxPacket
 	{
@@ -61,4 +67,5 @@ public sealed class JJxPacketRegistry
 	/* Class Properties */
 	public static JJxPacketRegistry Client => JJxClientRegistry.Registry;
 	public static JJxPacketRegistry Server => JJxServerRegistry.Registry;
+	public static readonly JJxSerializationOptions Default = new(JJxSerializationOptions.Default, true);
 }

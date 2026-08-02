@@ -10,7 +10,7 @@ using JJx.Core.Serialization;
 
 namespace JJx.Protocol.Packets;
 
-[PacketOpcode(Opcode=JJxPacketOpcode.WorldInfoRequest)]
+[PacketOpcode(Opcode=JJxPacketOpcode.ManagementWorldInfoRequest)]
 public sealed class WorldInfoRequestPacket : JJxPacket
 {
 	/* Constructor */
@@ -27,7 +27,7 @@ public sealed class WorldInfoRequestPacket : JJxPacket
 	public readonly ushort Status;
 }
 
-[PacketOpcode(Opcode=JJxPacketOpcode.WorldProgress)]
+[PacketOpcode(Opcode=JJxPacketOpcode.ManagementWorldProgress)]
 public sealed class WorldProgressPacket : JJxPacket
 {
 	/* Constructor */

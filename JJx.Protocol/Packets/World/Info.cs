@@ -45,16 +45,16 @@ public sealed class WorldInfoResponsePacket : JJxPacket
 		(reader.ReadUInt16(), reader.ReadUInt16()),
 		(reader.ReadUInt16(), reader.ReadUInt16()),
 		reader.ReadUInt32(),
-		reader.ReadObject<DayPhase>(),
+		reader.ReadObject<DayPhase>(JJxPacketRegistry.Default),
 		reader.ReadBool(),
-		reader.ReadObject<Weather>(),
-		reader.ReadObject<Planet>(),
-		reader.ReadObject<Difficulty>(),
-		reader.ReadObject<Planet>(),
-		reader.ReadObject<Season>(),
-		reader.ReadObject<Gamemode>(),
-		reader.ReadObject<MapBounds>(),
-		reader.ReadObject<MapBounds>(),
+		reader.ReadObject<Weather>(JJxPacketRegistry.Default),
+		reader.ReadObject<Planet>(JJxPacketRegistry.Default),
+		reader.ReadObject<Difficulty>(JJxPacketRegistry.Default),
+		reader.ReadObject<Planet>(JJxPacketRegistry.Default),
+		reader.ReadObject<Season>(JJxPacketRegistry.Default),
+		reader.ReadObject<Gamemode>(JJxPacketRegistry.Default),
+		reader.ReadObject<MapBounds>(JJxPacketRegistry.Default),
+		reader.ReadObject<MapBounds>(JJxPacketRegistry.Default),
 		reader.ReadUInt32(),
 		reader.ReadUInt32()
 	);
@@ -67,16 +67,16 @@ public sealed class WorldInfoResponsePacket : JJxPacket
 		writer.Write(packet.Player.X);
 		writer.Write(packet.Player.Y);
 		writer.Write(packet.Ticks);
-		writer.Write(packet.DayPhase);
+		writer.Write(packet.DayPhase, JJxPacketRegistry.Default);
 		writer.Write(packet.IsTimeTicking);
-		writer.Write(packet.Weather);
-		writer.Write(packet.Theme);
-		writer.Write(packet.Difficulty);
-		writer.Write(packet.Planet);
-		writer.Write(packet.Season);
-		writer.Write(packet.Gamemode);
-		writer.Write(packet.SizeBounds);
-		writer.Write(packet.SkyBounds);
+		writer.Write(packet.Weather, JJxPacketRegistry.Default);
+		writer.Write(packet.Theme, JJxPacketRegistry.Default);
+		writer.Write(packet.Difficulty, JJxPacketRegistry.Default);
+		writer.Write(packet.Planet, JJxPacketRegistry.Default);
+		writer.Write(packet.Season, JJxPacketRegistry.Default);
+		writer.Write(packet.Gamemode, JJxPacketRegistry.Default);
+		writer.Write(packet.SizeBounds, JJxPacketRegistry.Default);
+		writer.Write(packet.SkyBounds, JJxPacketRegistry.Default);
 		writer.Write(packet.Unknown);
 		writer.Write(packet.WorldSizeInBytes);
 	}
