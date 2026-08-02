@@ -27,7 +27,6 @@ internal static class JJxClientRegistry
 		Registry.RegisterDeserializer(PlayerListEntryPacket.Deserialize);
 		Registry.RegisterDeserializer(WorldTimePacket.Deserialize);
 		Registry.RegisterSerializer<PlayerReadyPacket>(PlayerReadyPacket.Serialize);
-		Registry.RegisterDeserializer(PlayerSpawnLocationPacket.Deserialize);
 		Registry.Register(PlayerUpdateModelPacket.Serialize, PlayerUpdateModelPacket.Deserialize);
 		Registry.Register(PlayerUpdateItemPacket.Serialize, PlayerUpdateItemPacket.Deserialize);
 		Registry.Register(PlayerUpdateEquipmentPacket.Serialize, PlayerUpdateEquipmentPacket.Deserialize);

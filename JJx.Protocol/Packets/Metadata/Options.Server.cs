@@ -27,6 +27,9 @@ internal static class JJxServerRegistry
 		Registry.RegisterSerializer<PlayerListEntryPacket>(PlayerListEntryPacket.Serialize);
 		Registry.RegisterSerializer<WorldTimePacket>(WorldTimePacket.Serialize);
 		Registry.RegisterDeserializer(PlayerReadyPacket.Deserialize);
+		Registry.Register(PlayerUpdateModelPacket.Serialize, PlayerUpdateModelPacket.Deserialize);
+		Registry.Register(PlayerUpdateItemPacket.Serialize, PlayerUpdateItemPacket.Deserialize);
+		Registry.Register(PlayerUpdateEquipmentPacket.Serialize, PlayerUpdateEquipmentPacket.Deserialize);
 	}
 	/* Class Properties */
 	internal static readonly JJxPacketRegistry Registry;
