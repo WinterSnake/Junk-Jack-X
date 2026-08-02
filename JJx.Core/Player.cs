@@ -18,7 +18,7 @@
 	:<Inventory>
 	Segment[0x7C  :  0xF3] = Hotbar: Survival    | Length: 120  (0x78) | Type: struct Item[10]   | Parent: Item
 	Segment[0xF4  : 0x16B] = Hotbar: Creative    | Length: 120  (0x78) | Type: struct Item[10]   | Parent: Item
-	Segment[0x16C : 0x16B] = Crafting Slots      | Length: 108  (0x6C) | Type: struct Item[9]    | Parent: Item
+	Segment[0x16C : 0x1D7] = Crafting Slots      | Length: 108  (0x6C) | Type: struct Item[9]    | Parent: Item
 	Segment[0x1D8 : 0x387] = Inventory           | Length: 432 (0x1B0) | Type: struct Item[36]   | Parent: Item
 	Segment[0x388 : 0x3C3] = Actual Armor Slots  | Length:  60  (0x3C) | Type: struct Item[5]    | Parent: Item
 	Segment[0x3C4 : 0x3FF] = Visual Armor Slots  | Length:  60  (0x3C) | Type: struct Item[5]    | Parent: Item
@@ -27,7 +27,7 @@
 	:<Craftbooks>
 	:<Achievements>
 	:<Status>
-	Segment[0x548 : 0x53B] = Health              | Length:   4   (0x4) | Type: float32
+	Segment[0x538 : 0x53B] = Health              | Length:   4   (0x4) | Type: float32
 	Segment[0x53C : 0x54C] = Effects             | Length:  16  (0x10) | Type: struct Effect[4]  | Parent: Effect
 	--------------------------------------------------------------------------------------------------------------------
 
@@ -35,60 +35,151 @@
 */
 
 using System;
+using System.Diagnostics;
 
 namespace JJx.Core;
 
-public sealed class Player
+public sealed class JJxPlayer : IArchive
 {
 	/* Constructor */
-	internal Player(Guid id, string name, Version version, Planet unlockedPlanets, CharacterAppearance appearance, Ruleset ruleset)
+	public JJxPlayer(string name)
+	{
+		this.Name = name;
+		this.Model = new(false, 0, 0, HairColor.White);
+		this.Rules = new(Difficulty.Peaceful, Ruleset.GameplayOptions.None);
+		this._Items = new Item[SIZEOF_ITEMS];
+		for (var i = 0; i < this._Items.Length; ++i)
+			this._Items[i] = Item.Empty;
+	}
+	private JJxPlayer(
+		Guid id, JJxVersion version, string name,
+		Ruleset.GameplayOptions flags, CharacterModel model, Difficulty difficulty,
+		Item[] items, byte[] craftbook, byte[] achievements, Effect[] effects
+	)
 	{
 		this.Id = id;
 		this.Version = version;
 		this._Name = name;
-		this.UnlockedPlanets = unlockedPlanets;
-		this.Appearance = appearance;
-		this.Rules = ruleset;
+		this.Rules = new(difficulty, flags);
+		this.Model = model;
+		this._Items = items;
+		this._Craftbook = craftbook;
+		this._Achievements = achievements;
+		this._Effects = effects;
+	}
+	/* Instance Methods */
+	/* Static Properties */
+	public static JJxPlayer Deserialize(IArchiveReader reader)
+	{
+		Debug.Assert(reader.Type is ArchiveType.Player);
+		// Info
+		Guid id;
+		string name;
+		JJxVersion version;
+		Planet unlockedPlanets;
+		Ruleset.GameplayOptions flags;
+		CharacterModel model;
+		Difficulty difficulty;
+		using (var memory = reader.GetChunkReader(ArchiverChunkType.PlayerInfo, out var chunkReader))
+		{
+			id = chunkReader.ReadObject<Guid>();
+			name = chunkReader.ReadString(SIZEOF_NAME);
+			version = chunkReader.ReadObject<JJxVersion>();
+			unlockedPlanets = chunkReader.ReadObject<Planet>();
+			flags = chunkReader.ReadObject<Ruleset.GameplayOptions>();
+			model = chunkReader.ReadObject<CharacterModel>();
+			chunkReader.Advance(2);  // Unknown: Likely padding
+			difficulty = chunkReader.ReadObject<Difficulty>();
+			chunkReader.Advance(3);  // Unknown: Likely padding
+			Debug.Assert(chunkReader.Remaining == 0);
+		}
+		// Items
+		var items = new Item[SIZEOF_ITEMS];
+		using (var memory = reader.GetChunkReader(ArchiverChunkType.PlayerItems, out var chunkReader))
+		{
+			for (var i = 0; i < items.Length; ++i)
+				items[i] = chunkReader.ReadObject<Item>();
+			Debug.Assert(chunkReader.Remaining == 0);
+		}
+		// Craftbooks
+		var craftbook = new byte[SIZEOF_CRAFTBOOK];
+		using (var memory = reader.GetChunkReader(ArchiverChunkType.PlayerCraftbooks, out var chunkReader))
+		{
+			chunkReader.CopyTo(craftbook);
+			Debug.Assert(chunkReader.Remaining == 0);
+		}
+		// Achievements
+		var achievemets = new byte[SIZEOF_ACHIEVEMENTS];
+		using (var memory = reader.GetChunkReader(ArchiverChunkType.PlayerAchievements, out var chunkReader))
+		{
+			chunkReader.CopyTo(achievemets);
+			Debug.Assert(chunkReader.Remaining == 0);
+		}
+		// Status
+		float health;
+		var effects = new Effect[SIZEOF_EFFECTS];
+		using (var memory = reader.GetChunkReader(ArchiverChunkType.PlayerStatus, out var chunkReader))
+		{
+			health = chunkReader.ReadFloat32();
+			for (var i = 0; i < effects.Length; ++i)
+				effects[i] = chunkReader.ReadObject<Effect>();
+			Debug.Assert(chunkReader.Remaining == 0);
+		}
+		return new(id, version, name, flags, model, difficulty, items, craftbook, achievemets, effects) {
+			UnlockedPlanets=unlockedPlanets,
+			Health = health,
+		};
+	}
+	public static void Serialize(JJxPlayer archive, IArchiveWriter writer)
+	{
+
 	}
 	/* Properties */
 	// Info
 	public readonly Guid Id = Guid.NewGuid();
-	public readonly Version Version = Version.Latest;
-	private string _Name;
+	public readonly JJxVersion Version = JJxVersion.Latest;
+	private string _Name = null!;
 	public string Name {
 		get => this._Name;
-		set => this._Name = value.Length > MAX_NAME_LENGTH ? value[..MAX_NAME_LENGTH] : value;
+		set {
+			if (String.IsNullOrEmpty(value))
+				throw new InvalidOperationException("Cannot set name to null/empty.");
+			this._Name = value.Length > MAX_NAME_LENGTH
+				? value[..MAX_NAME_LENGTH]
+				: value;
+		}
 	}
-	public Planet UnlockedPlanets;
-	public CharacterAppearance Appearance;
+	public Planet UnlockedPlanets = Planet.Terra;
 	public Ruleset Rules;
+	public CharacterModel Model;
 	// Items
-	private readonly Item[] _Items = new Item[COUNTOF_ITEMS];
-	public Span<Item> Items => this._Items.AsSpan();
-	public Span<Item> SurvivalHotbar => this._Items.AsSpan(OFFSET_SURVIVAL_HOTBAR, SIZEOF_HOTBAR);
-	public Span<Item> CreativeHotbar => this._Items.AsSpan(OFFSET_CREATIVE_HOTBAR, SIZEOF_HOTBAR);
+	private readonly Item[] _Items;
+	public Span<Item> Items => this._Items;
+	public Span<Item> SurvivalHotbar => this._Items.AsSpan(OFFSET_SURVIVAL_HOTBAR..SIZEOF_HOTBAR);
+	public Span<Item> CreativeHotbar => this._Items.AsSpan(OFFSET_CREATIVE_HOTBAR..SIZEOF_HOTBAR);
 	public Span<Item> CraftingSlots  => this._Items.AsSpan(OFFSET_CRAFTING, SIZEOF_CRAFTING);
 	public Span<Item> Inventory      => this._Items.AsSpan(OFFSET_INVENTORY, SIZEOF_INVENTORY);
 	public Span<Item> ArmorActual    => this._Items.AsSpan(OFFSET_ARMOR_ACTIVE, SIZEOF_ARMOR);
 	public Span<Item> ArmorVisual    => this._Items.AsSpan(OFFSET_ARMOR_VISUAL, SIZEOF_ARMOR);
-	public ref Item CraftSlot => ref this._Items[OFFSET_CRAFT];
-	public ref Item ArrowSlot => ref this._Items[OFFSET_ARROW];
+	public ref Item CraftSlot        => ref this._Items[OFFSET_CRAFT];
+	public ref Item ArrowSlot        => ref this._Items[OFFSET_ARROW];
 	// Craftbook
 	private readonly byte[] _Craftbook = new byte[SIZEOF_CRAFTBOOK];
-	public Span<byte> Craftbook => this._Craftbook.AsSpan();
+	public Span<byte> Craftbook => this._Craftbook;
 	// Achievements
 	private readonly byte[] _Achievements = new byte[SIZEOF_ACHIEVEMENTS];
-	public Span<byte> Achievements => this._Achievements.AsSpan();
+	public Span<byte> Achievements => this._Achievements;
 	// Status
-	public float Health;
-	private readonly Effect[] _Effects = new Effect[COUNTOF_EFFECTS];
-	public Span<Effect> Effects => this._Effects.AsSpan();
+	public float Health = 5.0f;
+	private readonly Effect[] _Effects = new Effect[SIZEOF_EFFECTS];
+	public Span<Effect> Effects => this._Effects;
 	/* Class Properties */
-	private const int MAX_NAME_LENGTH     = PlayerArchive.SIZEOF_NAME - 1;
-	private const int COUNTOF_ITEMS       = 77;
-	private const int COUNTOF_EFFECTS     = 4;
+	private const int SIZEOF_NAME         = 16;
+	private const int MAX_NAME_LENGTH     = SIZEOF_NAME - 1;
+	private const int SIZEOF_ITEMS        = 77;
 	private const int SIZEOF_CRAFTBOOK    = 256;
 	private const int SIZEOF_ACHIEVEMENTS = 32;
+	private const int SIZEOF_EFFECTS      = 4;
 	// Items
 	private const byte OFFSET_SURVIVAL_HOTBAR =  0;
 	private const byte OFFSET_CREATIVE_HOTBAR = 10;
