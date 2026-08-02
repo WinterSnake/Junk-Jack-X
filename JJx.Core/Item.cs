@@ -28,5 +28,5 @@ public record struct Item
 	public byte Variant;
 	public byte Unknown;
 	/* Class Properties */
-	public const ushort Empty = 0xFFFF;
+	public static readonly Item Empty = new() { Id=0xFFFF };
 }
