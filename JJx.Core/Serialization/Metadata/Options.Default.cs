@@ -15,7 +15,7 @@ internal static class JJxDefaultSerializationOptions
 	/* Constructor */
 	static JJxDefaultSerializationOptions()
 	{
-		Options = new();
+		Options = new(false);
 		Options.AddConverter<EnumConverterFactory>();
 		Options.AddConverter<ArchiverChunkConverter>(typeof(ArchiverChunk));
 		Options.AddConverter<GuidConverter>(typeof(Guid));

@@ -25,7 +25,7 @@ internal sealed class EnumConverter<T> : JJxConverter<T>
 	where T: struct, Enum
 {
     /* Instance Methods */
-    public override T Read(ref JJxReader reader)
+    public override T Read(ref JJxReader reader, JJxSerializationOptions options)
     {
 		return _EnumType switch
 		{
@@ -40,7 +40,7 @@ internal sealed class EnumConverter<T> : JJxConverter<T>
 			_ => throw new InvalidOperationException($"EnumConverter<T> does not support typecode '{_EnumType}'"),
 		};
     }
-    public override void Write(in T @value, JJxWriter writer)
+    public override void Write(in T @value, JJxWriter writer, JJxSerializationOptions options)
     {
 		switch(_EnumType)
 		{

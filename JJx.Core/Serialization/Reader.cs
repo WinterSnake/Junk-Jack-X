@@ -77,8 +77,7 @@ internal ref struct JJxReader
 			if (storage is not null) ArrayPool<byte>.Shared.Return(storage);
 		}
 	}
-	public T ReadObject<T>()
-		=> JJxSerializationOptions.Default.GetConverter<T>().Read(ref this);
+	public T ReadObject<T>(JJxSerializationOptions options) => options.GetConverter<T>().Read(ref this, options);
 	/* Properties */
 	private ReadOnlySpan<byte> _Buffer;
 	public int Remaining => this._Buffer.Length;

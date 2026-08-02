@@ -72,8 +72,7 @@ internal sealed class JJxWriter
 		buffer.CopyTo(this._Writer.GetSpan(buffer.Length));
 		this._Writer.Advance(buffer.Length);
 	}
-	public void Write<T>(in T @value)
-		=> JJxSerializationOptions.Default.GetConverter<T>().Write(@value, this);
+	public void Write<T>(in T @value, JJxSerializationOptions options) => options.GetConverter<T>().Write(@value, this, options);
 	/* Properties */
 	private readonly IBufferWriter<byte> _Writer;
 }

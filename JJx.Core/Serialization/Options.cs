@@ -13,6 +13,8 @@ namespace JJx.Core.Serialization;
 
 public sealed class JJxSerializationOptions
 {
+	/* Constructor */
+	public JJxSerializationOptions(bool isPacked) => this.IsPacked = isPacked;
 	/* Instance Methods */
 	internal void AddConverter<T>() where T: JJxConverter, new() => this._Converters.Add(new T());
 	internal void AddConverter<T>(Type lookupType) where T: JJxConverter, new() => this._ConverterCache[lookupType] = new T();
@@ -37,6 +39,7 @@ public sealed class JJxSerializationOptions
 		throw new InvalidOperationException($"JJx format does not support the type '{typeof(T).Name}'");
 	}
 	/* Properties */
+	public readonly bool IsPacked;
 	private readonly List<JJxConverter> _Converters = new();
 	private readonly Dictionary<Type, JJxConverter> _ConverterCache = new();
 	/* Class Properties */

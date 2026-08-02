@@ -12,7 +12,7 @@ namespace JJx.Core.Serialization;
 internal sealed class CharacterModelConverter : JJxConverter<CharacterModel>
 {
     /* Instance Methods */
-    public override CharacterModel Read(ref JJxReader reader)
+    public override CharacterModel Read(ref JJxReader reader, JJxSerializationOptions options)
 	{
 		var model  = reader.ReadUInt16();
 		var tone   =      (byte)((model & TONE_FLAG)   >> TONE_SHIFT);
@@ -21,7 +21,7 @@ internal sealed class CharacterModelConverter : JJxConverter<CharacterModel>
 		var color  = (HairColor)((model & COLOR_FLAG)  >> COLOR_SHIFT);
 		return new(gender, tone, style, color);
 	}
-    public override void Write(in CharacterModel @value, JJxWriter writer)
+    public override void Write(in CharacterModel @value, JJxWriter writer, JJxSerializationOptions options)
     {
 		var model = (ushort)(
 			(@value.SkinTone << TONE_SHIFT) |
