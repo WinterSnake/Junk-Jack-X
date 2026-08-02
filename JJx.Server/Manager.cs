@@ -92,6 +92,18 @@ public sealed class JJxServerManager
 				var jjxPeer = this._Pending[peer];
 				Console.WriteLine($"[Player:{jjxPeer.Name}] Health: {playerReady.Health}/{playerReady.MaxHealth}");
 			} break;
+			case PlayerUpdateModelPacket updateModel:
+			{
+				Console.WriteLine($"[Update:Model {updateModel.Id}] {updateModel.Model}");
+			} break;
+			case PlayerUpdateItemPacket updateItem:
+			{
+				Console.WriteLine($"[Update:Item {updateItem.Id}] Item: {updateItem.Item} ; Slot: {updateItem.Slot}");
+			} break;
+			case PlayerUpdateEquipmentPacket updateEquipment:
+			{
+				Console.WriteLine($"[Update:Equipment {updateEquipment.Id}] Item: {updateEquipment.Item} ; Slot: {updateEquipment.Slot} ; IsVisual: {updateEquipment.IsVisual}");
+			} break;
 		}
 	}
 	/* Properties */

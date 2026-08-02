@@ -91,12 +91,30 @@ public sealed class JJxClientManager
 			} break;
 			case PlayerListEntryPacket playerEntry:
 			{
+				if (playerEntry.IsSelf)
+				{
+					this.Peer.Id = playerEntry.Id;
+					this.Peer.Send(new PlayerUpdateModelPacket(this.Peer.Id, this.Player.Model));
+				}
 				Console.WriteLine($"[Entry] Id: {playerEntry.Id} ; IsSelf: {playerEntry.IsSelf} ; Name: {playerEntry.Name}");
+				Console.WriteLine($"Self Id: {this.Peer.Id}");
 			} break;
 			case WorldTimePacket worldTime:
 			{
 				Console.WriteLine($"Phase: {worldTime.DayPhase} ; Ticks: {worldTime.Ticks}");
 				this.Peer.Send(new PlayerReadyPacket(5, 5));
+			} break;
+			case PlayerUpdateModelPacket updateModel:
+			{
+				Console.WriteLine($"[Update:Model {updateModel.Id}] {updateModel.Model}");
+			} break;
+			case PlayerUpdateItemPacket updateItem:
+			{
+				Console.WriteLine($"[Update:Item {updateItem.Id}] Item: {updateItem.Item} ; Slot: {updateItem.Slot}");
+			} break;
+			case PlayerUpdateEquipmentPacket updateEquipment:
+			{
+				Console.WriteLine($"[Update:Equipment {updateEquipment.Id}] Item: {updateEquipment.Item} ; Slot: {updateEquipment.Slot} ; IsVisual: {updateEquipment.IsVisual}");
 			} break;
 		}
 	}
