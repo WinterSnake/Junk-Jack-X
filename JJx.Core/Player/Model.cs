@@ -27,7 +27,7 @@ public enum HairColor : byte
 	Yellow      = 0xF,
 }
 
-public sealed class CharacterModel
+public sealed record class CharacterModel
 {
 	/* Constructor */
 	public CharacterModel(bool isFemale, byte skinTone, byte hairStyle, HairColor hairColor)
