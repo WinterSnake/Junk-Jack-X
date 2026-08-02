@@ -47,3 +47,20 @@ public enum Season : byte
 	None   = 0xF,
 }
 
+public enum Weather : byte
+{
+	None     = 0x0,
+	Rain     = 0x1,
+	Snow     = 0x2,
+	AcidRain = 0x3,
+}
+
+[Flags]
+public enum DayPhase : byte
+{
+	None  = 0x0,
+	Day   = 0x1,
+	Dusk  = 0x2,
+	Night = 0x4,
+	Dawn  = 0x8,
+}
