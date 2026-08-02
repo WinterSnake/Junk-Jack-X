@@ -30,6 +30,7 @@ public enum JJxPacketOpcode : ushort
 	PlayerUpdateItem            = Player     | 0x15,
 	PlayerUpdateEquipment       = Player     | 0x16,
 	PlayerUpdateModel           = Player     | 0x17,
+	PlayerCreativeFlags         = Player     | 0x2E,
 	// Sub-type[WorldData]
 	WorldInfoResponse           = WorldData  | 0x43,
 	WorldTime                   = WorldData  | 0x44,

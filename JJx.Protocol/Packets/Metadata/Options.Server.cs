@@ -30,6 +30,7 @@ internal static class JJxServerRegistry
 		Registry.Register(PlayerUpdateModelPacket.Serialize, PlayerUpdateModelPacket.Deserialize);
 		Registry.Register(PlayerUpdateItemPacket.Serialize, PlayerUpdateItemPacket.Deserialize);
 		Registry.Register(PlayerUpdateEquipmentPacket.Serialize, PlayerUpdateEquipmentPacket.Deserialize);
+		Registry.RegisterDeserializer(PlayerCreativeFlagsPacket.Deserialize);
 	}
 	/* Class Properties */
 	internal static readonly JJxPacketRegistry Registry;
