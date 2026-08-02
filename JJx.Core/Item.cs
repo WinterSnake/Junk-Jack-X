@@ -27,5 +27,10 @@ public record struct Item
 	public uint Data;
 	public byte Variant;
 	/* Class Properties */
-	public static readonly Item Empty = new() { Id=0xFFFF };
+	public static readonly Item Empty = new() {
+		Id=0xFFFF,
+		Count=0xA470,
+		Durability=0x3962,
+		Data=0x123E0,
+	};
 }

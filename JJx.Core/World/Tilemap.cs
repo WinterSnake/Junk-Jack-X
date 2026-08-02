@@ -7,6 +7,7 @@
 
 using System;
 using System.Buffers;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using CommunityToolkit.HighPerformance.Buffers;
 using JJx.Core.Serialization;
@@ -18,7 +19,6 @@ public sealed class Tilemap
 	/* Constructor */
 	public Tilemap(Tile[,] tiles) => this._Tiles = tiles;
 	/* Instance Methods */
-	public ref Tile this[ushort x, ushort y] => ref this._Tiles[x, y];
 	public Span<Tile> GetColumn(ushort x)
 	{
 		ref var tile = ref this._Tiles[x, 0];
@@ -32,6 +32,7 @@ public sealed class Tilemap
 		for (var x = 0; x < size.width; ++x)
 			for (var y = 0; y < size.height; ++y)
 				tiles[x, y] = reader.ReadObject<Tile>(JJxSerializationOptions.Default);
+		Debug.Assert(reader.Remaining == 0);
 		return new(tiles);
 	}
 	public static IMemoryOwner<byte> Serialize(Tilemap tilemap, out ReadOnlyMemory<byte> buffer)
@@ -48,5 +49,6 @@ public sealed class Tilemap
 	/* Properties */
 	public (ushort Width, ushort Height) Size => ((ushort)this._Tiles.GetLength(0), (ushort)this._Tiles.GetLength(1));
 	public int Length => this._Tiles.Length;
+	public ref Tile this[ushort x, ushort y] => ref this._Tiles[x, y];
 	private readonly Tile[,] _Tiles;
 }
