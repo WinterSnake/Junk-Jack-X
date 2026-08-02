@@ -22,6 +22,7 @@ internal static class JJxDefaultSerializationOptions
 		Options.AddConverter<DateTimeConverter>(typeof(DateTime));
 		Options.AddConverter<TileConverter>(typeof(Tile));
 		Options.AddConverter<CharacterModelConverter>(typeof(CharacterModel));
+		Options.AddConverter<ItemConverter>(typeof(Item));
 	}
 	/* Class Properties */
 	internal static readonly JJxSerializationOptions Options;
