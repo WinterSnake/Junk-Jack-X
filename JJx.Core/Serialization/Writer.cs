@@ -18,6 +18,11 @@ internal sealed class JJxWriter
 	/* Constructor */
 	public JJxWriter(IBufferWriter<byte> writer) => this._Writer = writer;
 	/* Instance Methods */
+	public void Advance(int length)
+	{
+		this._Writer.GetSpan(length).Clear();
+		this._Writer.Advance(length);
+	}
 	public void Write(bool @value)
 	{
 		var size = sizeof(bool);

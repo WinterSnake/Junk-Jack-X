@@ -18,6 +18,12 @@ internal ref struct JJxReader
 	/* Constructor */
 	public JJxReader(ReadOnlySpan<byte> buffer) => this._Buffer = buffer;
 	/* Instance Methods */
+	public void Advance(int length) => this._Buffer = this._Buffer.Slice(length);
+	public void CopyTo(scoped Span<byte> buffer)
+	{
+		this._Buffer[..buffer.Length].CopyTo(buffer);
+		this._Buffer = this._Buffer.Slice(buffer.Length);
+	}
 	public bool ReadBool()
 	{
 		var @value = Convert.ToBoolean(this._Buffer[0]);
@@ -64,11 +70,6 @@ internal ref struct JJxReader
 		} finally {
 			if (storage is not null) ArrayPool<byte>.Shared.Return(storage);
 		}
-	}
-	public void CopyTo(scoped Span<byte> buffer)
-	{
-		this._Buffer[..buffer.Length].CopyTo(buffer);
-		this._Buffer = this._Buffer.Slice(buffer.Length);
 	}
 	public T ReadObject<T>()
 		=> JJxSerializationOptions.Default.GetConverter<T>().Read(ref this);
